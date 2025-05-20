@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aziz Phone Hub - Premium Electronics & Fashion</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Lightbox CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container position-relative">
+            <!-- Hamburger (left on mobile) -->
+            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Logo (center on mobile, left on desktop) -->
+            <a class="navbar-brand mx-auto mx-lg-0 order-2" href="#">
+                <div class="logo-container">
+                    <img src="images/aziz logo.webp" alt="Aziz Phone Hub">
+                </div>
+            </a>
+            <!-- Cart Icon (right on mobile) -->
+            <div class="d-lg-none order-3 position-absolute end-0 top-50 translate-middle-y" style="right: 1rem;">
+                <a href="#" class="nav-link p-0"><i class="fas fa-shopping-cart fa-lg"></i></a>
+            </div>
+            <!-- Navbar links and search (desktop) -->
+            <div class="collapse navbar-collapse order-lg-2" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Electronics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Fashion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <!-- Desktop Search Box -->
+                <form class="d-none d-lg-flex ms-3 search-box-form" role="search">
+                    <div class="search-box w-100">
+                        <input type="text" placeholder="Search products..." aria-label="Search">
+                        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+                <!-- Cart Icon (desktop) -->
+                <a href="#" class="nav-link d-none d-lg-block ms-3"><i class="fas fa-shopping-cart fa-lg"></i></a>
+            </div>
+        </div>
+    </nav>
+    <!-- Mobile Search Box -->
+    <div class="container d-lg-none mt-2">
+        <form class="search-box-form" role="search">
+            <div class="search-box w-100">
+                <input type="text" placeholder="Search products..." aria-label="Search">
+                <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Offers Section -->
+    <section class="offers-section py-5">
+        <div class="container offers-center-wrapper">
+            <div class="swiper offersSwiper">
+                <div class="swiper-wrapper">
+                    <!-- Offer Slide 1 -->
+                    <div class="swiper-slide">
+                        <div class="offer-content">
+                            <div class="offer-image">
+                                <img src="images/offer_placeholder_1.jpg" alt="Offer 1">
+                            </div>
+                            <h2>Special Offer</h2>
+                            <p>Get amazing discounts on selected items!</p>
+                            <a href="#" class="offer-btn">Shop Now</a>
+                        </div>
+                    </div>
+                    <!-- Offer Slide 2 -->
+                    <div class="swiper-slide">
+                        <div class="offer-content">
+                            <div class="offer-image">
+                                <img src="images/offer_placeholder_2.jpg" alt="Offer 2">
+                            </div>
+                            <h2>Limited Time Deal</h2>
+                            <p>Don't miss out on our flash sale!</p>
+                            <a href="#" class="offer-btn">Explore Deals</a>
+                        </div>
+                    </div>
+                    <!-- Offer Slide 3 -->
+                    <div class="swiper-slide">
+                        <div class="offer-content">
+                            <div class="offer-image">
+                                <img src="images/offer_placeholder_3.jpg" alt="Offer 3">
+                            </div>
+                            <h2>Exciting New Offer</h2>
+                            <p>Discover our latest deals and promotions!</p>
+                            <a href="#" class="offer-btn">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Add Pagination -->
+                <div class="swiper-pagination"></div>
+                <!-- Add Navigation (optional) -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories-section py-5">
+        <div class="container">
+            <h2 class="section-title text-center mb-4">Shop by Category</h2>
+            <!-- Row 1 -->
+            <div class="category-row horizontal-scroll mb-3">
+                <div class="category-card" data-aos="fade-up">
+                    <img src="images/airpods.jpeg" alt="AirPods">
+                    <h3>AirPods</h3>
+                </div>
+                <div class="category-card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="images/SmartWatch.jpeg" alt="SmartWatch">
+                    <h3>Smart Watches</h3>
+                </div>
+                <div class="category-card" data-aos="fade-up" data-aos-delay="200">
+                    <img src="images/HeadPhone.jpeg"  alt="Headphones">
+                    <h3>Headphones</h3>
+                </div>
+                <div class="category-card" data-aos="fade-up" data-aos-delay="300">
+                    <img src="images/magsafe.jpeg" alt="ma">
+                    <h3>MagSafe</h3>
+                </div>
+            </div>
+            <!-- Row 2 -->
+            <div class="category-row horizontal-scroll">
+                <div class="category-card" data-aos="fade-up" data-aos-delay="400">
+                    <img src="images/shoes.jpeg" alt="Shoes">
+                    <h3>Shoes</h3>
+                </div>
+                <div class="category-card" data-aos="fade-up" data-aos-delay="500">
+                    <img src="images/crocs.jpeg" alt="Crocs">
+                    <h3>Crocs</h3>
+                </div>
+                <div class="category-card" data-aos="fade-up" data-aos-delay="600">
+                    <img src="images/watch.jpeg" alt="watch">
+                    <h3>Casual Watch</h3>
+                </div>
+                <div class="category-card" data-aos="fade-up" data-aos-delay="700">
+                    <img src="images/adapter.jpeg" alt="adapter">
+                    <h3>More Products</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="featured-products py-5 bg-light">
+        <div class="container">
+            <h2 class="section-title text-center mb-4">Featured Products</h2>
+            <div class="featured-products-row horizontal-scroll">
+                <div class="product-card" data-aos="fade-up">
+                    <div class="product-image">
+                        <a href="https://via.placeholder.com/800x600" data-lightbox="products">
+                            <img src="images/AirPodsPro2.jpg" alt="AirPods Pro">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>AirPods Pro (2nd generation)</h3>
+                        <p class="price">₹999</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="product-image">
+                        <a href="https://via.placeholder.com/800x600" data-lightbox="products">
+                            <img src="images/Apple watch series 9.jpeg" alt="Apple watch series 9">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>Apple Watch Series 9</h3>
+                        <p class="price">₹999</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="product-image">
+                        <a href="https://via.placeholder.com/800x600" data-lightbox="products">
+                            <img src="images/nike air force 1.jpeg" alt="nike air force 1">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>Nike Air Force 1</h3>
+                        <p class="price">₹1400</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="product-image">
+                        <a href="https://via.placeholder.com/800x600" data-lightbox="products">
+                            <img src="images/apple magsafe battery pack.jpeg" alt="apple magsafe battery pack">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>Apple MagSafe Charger</h3>
+                        <p class="price">₹749</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <!-- More products -->
+                <div class="product-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="product-image">
+                        <a href="https://via.placeholder.com/800x600" data-lightbox="products">
+                            <img src="images/rolex submariner.jpg" alt="rolex submariner">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>Rolex Submariner</h3>
+                        <p class="price">₹1300</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card" data-aos="fade-up" data-aos-delay="500">
+                    <div class="product-image">
+                        <a href="https://via.placeholder.com/800x600" data-lightbox="products">
+                            <img src="images/ride crocs.jpeg" alt="ride crocs">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>Ride Crocs</h3>
+                        <p class="price">₹1,300</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card" data-aos="fade-up" data-aos-delay="600">
+                    <div class="product-image">
+                        <a href="https://via.placeholder.com/800x600" data-lightbox="products">
+                            <img src="images/apple airpods max.jpeg" alt="apple airpods max">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>Apple Airpods Max</h3>
+                        <p class="price">₹14,99</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card" data-aos="fade-up" data-aos-delay="700">
+                    <div class="product-image">
+                        <a href="https://via.placeholder.com/800x600" data-lightbox="products">
+                            <img src="images/adapter.jpeg" alt="adapter">
+                        </a>
+                    </div>
+                    <div class="product-info">
+                        <h3>Apple Adapter</h3>
+                        <p class="price">₹450</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section py-5">
+        <div class="container">
+            <div class="newsletter-content text-center" data-aos="fade-up">
+                <h2>Stay Updated</h2>
+                <p>Subscribe to our newsletter for the latest products and offers</p>
+                <form class="newsletter-form">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Enter your email">
+                        <button class="btn btn-primary" type="submit">Subscribe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Aziz Phone Hub</h3>
+                    <p>Your one-stop shop for premium electronics and fashion products.</p>
+                </div>
+                <div class="col-md-4">
+                    <h3>Quick Links</h3>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Electronics</a></li>
+                        <li><a href="#">Fashion</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h3>Contact Us</h3>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone"></i> +91 1234567890</li>
+                        <li><i class="fas fa-envelope"></i> info@azizphonehub.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Your Address Here</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
