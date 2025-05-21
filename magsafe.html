@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagSafe Collection - Aziz Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <div class="logo-container">
+                    <img src="./images/aziz logo.webp" alt="Aziz Store Logo">
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#categories">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#featured">Featured</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#offers">Offers</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Search Box -->
+    <div class="container d-lg-none mt-2">
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary filter-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterPanel">
+                <i class="fas fa-filter"></i> Filters
+            </button>
+            <form class="search-box-form flex-grow-1" role="search">
+                <div class="search-box w-100">
+                    <input type="text" placeholder="Search products..." aria-label="Search">
+                    <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Desktop Search Box with Filter -->
+    <div class="container d-none d-lg-block mt-2">
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary filter-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterPanel">
+                <i class="fas fa-filter"></i> Filters
+            </button>
+            <form class="search-box-form flex-grow-1" role="search">
+                <div class="search-box w-100">
+                    <input type="text" placeholder="Search products..." aria-label="Search">
+                    <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Header -->
+    <section class="category-header py-2">
+        <div class="container">
+            <div>
+                <h1 class="mb-1">MagSafe Collection</h1>
+                <p class="mb-0">Discover our premium selection of MagSafe chargers and accessories</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Panel (Offcanvas) -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="filterPanel" aria-labelledby="filterPanelLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="filterPanelLabel">Filter Products</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <!-- Price Range Filter -->
+            <div class="filter-group mb-4">
+                <h5 class="mb-2">Price Range</h5>
+                <div class="d-flex gap-2">
+                    <input type="number" class="form-control" placeholder="Min" min="0">
+                    <input type="number" class="form-control" placeholder="Max" min="0">
+                </div>
+            </div>
+            <!-- Brand Filter -->
+            <div class="filter-group mb-4">
+                <h5 class="mb-2">Brand</h5>
+                <select class="form-select">
+                    <option value="">All Brands</option>
+                    <option value="apple">Apple</option>
+                    <option value="belkin">Belkin</option>
+                    <option value="anker">Anker</option>
+                    <option value="mophie">Mophie</option>
+                </select>
+            </div>
+            <!-- Features Filter -->
+            <div class="filter-group mb-4">
+                <h5 class="mb-2">Features</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="fastCharging">
+                    <label class="form-check-label" for="fastCharging">Fast Charging</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="stand">
+                    <label class="form-check-label" for="stand">With Stand</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="portable">
+                    <label class="form-check-label" for="portable">Portable</label>
+                </div>
+            </div>
+            <!-- Sort Filter -->
+            <div class="filter-group mb-4">
+                <h5 class="mb-2">Sort By</h5>
+                <select class="form-select">
+                    <option value="popularity">Popularity</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="newest">Newest First</option>
+                </select>
+            </div>
+            <!-- Apply Filters Button -->
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary">Apply Filters</button>
+                <button class="btn btn-outline-secondary">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <section class="category-products py-3">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Apple MagSafe Charger -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <a href="./images/AppleMagSafe.jpg" data-lightbox="magsafe">
+                                <img src="./images/AppleMagSafe.jpg" alt="Apple MagSafe Charger">
+                            </a>
+                        </div>
+                        <div class="product-info">
+                            <h3>Apple MagSafe Charger</h3>
+                            <p class="price">₹4,500</p>
+                            <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Belkin 3-in-1 MagSafe Charger -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <a href="./images/Belkin3in1.jpg" data-lightbox="magsafe">
+                                <img src="./images/Belkin3in1.jpg" alt="Belkin 3-in-1 MagSafe Charger">
+                            </a>
+                        </div>
+                        <div class="product-info">
+                            <h3>Belkin 3-in-1 MagSafe Charger</h3>
+                            <p class="price">₹12,990</p>
+                            <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anker MagSafe Power Bank -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <a href="./images/AnkerMagSafe.jpg" data-lightbox="magsafe">
+                                <img src="./images/AnkerMagSafe.jpg" alt="Anker MagSafe Power Bank">
+                            </a>
+                        </div>
+                        <div class="product-info">
+                            <h3>Anker MagSafe Power Bank</h3>
+                            <p class="price">₹5,999</p>
+                            <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty Card for Future Product -->
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <div class="empty-product">
+                                <i class="fas fa-plus"></i>
+                                <p>Coming Soon</p>
+                            </div>
+                        </div>
+                        <div class="product-info">
+                            <h3>New Product</h3>
+                            <p class="price">Coming Soon</p>
+                            <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>About Us</h3>
+                    <p>Your one-stop shop for premium electronics and accessories.</p>
+                </div>
+                <div class="col-md-4">
+                    <h3>Quick Links</h3>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#categories">Categories</a></li>
+                        <li><a href="index.html#featured">Featured Products</a></li>
+                        <li><a href="index.html#offers">Offers</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h3>Contact Us</h3>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone"></i> +91 1234567890</li>
+                        <li><i class="fas fa-envelope"></i> info@azizstore.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Main Street, City</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
