@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Aziz Phone Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container position-relative">
+            <!-- Hamburger (left on mobile) -->
+            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Logo (center on mobile, left on desktop) -->
+            <a class="navbar-brand mx-auto mx-lg-0 order-2" href="index.html">
+                <div class="logo-container">
+                    <img src="./images/aziz logo.svg" alt="Aziz Phone Hub">
+                </div>
+            </a>
+            <!-- Cart Icon (right on mobile) -->
+            <div class="d-lg-none order-3 position-absolute end-0 top-50 translate-middle-y" style="right: 1rem;">
+                <a href="cart.html" class="nav-link p-0">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span class="cart-count-badge" id="mobile-nav-cart-count">0</span>
+                </a>
+            </div>
+            <!-- Navbar links and search (desktop) -->
+            <div class="collapse navbar-collapse order-lg-2" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Electronics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Fashion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <!-- Desktop Search Box -->
+                <form class="d-none d-lg-flex ms-3 search-box-form" role="search">
+                    <div class="search-box w-100">
+                        <input type="text" placeholder="Search products..." aria-label="Search">
+                        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+                <!-- Cart Icon (desktop) -->
+                <a href="cart.html" class="nav-link d-none d-lg-block ms-3 position-relative">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span class="cart-count-badge" id="desktop-nav-cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Section -->
+    <section class="cart-section py-5">
+        <div class="container">
+            <h2 class="section-title mb-4">Shopping Cart</h2>
+            
+            <!-- Empty Cart Message (shown when cart is empty) -->
+            <div id="empty-cart" class="text-center py-5 d-none">
+                <div class="empty-cart-container">
+                    <div class="empty-cart-icon mb-4">
+                        <i class="fas fa-shopping-cart fa-5x text-muted"></i>
+                    </div>
+                    <h3>Your cart is empty</h3>
+                    <p class="text-muted mb-4">Looks like you haven't added any products to your cart yet.</p>
+                    <a href="shop.html" class="btn btn-primary">Shop Now</a>
+                </div>
+            </div>
+            
+            <!-- Cart Content (shown when cart has items) -->
+            <div id="cart-content" class="row">
+                <!-- Cart Items -->
+                <div class="col-lg-8">
+                    <div id="cart-items" class="cart-items">
+                        <!-- Cart items will be dynamically inserted here -->
+                    </div>
+                </div>
+
+                <!-- Price Summary -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Price Summary</h5>
+                            <div id="cart-item-prices" class="mb-3">
+                                <!-- Individual product prices will be inserted here by JavaScript -->
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <span id="cart-subtotal">₹0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shipping</span>
+                                <span id="cart-shipping">Free</span>
+                            </div>
+                            
+                            <hr>
+                            <div class="d-flex justify-content-between mb-4">
+                                <strong>Total</strong>
+                                <strong class="text-primary" id="cart-total">₹0</strong>
+                            </div>
+                            
+                            <button id="checkout-btn" class="btn btn-primary w-100">Proceed to Checkout</button>
+                            
+                            <div class="mt-3 text-center">
+                                <a href="shop.html" class="btn btn-link"><i class="fas fa-arrow-left me-2"></i>Continue Shopping</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fixed Bottom Navigation Footer -->
+    <footer class="fixed-bottom-footer d-lg-none">
+        <div class="container-fluid h-100">
+            <div class="row h-100">
+                <div class="col text-center">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-home"></i><span>Home</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="shop.html" class="nav-link">
+                        <i class="fas fa-shop"></i><span>Shop</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="wishlist.html" class="nav-link">
+                        <i class="fas fa-heart"></i><span>Wishlist</span>
+                        <span class="wishlist-count-badge" id="mobile-wishlist-count">0</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="cart.html" class="nav-link active">
+                        <i class="fas fa-shopping-cart"></i><span>Cart</span>
+                        <span class="cart-count-badge" id="mobile-cart-count">0</span>
+                    </a>
+                </div>
+                <div class="col text-center dropdown">
+                    <a href="#" class="nav-link" id="mobileFooterProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i><span>Profile</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileFooterProfileDropdown">
+                        <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="orders.html"><i class="fas fa-box me-2"></i>My Orders</a></li>
+                        <li><a class="dropdown-item" href="wishlist.html"><i class="fas fa-heart me-2"></i>Wishlist <span class="badge bg-danger rounded-pill" id="mobile-footer-wishlist-count">0</span></a></li>
+                        <li><a class="dropdown-item" href="cart.html"><i class="fas fa-shopping-cart me-2"></i>Cart <span class="badge bg-danger rounded-pill" id="mobile-footer-cart-count">0</span></a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="auth.html" id="mobileFooterLoginSignupBtn"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
+                        <li><a class="dropdown-item text-danger" href="#" id="mobileFooterLogoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="profile.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="static-products.js"></script>
+    <script src="search.js"></script>
+    <script src="firestore-cart.js"></script>
+    
+</body>
+</html>

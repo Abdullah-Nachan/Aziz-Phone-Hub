@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migrate Products to Firebase - Aziz Phone Hub</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .progress-container {
+            margin-top: 30px;
+        }
+        #progress-bar {
+            height: 30px;
+            transition: width 0.3s ease;
+        }
+        .log-container {
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            font-family: monospace;
+        }
+        .log-success {
+            color: #198754;
+        }
+        .log-error {
+            color: #dc3545;
+        }
+        .log-info {
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="mb-4">Migrate Products to Firebase</h1>
+                <p class="lead">This tool will migrate all products from the static products.js file to Firebase Firestore.</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> This process will add all products to Firestore. If products with the same IDs already exist, they will be overwritten.
+                </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> You need to create a products.js file in the admin/backup folder with your product data before migration.
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <button id="startMigration" class="btn btn-primary btn-lg">
+                    <i class="fas fa-upload me-2"></i>Start Migration
+                </button>
+                <button id="clearBtn" class="btn btn-danger btn-lg ms-2">
+                    <i class="fas fa-trash me-2"></i>Clear All Products
+                </button>
+                <a href="index.html" class="btn btn-secondary btn-lg ms-2">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Admin
+                </a>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <h4 id="progress-status">Ready to migrate</h4>
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+            </div>
+            <p id="progress-text" class="mt-2">0 of 0 products migrated</p>
+        </div>
+
+        <div class="log-container">
+            <div id="log-entries"></div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <!-- Firebase Config -->
+    <script src="../firebase-config.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
+    <script>
+        // Global variables
+        let productsToMigrate = [];
+        let migratedCount = 0;
+        let totalProducts = 0;
+        let logEntries = document.getElementById('log-entries');
+        let progressBar = document.getElementById('progress-bar');
+        let progressText = document.getElementById('progress-text');
+        let progressStatus = document.getElementById('progress-status');
+        let startBtn = document.getElementById('startMigration');
+        let clearBtn = document.getElementById('clearBtn');
+
+        // Format price function
+        function formatPrice(price) {
+            return parseFloat(price).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'PKR'
+            });
+        }
+
+        // Add log entry
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEntries.appendChild(entry);
+            logEntries.scrollTop = logEntries.scrollHeight;
+        }
+
+        // Clear log - This function is for the log display, not clearing products from DB
+        function clearDisplayLog() { // Renamed to avoid confusion with clearAllProducts
+            logEntries.innerHTML = '';
+            log('Log cleared.', 'info');
+        }
+
+        // Update progress
+        function updateProgress(count, total) {
+            const percentage = Math.round((count / total) * 100);
+            progressBar.style.width = `${percentage}%`;
+            progressBar.setAttribute('aria-valuenow', percentage);
+            progressText.textContent = `${count} of ${total} products migrated (${percentage}%)`;
+        }
+
+        // Load products from backup file
+        async function loadProductsData() {
+            try {
+                log('Loading products from admin/backup/products.js...', 'info');
+                const script = document.createElement('script');
+                script.src = 'backup/products.js'; // Path relative to admin/migrate-products.html
+                
+                return new Promise((resolve, reject) => {
+                    script.onload = function() {
+                        if (window.products && Object.keys(window.products).length > 0) {
+                            const productArray = Object.values(window.products);
+                            log(`Successfully loaded ${productArray.length} products.`, 'success');
+                            resolve(productArray);
+                        } else {
+                            reject(new Error('No products found in admin/backup/products.js or it is empty.'));
+                        }
+                    };
+                    script.onerror = function() {
+                        reject(new Error('Failed to load admin/backup/products.js. Check file existence and path.'));
+                    };
+                    document.head.appendChild(script);
+                });
+            } catch (error) {
+                throw new Error(`Error loading products: ${error.message}`);
+            }
+        }
+
+        // Start migration
+        async function startMigration() {
+            try {
+                startBtn.disabled = true;
+                clearBtn.disabled = true;
+                migratedCount = 0;
+                progressBar.style.width = '0%';
+                progressStatus.textContent = 'Loading products...';
+                
+                try {
+                    productsToMigrate = await loadProductsData();
+                    totalProducts = productsToMigrate.length;
+                    progressText.textContent = `0 of ${totalProducts} products migrated`;
+                } catch (error) {
+                    log(error.message, 'error');
+                    progressStatus.textContent = 'Error loading products';
+                    Swal.fire('Error Loading Products', error.message, 'error');
+                    startBtn.disabled = false;
+                    clearBtn.disabled = false;
+                    return;
+                }
+                
+                if (totalProducts === 0) {
+                    log('No products to migrate.', 'warning');
+                    progressStatus.textContent = 'No products found to migrate.';
+                    Swal.fire('No Products', 'No products found in admin/backup/products.js to migrate.', 'warning');
+                    startBtn.disabled = false;
+                    clearBtn.disabled = false;
+                    return;
+                }
+
+                progressStatus.textContent = 'Migration in progress...';
+                log(`Starting migration of ${totalProducts} products...`, 'info');
+                
+                for (const product of productsToMigrate) {
+                    try {
+                        const productData = {
+                            name: product.name,
+                            price: typeof product.price === 'string' ? parseFloat(product.price.replace(/[^0-9.-]+/g,"")) : product.price,
+                            description: product.description || '',
+                            category: product.category || 'Uncategorized',
+                            inStock: product.inStock !== undefined ? product.inStock : true,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        };
+                        
+                        if (product.image) productData.image = product.image;
+                        if (product.images && Array.isArray(product.images)) productData.images = product.images;
+                        else if (product.image) productData.images = [product.image];
+                        else productData.images = [];
+                        
+                        const docId = String(product.id).trim();
+                        if (!docId) throw new Error(`Product ID is missing or invalid for: ${product.name || 'Unknown Name'}`);
+
+                        await db.collection('products').doc(docId).set(productData, { merge: true });
+                        
+                        migratedCount++;
+                        updateProgress(migratedCount, totalProducts);
+                        log(`Migrated: ${product.name} (ID: ${docId})`, 'success');
+                    } catch (error) {
+                        log(`Error migrating ${product.id || 'unknown'}: ${error.message}`, 'error');
+                    }
+                }
+                
+                progressStatus.textContent = 'Migration completed';
+                log(`Migration completed. ${migratedCount} of ${totalProducts} products migrated.`, 'info');
+                Swal.fire('Migration Completed', `${migratedCount} of ${totalProducts} products migrated.`, migratedCount > 0 && migratedCount === totalProducts ? 'success' : (migratedCount > 0 ? 'warning' : 'error'));
+
+            } catch (error) {
+                log(`Migration error: ${error.message}`, 'error');
+                progressStatus.textContent = 'Error during migration';
+                Swal.fire('Migration Error', error.message, 'error');
+            } finally {
+                startBtn.disabled = false;
+                clearBtn.disabled = false;
+            }
+        }
+
+        // Clear all products from Firestore
+        async function clearAllProducts() {
+            try {
+                const result = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This will delete ALL products from Firestore. This action cannot be undone!',
+                    icon: 'warning', showCancelButton: true, confirmButtonText: 'Yes, delete all!',
+                    cancelButtonText: 'Cancel', confirmButtonColor: '#dc3545'
+                });
+                if (!result.isConfirmed) return;
+                
+                startBtn.disabled = true; clearBtn.disabled = true;
+                progressStatus.textContent = 'Deleting all products...';
+                log('Deleting all products from Firestore...', 'info');
+                
+                const snapshot = await db.collection('products').get();
+                const totalToDelete = snapshot.size;
+                let deletedCount = 0;
+                
+                if (totalToDelete === 0) {
+                    log('No products in Firestore to delete.', 'info');
+                    progressStatus.textContent = 'No products to delete.';
+                    Swal.fire('No Products', 'No products in Firestore to delete.', 'info');
+                    startBtn.disabled = false; clearBtn.disabled = false;
+                    return;
+                }
+
+                for (const doc of snapshot.docs) {
+                    await db.collection('products').doc(doc.id).delete();
+                    deletedCount++;
+                    updateProgress(deletedCount, totalToDelete); // Reusing updateProgress for deletion
+                    log(`Deleted product: ${doc.id}`, 'info');
+                }
+                
+                progressStatus.textContent = 'All products deleted';
+                log(`Deleted ${deletedCount} products from Firestore.`, 'success');
+                Swal.fire('Products Deleted', `${deletedCount} products deleted.`, 'success');
+
+            } catch (error) {
+                log(`Error deleting products: ${error.message}`, 'error');
+                progressStatus.textContent = 'Error deleting products';
+                Swal.fire('Error Deleting Products', error.message, 'error');
+            } finally {
+                startBtn.disabled = false; clearBtn.disabled = false;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof firebase === 'undefined' || typeof firebase.firestore === 'undefined') {
+                log('Firebase or Firestore SDK not loaded. Check script tags and firebase-config.js.', 'error');
+                progressStatus.textContent = 'Error: Firebase/Firestore not initialized';
+                if(startBtn) startBtn.disabled = true;
+                if(clearBtn) clearBtn.disabled = true;
+                return;
+            }
+            try {
+                // db = firebase.firestore(); // Initialize Firestore database instance
+                log('Firestore initialized.', 'info');
+            } catch (e) {
+                log('Error initializing Firestore: ' + e.message, 'error');
+                progressStatus.textContent = 'Error: Firestore initialization failed';
+                if(startBtn) startBtn.disabled = true;
+                if(clearBtn) clearBtn.disabled = true;
+                return;
+            }
+            
+            log('Migration tool ready. Ensure admin/backup/products.js is correctly formatted.', 'info');
+            startBtn.addEventListener('click', startMigration);
+            // The clear button is for clearing products from DB, not just the log.
+            // If a separate "Clear Log" button is desired, it should call clearDisplayLog().
+            clearBtn.addEventListener('click', clearAllProducts); 
+        });
+    </script>
+</body>
+</html>

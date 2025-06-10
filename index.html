@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aziz Phone Hub - Premium Electronics & Fashion</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Video Modal Styles */
+        .video-container {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .video-container:hover {
+            transform: scale(1.02);
+        }
+        #videoModal .modal-content {
+            background: transparent;
+        }
+        #videoModal .btn-close {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            z-index: 10;
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+        #videoModal .btn-close:hover {
+            opacity: 1;
+        }
+        #modalVideo {
+            width: 100%;
+            height: 500px;
+            background: #000;
+            object-fit: cover;
+        }
+    </style>
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <!-- Lightbox CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Video and Reviews CSS -->
+    <link rel="stylesheet" href="styles-video-reviews.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Local Storage Migration Script -->
+    <script>
+    // Global error handler for uncaught errors
+    window.addEventListener('error', function(event) {
+        console.error('Global error:', event.error || event.message, event);
+    });
+    
+    // Handle CORS errors
+    window.addEventListener('unhandledrejection', function(event) {
+        console.warn('Unhandled promise rejection:', event.reason);
+    });
+    </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container position-relative">
+            <!-- Hamburger (left on mobile) -->
+            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Logo (center on mobile, left on desktop) -->
+            <a class="navbar-brand mx-auto mx-lg-0 order-2" href="#">
+                <div class="logo-container">
+                    <img src="./images/logo.jpg" alt="Aziz Phone Hub">
+                </div>
+            </a>
+            <!-- Profile icon (right on mobile) -->
+            <div class="d-lg-none order-3 position-absolute end-0 top-50 translate-middle-y d-flex align-items-center" style="right: 1rem; gap: 12px;">
+                <div class="dropdown">
+                    <a href="#" class="nav-link p-0 position-relative" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Profile">
+                        <i class="fas fa-user-circle fa-lg"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="orders.html"><i class="fas fa-box me-2"></i>My Orders</a></li>
+                        <li><a class="dropdown-item" href="wishlist.html"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
+                        <li><a class="dropdown-item" href="cart.html"><i class="fas fa-shopping-cart me-2"></i>Cart</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="auth.html" id="mobileLoginSignupBtn"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
+                        <li><a class="dropdown-item text-danger" href="#" id="mobileLogoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Navbar links and search (desktop) -->
+            <div class="collapse navbar-collapse order-lg-2" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="category.html?cat=airpods">AirPods</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=smartwatches">Smart Watches</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=headphones">Headphones</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=accessories">Accessories</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=shoes">Shoes</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=crocs">Crocs</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=casualwatch">Casual Watch</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=combo-offers">Combo Offers</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+                <!-- Desktop Search Box -->
+                <form class="d-none d-lg-flex ms-3 search-box-form" role="search">
+                    <div class="search-box w-100">
+                        <input type="text" placeholder="Search products..." aria-label="Search">
+                        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+                <!-- Wishlist Icon (desktop) -->
+                <a href="wishlist.html" class="nav-link d-none d-lg-block ms-3 position-relative" title="Wishlist">
+                    <i class="fas fa-heart fa-lg"></i>
+                    <span class="wishlist-count-badge" id="desktop-nav-wishlist-count">0</span>
+                </a>
+                <!-- Cart Icon (desktop) -->
+                <a href="cart.html" class="nav-link d-none d-lg-block ms-3 position-relative" title="Cart">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span class="cart-count-badge" id="desktop-nav-cart-count">0</span>
+                </a>
+                <!-- Profile Icon (desktop) -->
+                <div class="dropdown d-none d-lg-block">
+                    <a href="auth.html" class="nav-link p-0 d-flex align-items-center" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Profile">
+                        <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="orders.html"><i class="fas fa-box me-2"></i>My Orders</a></li>
+                        <li><a class="dropdown-item" href="wishlist.html"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="auth.html" id="loginSignupBtn"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
+                        <li><a class="dropdown-item text-danger" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Slide-out Menu -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mobileCategories">
+                        Categories <i class="fas fa-chevron-down float-end"></i>
+                    </a>
+                    <div class="collapse" id="mobileCategories">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="category.html?cat=airpods">AirPods</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="category.html?cat=smartwatches">Smart Watches</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="category.html?cat=headphones">Headphones</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="category.html?cat=accessories">Accessories</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="category.html?cat=shoes">Shoes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="category.html?cat=crocs">Crocs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="category.html?cat=casualwatch">Casual Watch</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="category.html?cat=combo-offers">Combo Offers</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Mobile Search Box -->
+    <div class="container d-lg-none mt-2">
+        <form class="search-box-form" role="search">
+            <div class="search-box w-100">
+                <input type="text" placeholder="Search products..." aria-label="Search">
+                <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Hero Section with Swiper Slider -->
+    <section class="hero-section">
+        <div class="hero-card">
+            <div class="swiper heroSwiper">
+                <div class="swiper-wrapper">
+                    <!-- Slide 1 -->
+                    <div class="swiper-slide">
+                        <a href="product.html?id=airpods-pro2-magsafe" class="hero-slide-link">
+                            <img src="./images/airpods-pro2-&-magsafe.png" alt="Hero Slide 1 Image" class="hero-slide-image">
+                            <div class="container">
+                                <div class="row justify-content-center align-items-center h-100">
+                                    <div class="col-md-8 text-center text-white">
+                                        <!-- Content can be added here if needed -->
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- Slide 2 -->
+                    <div class="swiper-slide">
+                        <a href="product.html?id=7in1-apple-ultra-smartwatch" class="hero-slide-link">
+                            <img src="./images/7in1-watch-ultra.png" alt="Hero Slide 2 Image" class="hero-slide-image">
+                            <div class="container">
+                                <div class="row justify-content-center align-items-center h-100">
+                                    <div class="col-md-8 text-center text-white">
+                                        <!-- Content can be added here if needed -->
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- Slide 3 -->
+                    <div class="swiper-slide">
+                        <a href="product.html?id=series9-gold-with-straps" class="hero-slide-link">
+                            <img src="./images/series9-pro-gold.png" alt="Hero Slide 3 Image" class="hero-slide-image">
+                            <div class="container">
+                                <div class="row justify-content-center align-items-center h-100">
+                                    <div class="col-md-8 text-center text-white">
+                                        <!-- Content can be added here if needed -->
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <!-- Add Pagination -->
+                <div class="swiper-pagination"></div>
+                <!-- Add Navigation -->
+                <!-- <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div> -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories-section py-5">
+        <div class="container">
+            <h2 class="section-title text-center mb-4">Shop by Category</h2>
+            <!-- Row 1 -->
+            <div class="category-row horizontal-scroll mb-3">
+                <a href="category.html?cat=airpods" class="category-card" data-aos="fade-up">
+                    <img src="./images/airpods.jpeg" alt="AirPods" class="img-fluid">
+                    <h3>AirPods</h3>
+                </a>
+                <a href="category.html?cat=smartwatches" class="category-card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="./images/smartwatch.jpeg" alt="HK9 Ultra Smartwatch" class="img-fluid">
+                    <h3>Smart Watches</h3>
+                </a>
+                <a href="category.html?cat=headphones" class="category-card" data-aos="fade-up" data-aos-delay="200">
+                    <img src="./images/headphone.jpeg" alt="Headphones" class="img-fluid">
+                    <h3>Headphones</h3>
+                </a>
+                <a href="category.html?cat=accessories" class="category-card" data-aos="fade-up" data-aos-delay="300">
+                    <img src="./images/adapter.jpeg" alt="Accessories" class="img-fluid">
+                    <h3>Accessories</h3>
+                </a>
+            </div>
+            <!-- Row 2 -->
+            <div class="category-row horizontal-scroll">
+                <a href="category.html?cat=shoes" class="category-card" data-aos="fade-up" data-aos-delay="400">
+                    <img src="./images/shoes.jpeg" alt="Shoes" class="img-fluid">
+                    <h3>Shoes</h3>
+                </a>
+                <a href="category.html?cat=crocs" class="category-card" data-aos="fade-up" data-aos-delay="500">
+                    <img src="./images/crocs.jpeg" alt="Crocs" class="img-fluid">
+                    <h3>Crocs</h3>
+                </a>
+                <a href="category.html?cat=casualwatch" class="category-card" data-aos="fade-up" data-aos-delay="600">
+                    <img src="./images/watch_omega.jpg" alt="Casual Watch" class="img-fluid">
+                    <h3>Casual Watch</h3>
+                </a>
+                <a href="category.html?cat=combo-offers" class="category-card" data-aos="fade-up" data-aos-delay="700">
+                    <img src="./images/combo-offers.jpg" alt="Combo Offers" class="img-fluid">
+                    <h3>Combo Offers</h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Video Section -->
+    <section class="live-video-section py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title mb-0">[ Shoes Live Videos ]</h2>
+                <div class="swiper-navigation d-none d-md-block">
+                    <button class="swiper-prev-video me-2"><i class="fas fa-chevron-left"></i></button>
+                    <button class="swiper-next-video"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            
+            <div class="video-cards-container">
+                <div class="video-cards-wrapper">
+                    <!-- Video Card 1 -->
+                    <div class="video-product-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/Shoes-videos/air-force-poster.jpg">
+                                <source src="video/1.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="video-product-info">
+                            <h3>Nike Air Force 1 Full White (UA Quality)</h3>
+                            <div class="video-product-price">
+                                <span class="original-price">₹2,599</span>
+                                <span class="discounted-price">₹1,650</span>
+                                <span class="discount-tag">37% OFF</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Card 2 -->
+                    <div class="video-product-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/Shoes-videos/jordan4-poster.jpg">
+                                <source src="video/2.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="video-product-info">
+                            <h3>Nike Air Jordan Retro 4 Pine Green (UA Quality)</h3>
+                            <div class="video-product-price">
+                                <span class="original-price">₹4,000</span>
+                                <span class="discounted-price">₹2,500</span>
+                                <span class="discount-tag">38% OFF</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Card 3 -->
+                    <div class="video-product-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/Shoes-videos/samba-poster.jpg">
+                                <source src="video/3.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="video-product-info">
+                            <h3>Adidas Samba Black White (Master Quality)</h3>
+                            <div class="video-product-price">
+                                <span class="original-price">₹2,799</span>
+                                <span class="discounted-price">₹1,650</span>
+                                <span class="discount-tag">41% OFF</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Card 4 -->
+                    <div class="video-product-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/Shoes-videos/dunk-ae56-poster.jpg">
+                                <source src="video/4.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="video-product-info">
+                            <h3>Nike SB Dunk Low Pro AE56 (UA Quality)</h3>
+                            <div class="video-product-price">
+                                <span class="original-price">₹2,500</span>
+                                <span class="discounted-price">₹1,750</span>
+                                <span class="discount-tag">30% OFF</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Card 5 -->
+                    <div class="video-product-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/Shoes-videos/dunk-dragon-poster.jpg">
+                                <source src="video/5.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="video-product-info">
+                            <h3>Nike SB Dunk Year Of The Dragon Steam (UA Quality)</h3>
+                            <div class="video-product-price">
+                                <span class="original-price">₹2,499</span>
+                                <span class="discounted-price">₹1,650</span>
+                                <span class="discount-tag">34% OFF</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Card 6 -->
+                    <div class="video-product-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/Shoes-videos/nb-flite-poster.jpg">
+                                <source src="video/6.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="video-product-info">
+                            <h3>New Balance 9C Flite V4 White Black (Master Quality)</h3>
+                            <div class="video-product-price">
+                                <span class="original-price">₹3,500</span>
+                                <span class="discounted-price">₹2,200</span>
+                                <span class="discount-tag">37% OFF</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Card 7 -->
+                    <div class="video-product-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/Shoes-videos/dunk-racing-poster.jpg">
+                                <source src="video/7.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="video-product-info">
+                            <h3>Nike SB Dunk Low Racing Buggy Sand Scorched (UA Quality)</h3>
+                            <div class="video-product-price">
+                                <span class="original-price">₹3,500</span>
+                                <span class="discounted-price">₹2,200</span>
+                                <span class="discount-tag">37% OFF</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="featured-products-section py-5">
+        <div class="container">
+            <h2 class="section-title text-center mb-4">Featured Products</h2>
+            <div class="row featured-products-row" id="featuredProductsContainer">
+                <!-- Products will be loaded dynamically here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Customer Reviews Section -->
+    <section class="customer-reviews-section py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title mb-0">[ Customer Reviews ]</h2>
+                <div class="swiper-navigation d-none d-md-block">
+                    <button class="swiper-prev-review me-2"><i class="fas fa-chevron-left"></i></button>
+                    <button class="swiper-next-review"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            
+            <div class="review-videos-container">
+                <div class="review-videos-wrapper">
+                    <!-- Review Video 1 -->
+                    <div class="review-video-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/customer-reviews/review1-poster.jpg">
+                                <source src="video/1.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="review-info">
+                                <h4>Rahul S.</h4>
+                                <div class="rating">★★★★★</div>
+                                <p>"Amazing quality and service!"</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Video 2 -->
+                    <div class="review-video-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/customer-reviews/review2-poster.jpg">
+                                <source src="video/2.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="review-info">
+                                <h4>Priya M.</h4>
+                                <div class="rating">★★★★★</div>
+                                <p>"Great fit and amazing comfort!"</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Video 3 -->
+                    <div class="review-video-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/customer-reviews/review3-poster.jpg">
+                                <source src="video/3.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="review-info">
+                                <h4>Vikram K.</h4>
+                                <div class="rating">★★★★☆</div>
+                                <p>"Good quality, fast delivery!"</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Video 4 -->
+                    <div class="review-video-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/customer-reviews/review4-poster.jpg">
+                                <source src="video/4.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="review-info">
+                                <h4>Ananya P.</h4>
+                                <div class="rating">★★★★★</div>
+                                <p>"Love my new shoes! Will shop again."</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Video 5 -->
+                    <div class="review-video-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/customer-reviews/review3-poster.jpg">
+                                <source src="video/3.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="review-info">
+                                <h4>Amit K.</h4>
+                                <div class="rating">★★★★★</div>
+                                <p>"Fast delivery and perfect condition!"</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Video 6 -->
+                    <div class="review-video-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/customer-reviews/review1-poster.jpg">
+                                <source src="video/1.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="review-info">
+                                <h4>Rahul S.</h4>
+                                <div class="rating">★★★★★</div>
+                                <p>"Amazing quality and service!"</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Video 7 -->
+                    <div class="review-video-card">
+                        <div class="video-container">
+                            <video width="100%" height="500" autoplay loop muted playsinline poster="images/customer-reviews/review7-poster.jpg">
+                                <source src="video/7.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="review-info">
+                                <h4>Meera K.</h4>
+                                <div class="rating">★★★★★</div>
+                                <p>"Excellent quality and service!"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section py-5">
+        <div class="container">
+            <h2 class="section-title text-center mb-4">About Us</h2>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <img src="images/logo.jpg" alt="About Aziz Phone Hub" class="img-fluid rounded shadow">
+                </div>
+                <div class="col-md-6">
+                    <h3 class="mb-3">Welcome to Aziz Phone Hub</h3>
+                    <p class="lead">Your one-stop destination for premium electronics and fashion products.</p>
+                    <p>At Aziz Phone Hub, we are committed to providing our customers with the highest quality products at competitive prices. Our extensive collection includes:</p>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check-circle text-primary me-2"></i>Premium AirPods and Headphones</li>
+                        <li><i class="fas fa-check-circle text-primary me-2"></i>Smart Watches and Accessories</li>
+                        <li><i class="fas fa-check-circle text-primary me-2"></i>Trendy Footwear Collection</li>
+                        <li><i class="fas fa-check-circle text-primary me-2"></i>Exclusive Combo Offers</li>
+                    </ul>
+                    <p>We take pride in our customer service and ensure a seamless shopping experience for all our valued customers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section py-5 bg-light">
+        <div class="container">
+            <h2 class="section-title text-center mb-4">Contact Us</h2>
+            <div class="row">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="contact-info">
+                        <h3 class="mb-4">Get in Touch</h3>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-map-marker-alt fa-2x text-primary me-3"></i>
+                            <div>
+                                <h5 class="mb-1">Our Location</h5>
+                                <p class="mb-0">Your Address Here, City, State, Country</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-phone fa-2x text-primary me-3"></i>
+                            <div>
+                                <h5 class="mb-1">Phone Number</h5>
+                                <p class="mb-0">+91 1234567890</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-envelope fa-2x text-primary me-3"></i>
+                            <div>
+                                <h5 class="mb-1">Email Address</h5>
+                                <p class="mb-0">info@azizphonehub.com</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-clock fa-2x text-primary me-3"></i>
+                            <div>
+                                <h5 class="mb-1">Business Hours</h5>
+                                <p class="mb-0">Monday - Saturday: 10:00 AM - 8:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="contact-form">
+                        <h3 class="mb-4">Send us a Message</h3>
+                        <form>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Your Name" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" class="form-control" placeholder="Your Email" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" placeholder="Subject">
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" rows="5" placeholder="Your Message" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter-section py-5">
+        <div class="container">
+            <div class="newsletter-content text-center" data-aos="fade-up">
+                <h2>Stay Updated</h2>
+                <p>Subscribe to our newsletter for the latest products and offers</p>
+                <form class="newsletter-form">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Enter your email">
+                        <button class="btn btn-primary" type="submit">Subscribe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Aziz Phone Hub</h3>
+                    <p>Your one-stop shop for premium electronics and fashion products.</p>
+                </div>
+                <div class="col-md-4">
+                    <h3>Quick Links</h3>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="wishlist.html">Wishlist</a></li>
+                        <li><a href="profile.html">Profile</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h3>Contact Us</h3>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone"></i> +91 1234567890</li>
+                        <li><i class="fas fa-envelope"></i> info@azizphonehub.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Your Address Here</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Fixed Bottom Navigation Footer -->
+    <footer class="fixed-bottom-footer d-lg-none">
+        <div class="container-fluid h-100">
+            <div class="row h-100">
+                <div class="col text-center">
+                    <a href="index.html" class="nav-link active">
+                        <i class="fas fa-home"></i><span>Home</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="shop.html" class="nav-link">
+                        <i class="fas fa-shop"></i><span>Shop</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="wishlist.html" class="nav-link">
+                        <i class="fas fa-heart"></i><span>Wishlist</span>
+                        <span class="wishlist-count-badge" id="mobile-wishlist-count">0</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="cart.html" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i><span>Cart</span>
+                        <span class="cart-count-badge" id="mobile-cart-count">0</span>
+                    </a>
+                </div>
+                <div class="col text-center dropdown">
+                    <a href="#" class="nav-link" id="mobileFooterProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i><span>Profile</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileFooterProfileDropdown">
+                        <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="orders.html"><i class="fas fa-box me-2"></i>My Orders</a></li>
+                        <li><a class="dropdown-item" href="wishlist.html"><i class="fas fa-heart me-2"></i>Wishlist <span class="badge bg-danger rounded-pill" id="mobile-footer-wishlist-count">0</span></a></li>
+                        <li><a class="dropdown-item" href="cart.html"><i class="fas fa-shopping-cart me-2"></i>Cart <span class="badge bg-danger rounded-pill" id="mobile-footer-cart-count">0</span></a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="auth.html" id="mobileFooterLoginSignupBtn"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
+                        <li><a class="dropdown-item text-danger" href="#" id="mobileFooterLogoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Video Modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content bg-transparent border-0">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="ratio ratio-16x9">
+                        <video id="modalVideo" width="100%" controls autoplay>
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script type="module" src="./firebase-config.js"></script>
+    <script type="module" src="./firebase-auth.js"></script>
+    <script type="module" src="./firestore-cart.js"></script>
+    <script type="module" src="./firestore-wishlist.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="./script.js"></script>
+    <script src="./cart.js"></script>
+    <script src="./wishlist.js"></script>
+    <script src="./product-detail.js"></script>
+    <script src="./category.js"></script>
+    <script src="./category-script.js"></script>
+    <script src="./category-search.js"></script>
+    <script src="./static-products.js"></script>
+    <script src="./featured-products.js"></script>
+    
+    <!-- Video Popup Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap modal
+            const videoModal = new bootstrap.Modal(document.getElementById('videoModal'));
+            const modalVideo = document.getElementById('modalVideo');
+            let isInPipMode = false;
+            
+            // Function to toggle picture-in-picture
+            async function togglePictureInPicture(video) {
+                try {
+                    if (document.pictureInPictureElement) {
+                        await document.exitPictureInPicture();
+                        isInPipMode = false;
+                    } else if (document.pictureInPictureEnabled) {
+                        await video.requestPictureInPicture();
+                        isInPipMode = true;
+                        
+                        // Handle when PiP is closed
+                        video.addEventListener('leavepictureinpicture', () => {
+                            isInPipMode = false;
+                        }, { once: true });
+                    }
+                } catch (error) {
+                    console.error('Error toggling Picture-in-Picture:', error);
+                }
+            }
+            
+            // Handle video container clicks
+            function handleVideoClick(e, video) {
+                // Don't trigger if clicking on video controls
+                if (e.target.tagName === 'VIDEO' && e.target.controls) return;
+                
+                // Check if we're already in PiP mode
+                if (isInPipMode) {
+                    togglePictureInPicture(video);
+                    return;
+                }
+                
+                // If not in PiP mode, open modal
+                const source = video.querySelector('source');
+                if (source) {
+                    // Clear existing sources
+                    while (modalVideo.firstChild) {
+                        modalVideo.removeChild(modalVideo.firstChild);
+                    }
+                    // Add new source
+                    const newSource = document.createElement('source');
+                    newSource.src = source.src;
+                    newSource.type = source.type;
+                    modalVideo.appendChild(newSource);
+                    
+                    // Show modal and play video
+                    videoModal.show();
+                    
+                    // Play video when modal is shown
+                    videoModal._element.addEventListener('shown.bs.modal', function onShown() {
+                        modalVideo.play();
+                        videoModal._element.removeEventListener('shown.bs.modal', onShown);
+                        
+                        // Add PiP button to modal video
+                        if (document.pictureInPictureEnabled) {
+                            const pipButton = document.createElement('button');
+                            pipButton.className = 'pip-button';
+                            pipButton.innerHTML = '&#xe63b;';
+                            pipButton.style.cssText = `
+                                position: absolute;
+                                right: 60px;
+                                top: 15px;
+                                z-index: 10;
+                                background: rgba(0,0,0,0.5);
+                                border: none;
+                                color: white;
+                                width: 30px;
+                                height: 30px;
+                                border-radius: 50%;
+                                cursor: pointer;
+                                font-family: 'Material Icons';
+                                font-size: 18px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            `;
+                            
+                            pipButton.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                togglePictureInPicture(modalVideo);
+                            });
+                            
+                            videoModal._element.querySelector('.modal-content').appendChild(pipButton);
+                        }
+                    }, { once: true });
+                    
+                    // Pause video when modal is hidden
+                    videoModal._element.addEventListener('hidden.bs.modal', function onHidden() {
+                        if (!isInPipMode) {
+                            modalVideo.pause();
+                            modalVideo.currentTime = 0;
+                        }
+                        // Remove PiP button if it exists
+                        const pipButton = videoModal._element.querySelector('.pip-button');
+                        if (pipButton) pipButton.remove();
+                        videoModal._element.removeEventListener('hidden.bs.modal', onHidden);
+                    }, { once: true });
+                }
+            }
+            
+            // Add click event to all video containers
+            document.querySelectorAll('.video-container').forEach(container => {
+                const video = container.querySelector('video');
+                if (video) {
+                    // Click anywhere on container to open modal
+                    container.addEventListener('click', (e) => handleVideoClick(e, video));
+                    
+                    // Double click to toggle picture-in-picture
+                    let clickCount = 0;
+                    container.addEventListener('click', (e) => {
+                        clickCount++;
+                        if (clickCount === 1) {
+                            setTimeout(() => {
+                                if (clickCount === 2) {
+                                    // Double click detected
+                                    togglePictureInPicture(video);
+                                }
+                                clickCount = 0;
+                            }, 300);
+                        }
+                    });
+                }
+            });
+            
+            // Close modal when clicking outside the video
+            document.getElementById('videoModal').addEventListener('click', function(e) {
+                if (e.target === this && !isInPipMode) {
+                    videoModal.hide();
+                }
+            });
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && videoModal._isShown && !isInPipMode) {
+                    videoModal.hide();
+                }
+            });
+            
+            // Handle PiP mode changes
+            document.addEventListener('leavepictureinpicture', () => {
+                isInPipMode = false;
+                // If modal was open before PiP, show it again
+                if (videoModal._isShown) {
+                    videoModal.hide();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

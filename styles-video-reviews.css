@@ -1,0 +1,266 @@
+/* 
+ * Video Section and Customer Reviews Styles
+ * For Aziz Phone Hub
+ * Matches foothunk.co.in styling
+ */
+
+/* Common Styles for Sections */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.live-video-section .d-flex,
+.customer-reviews-section .d-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.live-video-section .swiper-navigation,
+.customer-reviews-section .swiper-navigation {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.live-video-section .section-title,
+.customer-reviews-section .section-title {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+/* Navigation Buttons */
+.swiper-prev-video,
+.swiper-next-video,
+.swiper-prev-review,
+.swiper-next-review {
+    background-color: #f8f9fa;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.swiper-prev-video:hover,
+.swiper-next-video:hover,
+.swiper-prev-review:hover,
+.swiper-next-review:hover {
+    background-color: #e9ecef;
+    transform: scale(1.05);
+}
+
+.swiper-prev-video:hover,
+.swiper-next-video:hover,
+.swiper-prev-review:hover,
+.swiper-next-review:hover {
+    background-color: #e9ecef;
+}
+
+/* Live Video Section Styles */
+.live-video-section {
+    padding: 2rem 0;
+    background-color: #ffffff;
+}
+
+.video-cards-container {
+    position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.video-cards-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.video-cards-wrapper {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+    padding: 10px 0;
+    width: 100%;
+}
+
+.video-product-card {
+    width: 100%;
+    min-width: 0; /* Allows cards to shrink below their content size */
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    aspect-ratio: 9/16; /* Maintain video aspect ratio */
+}
+
+.video-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    aspect-ratio: 9/16; /* Maintain video aspect ratio */
+}
+
+.video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-product-info {
+    padding: 12px;
+}
+
+.video-product-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    line-height: 1.3;
+    height: 2.6rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.video-product-price {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.original-price {
+    color: #6c757d;
+    text-decoration: line-through;
+    font-size: 0.85rem;
+}
+
+.discounted-price {
+    font-weight: 600;
+    color: #212529;
+    font-size: 1rem;
+}
+
+.discount-tag {
+    background-color: #28a745;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/* Customer Reviews Section Styles */
+.customer-reviews-section {
+    padding: 2rem 0;
+    background-color: #ffffff;
+}
+
+.review-videos-container {
+    position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.review-videos-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.review-videos-wrapper {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+    padding: 10px 0;
+    width: 100%;
+}
+
+.review-video-card {
+    width: 100%;
+    min-width: 0; /* Allows cards to shrink below their content size */
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    aspect-ratio: 9/16; /* Maintain video aspect ratio */
+    position: relative;
+}
+
+.review-video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.review-video-card .video-container {
+    width: 100%;
+    height: 100%;
+}
+
+.review-video-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+    color: white;
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+}
+
+.review-branding {
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.review-badge {
+    background-color: #fff;
+    color: #000;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767.98px) {
+    .section-title {
+        font-size: 1.3rem;
+    }
+    
+    .video-product-card {
+        width: 200px;
+    }
+    
+    .video-container {
+        height: 200px;
+    }
+    
+    .review-video-card {
+        width: 160px;
+        height: 240px;
+    }
+}

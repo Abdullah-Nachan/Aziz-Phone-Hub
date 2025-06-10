@@ -1,0 +1,233 @@
+/**
+ * Category Page Styles for Aziz Phone Hub
+ * These styles ensure consistent product card formatting
+ */
+
+/* Product Grid */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* Product Card */
+.product-card {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Product Image */
+.product-image {
+    position: relative;
+    overflow: hidden;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+}
+
+.product-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.05);
+}
+
+/* Product Actions Container */
+.product-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    padding: 0;
+}
+
+/* Product Actions */
+.add-to-cart {
+    flex-grow: 1;
+    background-color: #4a6cf7;
+    border-color: #4a6cf7;
+    transition: all 0.3s ease;
+}
+
+.add-to-cart:hover {
+    background-color: #3a5be8;
+    border-color: #3a5be8;
+}
+
+.buy-now {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a6cf7;
+    border-color: #4a6cf7;
+}
+
+.buy-now:hover {
+    background-color: #4a6cf7;
+    color: white;
+}
+
+/* Loading Indicator */
+#loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+}
+
+#loading-indicator .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+#loading-indicator p {
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+/* No Products Found */
+#no-products-found {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+#no-products-found .alert {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Filter and Sort Buttons */
+.filter-sort-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.filter-sort-buttons .btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Wishlist Button */
+.like-btn {
+    position: static;
+    top: auto;
+    right: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: #aaa;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.like-btn:hover {
+    color: #ff5a5a;
+    transform: scale(1.1);
+}
+
+.like-btn.active {
+    color: #ff5a5a;
+}
+
+/* Product Info */
+.product-info {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.product-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 2.5rem;
+    max-height: 2.5rem;
+}
+
+.price {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.discount-badge {
+    background-color: #ff5a5a;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .product-title {
+        font-size: 0.9rem;
+        height: 2.2rem;
+    }
+    
+    .price {
+        font-size: 1rem;
+    }
+    
+    .add-to-cart, .buy-now {
+        font-size: 0.8rem;
+        padding: 0.375rem 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .products-grid {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}

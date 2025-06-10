@@ -1,0 +1,215 @@
+/**
+ * Admin Panel Styles for Aziz Phone Hub
+ */
+
+/* Login Page */
+.login-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.login-box {
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+/* Admin Dashboard */
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #343a40;
+    color: #fff;
+    padding: 20px 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar h3 {
+    padding: 0 20px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px 20px;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.sidebar a:hover, .sidebar a.active {
+    background-color: #495057;
+}
+
+.sidebar .logout-btn {
+    position: absolute;
+    bottom: 20px;
+    width: 85%;
+    margin: 0 20px;
+}
+
+.content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 20px;
+}
+
+/* Product Management */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.product-card {
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.product-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.product-card .card-body {
+    padding: 15px;
+}
+
+.product-card h3 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.product-card p {
+    margin-bottom: 10px;
+    color: #28a745;
+    font-weight: bold;
+}
+
+.product-card .actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 800px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.image-preview {
+    width: 100%;
+    height: 200px;
+    border: 1px dashed #ddd;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Order Management */
+.order-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.status-processing {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.status-shipped {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.status-delivered {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.status-cancelled {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    
+    .content {
+        margin-left: 0;
+    }
+    
+    .sidebar a {
+        float: left;
+    }
+    
+    .sidebar .logout-btn {
+        position: relative;
+        bottom: auto;
+        margin: 10px;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}

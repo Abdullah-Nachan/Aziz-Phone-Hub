@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - Aziz Phone Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    <!-- Orders CSS -->
+    <link rel="stylesheet" href="css/orders.css">
+    <!-- Admin CSS -->
+    <link rel="stylesheet" href="css/admin.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <h3>Admin Panel</h3>
+            <a href="dashboard.html">
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+            </a>
+            <a href="products.html">
+                <i class="fas fa-box me-2"></i> Products
+            </a>
+            <a href="orders.html" class="active">
+                <i class="fas fa-shopping-cart me-2"></i> Orders
+            </a>
+            <a href="categories.html">
+                <i class="fas fa-tags me-2"></i> Categories
+            </a>
+            <button class="btn btn-danger logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+            </button>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="content">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1>Manage Orders</h1>
+                    <div>
+                        <button id="refreshOrdersBtn" class="btn btn-outline-primary">
+                            <i class="fas fa-sync-alt me-2"></i> Refresh
+                        </button>
+                        <button id="exportOrdersBtn" class="btn btn-success ms-2">
+                            <i class="fas fa-file-export me-2"></i> Export
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Search and Filter -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Search orders...">
+                            </div>
+                            <div class="col-md-3">
+                                <select id="statusFilter" class="form-select">
+                                    <option value="">All Statuses</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="shipped">Shipped</option>
+                                    <option value="delivered">Delivered</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="sortBy" class="form-select">
+                                    <option value="date-desc">Date (Newest First)</option>
+                                    <option value="date-asc">Date (Oldest First)</option>
+                                    <option value="total-desc">Total (High to Low)</option>
+                                    <option value="total-asc">Total (Low to High)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="filterBtn" class="btn btn-secondary w-100">
+                                    <i class="fas fa-filter me-2"></i> Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Orders Table -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Date</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody">
+                                    <!-- Orders will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Loading Indicator -->
+                        <div id="loadingIndicator" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading orders...</p>
+                        </div>
+                        
+                        <!-- No Orders Message -->
+                        <div id="noOrdersMessage" class="alert alert-info d-none" role="alert">
+                            No orders found. New orders will appear here when customers place them.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <nav aria-label="Orders pagination" class="mt-4">
+                    <ul id="pagination" class="pagination justify-content-center">
+                        <!-- Pagination will be generated dynamically -->
+                    </ul>
+                </nav>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Order Details Modal -->
+    <div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderDetailsModalLabel">Order Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="orderDetailsContent">
+                    <!-- Order details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="updateStatusBtn">Update Status</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <!-- Firebase Auth -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <!-- Firebase Firestore -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Firebase Config -->
+    <script src="../firebase-config.js"></script>
+    <!-- Admin Auth JS -->
+    <script src="js/auth.js"></script>
+    <!-- Orders JS -->
+    <script src="js/orders.js"></script>
+</body>
+</html>
