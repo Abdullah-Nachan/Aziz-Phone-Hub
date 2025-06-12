@@ -1,0 +1,313 @@
+/**
+ * Cart functionality for Aziz Phone Hub
+ * Handles adding, removing, and displaying cart items
+ */
+
+// Global cart instance
+let cartInstance;
+
+// Cart class
+class Cart {
+    constructor() {
+        console.log('Creating cart instance');
+        this.items = this.loadCart();
+        this.updateCartCount();
+        this.setupEventListeners();
+    }
+
+    // Load cart from localStorage
+    loadCart() {
+        try {
+            const savedCart = localStorage.getItem('cart');
+            return savedCart ? JSON.parse(savedCart) : [];
+        } catch (error) {
+            console.error('Error loading cart:', error);
+            return [];
+        }
+    }
+
+    // Save cart to localStorage
+    saveCart() {
+        try {
+            localStorage.setItem('cart', JSON.stringify(this.items));
+            this.updateCartCount();
+        } catch (error) {
+            console.error('Error saving cart:', error);
+        }
+    }
+
+    // Add item to cart
+    addItem(product, quantity = 1) {
+        try {
+            // If product is just an ID, convert to object
+            const productObj = typeof product === 'string' ? { id: product, quantity } : product;
+            const productId = productObj.id;
+            
+            // Check if item already exists in cart
+            const existingItem = this.items.find(item => item.id === productId);
+            
+            if (existingItem) {
+                // Update quantity
+                existingItem.quantity = parseInt(existingItem.quantity) + parseInt(quantity);
+            } else {
+                // Add new item
+                this.items.push({
+                    id: productId,
+                    quantity: parseInt(quantity),
+                    ...(typeof product === 'object' ? product : {})
+                });
+            }
+            
+            this.saveCart();
+            return true;
+        } catch (error) {
+            console.error('Error adding item to cart:', error);
+            return false;
+        }
+    }
+
+    // Remove item from cart
+    removeItem(productId) {
+        try {
+            const index = this.items.findIndex(item => item.id === productId);
+            if (index > -1) {
+                this.items.splice(index, 1);
+                this.saveCart();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error removing item from cart:', error);
+            return false;
+        }
+    }
+
+    // Update item quantity
+    updateQuantity(productId, quantity) {
+        try {
+            const item = this.items.find(item => item.id === productId);
+            if (item) {
+                item.quantity = parseInt(quantity);
+                if (item.quantity <= 0) {
+                    return this.removeItem(productId);
+                }
+                this.saveCart();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error updating cart quantity:', error);
+            return false;
+        }
+    }
+    
+    // Check if item is in cart
+    hasItem(productId) {
+        return this.items.some(item => item.id === productId);
+    }
+    
+    // Get item quantity
+    getItemQuantity(productId) {
+        const item = this.items.find(item => item.id === productId);
+        return item ? item.quantity : 0;
+    }
+    
+    // Get total quantity of items in cart
+    getTotalQuantity() {
+        return this.items.reduce((total, item) => total + parseInt(item.quantity || 0), 0);
+    }
+    
+    // Update cart count in UI
+    updateCartCount() {
+        try {
+            const count = this.getTotalQuantity();
+            
+            // Update all cart count badges
+            const cartCounts = document.querySelectorAll('.cart-count-badge');
+            cartCounts.forEach(badge => {
+                badge.textContent = count;
+                badge.style.display = count > 0 ? 'flex' : 'none';
+            });
+            
+            // Also update specific elements by ID
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount) {
+                cartCount.textContent = count;
+            }
+            
+            const mobileCartCount = document.getElementById('mobile-nav-cart-count');
+            if (mobileCartCount) {
+                mobileCartCount.textContent = count;
+                mobileCartCount.style.display = count > 0 ? 'flex' : 'none';
+            }
+            
+            const desktopCartCount = document.getElementById('desktop-nav-cart-count');
+            if (desktopCartCount) {
+                desktopCartCount.textContent = count;
+                desktopCartCount.style.display = count > 0 ? 'flex' : 'none';
+            }
+        } catch (error) {
+            console.error('Error updating cart count:', error);
+        }
+    }
+    
+    // Setup event listeners
+    setupEventListeners() {
+        try {
+            // Listen for add to cart button clicks
+            document.addEventListener('click', (e) => {
+                // Check if the clicked element is an add to cart button or its child
+                const addToCartBtn = e.target.closest('.btn-add-to-cart');
+                if (addToCartBtn) {
+                    e.preventDefault();
+                    const productId = addToCartBtn.dataset.productId;
+                    
+                    // Find the product if available
+                    let product = { id: productId, quantity: 1 };
+                    
+                    // Try to get product from page data
+                    if (window.currentProduct && window.currentProduct.id === productId) {
+                        product = { ...window.currentProduct, quantity: 1 };
+                    } else if (window.filteredProducts) {
+                        const foundProduct = window.filteredProducts.find(p => p.id === productId);
+                        if (foundProduct) product = { ...foundProduct, quantity: 1 };
+                    }
+                    
+                    this.addItem(product);
+                    
+                    // Show success message
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Added to Cart',
+                            text: 'Product has been added to your cart.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                }
+                
+                // Handle buy now button
+                const buyNowBtn = e.target.closest('.btn-buy-now');
+                if (buyNowBtn) {
+                    e.preventDefault();
+                    const productId = buyNowBtn.dataset.productId;
+                    
+                    // Find the product if available
+                    let product = { id: productId, quantity: 1 };
+                    
+                    // Try to get product from page data
+                    if (window.currentProduct && window.currentProduct.id === productId) {
+                        product = { ...window.currentProduct, quantity: 1 };
+                    } else if (window.filteredProducts) {
+                        const foundProduct = window.filteredProducts.find(p => p.id === productId);
+                        if (foundProduct) product = { ...foundProduct, quantity: 1 };
+                    }
+                    
+                    this.addItem(product);
+                    this.checkout();
+                }
+            });
+        } catch (error) {
+            console.error('Error setting up cart event listeners:', error);
+        }
+    }
+    
+    // Get all cart items with details
+    async getCartItems() {
+        try {
+            // If all items have details, return them
+            if (this.items.every(item => item.name && item.price)) {
+                return this.items;
+            }
+            
+            // Otherwise fetch missing details from Firestore
+            // Check if db is available
+            if (typeof db === 'undefined') {
+                if (typeof firebase !== 'undefined' && typeof firebase.firestore === 'function') {
+                    window.db = firebase.firestore();
+                } else {
+                    console.error('Firestore not available');
+                    return this.items;
+                }
+            }
+            
+            // Fetch products that need details
+            const itemsNeedingDetails = this.items.filter(item => !item.name || !item.price);
+            
+            // Fetch products in batches of 10 to avoid Firestore limitations
+            for (let i = 0; i < itemsNeedingDetails.length; i += 10) {
+                const batch = itemsNeedingDetails.slice(i, i + 10);
+                const promises = batch.map(item => db.collection('products').doc(item.id).get());
+                const snapshots = await Promise.all(promises);
+                
+                snapshots.forEach(doc => {
+                    if (doc.exists) {
+                        const productData = doc.data();
+                        // Find the item in the cart and update it
+                        const cartItem = this.items.find(item => item.id === doc.id);
+                        if (cartItem) {
+                            Object.assign(cartItem, productData);
+                        }
+                    }
+                });
+            }
+            
+            // Save updated cart
+            this.saveCart();
+            
+            return this.items;
+        } catch (error) {
+            console.error('Error fetching cart products:', error);
+            return this.items;
+        }
+    }
+    
+    // Calculate cart total
+    calculateTotal() {
+        return this.items.reduce((total, item) => {
+            const price = parseFloat(item.price) || 0;
+            return total + (price * parseInt(item.quantity || 0));
+        }, 0);
+    }
+    
+    // Clear cart
+    clearCart() {
+        this.items = [];
+        this.saveCart();
+    }
+    
+    // Proceed to checkout
+    checkout() {
+        try {
+            // Save cart for checkout page
+            localStorage.setItem('checkoutCart', JSON.stringify(this.items));
+            
+            // Redirect to checkout page
+            window.location.href = '/checkout.html';
+        } catch (error) {
+            console.error('Error proceeding to checkout:', error);
+            // Fallback to checkout page without cart data
+            window.location.href = '/checkout.html';
+        }
+    }
+}
+
+// Initialize cart when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing cart module');
+    if (!window.cartInitialized) {
+        window.cartInitialized = true;
+        cartInstance = new Cart();
+        
+        // Make functions globally available
+        window.isInCart = (productId) => cartInstance.hasItem(productId);
+        window.addToCart = (product, quantity) => cartInstance.addItem(product, quantity);
+        window.removeFromCart = (productId) => cartInstance.removeItem(productId);
+        window.updateCartQuantity = (productId, quantity) => cartInstance.updateQuantity(productId, quantity);
+        window.getCartItems = () => cartInstance.getCartItems();
+        window.getCartTotal = () => cartInstance.calculateTotal();
+        window.clearCart = () => cartInstance.clearCart();
+        window.checkout = () => cartInstance.checkout();
+    }
+});

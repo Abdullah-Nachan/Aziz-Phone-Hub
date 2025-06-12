@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Aziz Phone Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container position-relative">
+            <!-- Hamburger (left on mobile) -->
+            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Logo (center on mobile, left on desktop) -->
+            <a class="navbar-brand mx-auto mx-lg-0 order-2" href="index.html">
+                <div class="logo-container">
+                    <img src="./images/AzizPhoneHub.webp" alt="Aziz Phone Hub">
+                </div>
+            </a>
+            <!-- Cart Icon (right on mobile) -->
+            <div class="d-lg-none order-3 position-absolute end-0 top-50 translate-middle-y" style="right: 1rem;">
+                <a href="cart.html" class="nav-link p-0">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span class="cart-count-badge" id="mobile-nav-cart-count">0</span>
+                </a>
+            </div>
+            <!-- Navbar links and search (desktop) -->
+            <div class="collapse navbar-collapse order-lg-2" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Electronics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Fashion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <!-- Desktop Search Box -->
+                <form class="d-none d-lg-flex ms-3 search-box-form" role="search">
+                    <div class="search-box w-100 position-relative">
+                        <input type="text" placeholder="Search products..." aria-label="Search">
+                        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                        <div class="search-suggestions"></div>
+                    </div>
+                </form>
+                <!-- Cart Icon (desktop) -->
+                <a href="cart.html" class="nav-link d-none d-lg-block ms-3">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span class="cart-count-badge" id="desktop-cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Checkout Section -->
+    <section class="checkout-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="checkout-steps mb-4">
+                        <div class="step active" id="step-cart">
+                            <div class="step-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="step-label">Cart</div>
+                        </div>
+                        <div class="step-connector active" id="connector-info"></div>
+                        <div class="step active" id="step-info">
+                            <div class="step-icon">
+                                <i class="fas fa-address-card"></i>
+                            </div>
+                            <div class="step-label">Information</div>
+                        </div>
+                        <div class="step-connector" id="connector-payment"></div>
+                        <div class="step" id="step-payment">
+                            <div class="step-icon">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="step-label">Payment</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Checkout Form -->
+                <div class="col-lg-8">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Contact Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="checkout-form">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email address</label>
+                                    <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone number</label>
+                                    <input type="tel" class="form-control" id="phone" placeholder="+91 1234567890" required>
+                                </div>
+                                
+                                <h5 class="mt-4 mb-3">Shipping Address</h5>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="firstName" class="form-label">First name</label>
+                                        <input type="text" class="form-control" id="firstName" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lastName" class="form-label">Last name</label>
+                                        <input type="text" class="form-control" id="lastName" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <input type="text" class="form-control" id="address" placeholder="1234 Main St" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="address2" class="form-label">Address 2 <span class="text-muted">(Optional)</span></label>
+                                    <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-5 mb-3">
+                                        <label for="country" class="form-label">Country</label>
+                                        <select class="form-select" id="country" required>
+                                            <option value="">Choose...</option>
+                                            <option value="India" selected>India</option>
+                                            <option value="United States">United States</option>
+                                            <option value="United Kingdom">United Kingdom</option>
+                                            <option value="Canada">Canada</option>
+                                            <option value="Australia">Australia</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="state" class="form-label">State</label>
+                                        <select class="form-select" id="state" required>
+                                            <option value="">Choose...</option>
+                                            <option value="Maharashtra">Maharashtra</option>
+                                            <option value="Delhi">Delhi</option>
+                                            <option value="Karnataka">Karnataka</option>
+                                            <option value="Tamil Nadu">Tamil Nadu</option>
+                                            <option value="Gujarat">Gujarat</option>
+                                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label for="zip" class="form-label">Pincode</label>
+                                        <input type="text" class="form-control" id="zip" placeholder="400001" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input type="checkbox" class="form-check-input" id="same-address">
+                                    <label class="form-check-label" for="same-address">Shipping address is the same as my billing address</label>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input type="checkbox" class="form-check-input" id="save-info">
+                                    <label class="form-check-label" for="save-info">Save this information for next time</label>
+                                </div>
+                                
+                                <h5 class="mt-4 mb-3">Shipping Method</h5>
+                                
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input id="standard-shipping" name="shipping-option" type="radio" class="form-check-input" checked required>
+                                            <label class="form-check-label" for="standard-shipping">
+                                                Standard Shipping (3-5 business days)
+                                                <span class="text-success float-end">Free</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="form-check">
+                                            <input id="express-shipping" name="shipping-option" type="radio" class="form-check-input" required>
+                                            <label class="form-check-label" for="express-shipping">
+                                                Express Shipping (1-2 business days)
+                                                <span class="float-end">₹199</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Proceed to Payment Button -->
+                                <div class="d-grid mt-4">
+                                    <button type="button" id="proceed-to-payment-btn" class="btn btn-primary btn-lg">Proceed to Payment</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Payment Section (hidden by default) -->
+                    <div id="payment-section" class="card mb-4 shadow-sm d-none">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Select Payment Method</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="payment-form">
+                                <div class="mb-3">
+                                    <label class="form-label">UPI Apps</label>
+                                    <div class="d-flex gap-3 flex-wrap">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="payment-method" id="payment-upi-phonepe" value="upi-phonepe">
+                                            <label class="form-check-label" for="payment-upi-phonepe">
+                                                <img src="phonepe-logo.png" alt="PhonePe" style="height: 28px; margin-right: 4px;"> PhonePe
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="payment-method" id="payment-upi-paytm" value="upi-paytm">
+                                            <label class="form-check-label" for="payment-upi-paytm">
+                                                <img src="paytm-logo.png" alt="Paytm" style="height: 28px; margin-right: 4px;"> Paytm
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="payment-method" id="payment-upi-gpay" value="upi-gpay">
+                                            <label class="form-check-label" for="payment-upi-gpay">
+                                                <img src="gpay-logo.png" alt="Google Pay" style="height: 28px; margin-right: 4px;"> Google Pay
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Cards</label>
+                                    <div class="d-flex gap-3 flex-wrap">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="payment-method" id="payment-credit-card" value="credit-card">
+                                            <label class="form-check-label" for="payment-credit-card"><i class="fas fa-credit-card me-2"></i>Credit Card</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="payment-method" id="payment-debit-card" value="debit-card">
+                                            <label class="form-check-label" for="payment-debit-card"><i class="fas fa-credit-card me-2"></i>Debit Card</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Other</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment-method" id="payment-cod-partial" value="cod-partial">
+                                        <label class="form-check-label" for="payment-cod-partial"><i class="fas fa-money-bill-wave me-2"></i>Cash on Delivery (Partial COD)</label>
+                                    </div>
+                                </div>
+                                <div class="d-grid mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
+                                </div>
+                                <div class="d-grid mt-3">
+                                    <button type="button" id="back-to-info-btn" class="btn btn-outline-secondary btn-lg">Back to Information</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Summary -->
+                <div class="col-lg-4">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Order Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="checkout-items">
+                                <!-- Checkout items will be dynamically inserted here -->
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal</span>
+                                <span id="summary-subtotal">₹0</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shipping</span>
+                                <span id="summary-shipping">Free</span>
+                            </div>
+                            <hr class="my-3">
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Total</span>
+                                <span id="summary-total">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fixed Bottom Navigation Footer -->
+    <footer class="fixed-bottom-footer d-lg-none">
+        <div class="container-fluid h-100">
+            <div class="row h-100">
+                <div class="col text-center">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-home"></i><span>Home</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="shop.html" class="nav-link">
+                        <i class="fas fa-shop"></i><span>Shop</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="wishlist.html" class="nav-link">
+                        <i class="fas fa-heart"></i><span>Wishlist</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="profile.html" class="nav-link">
+                        <i class="fas fa-user"></i><span>Profile</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="cart.html" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i><span>Cart</span>
+                        <span class="cart-count-badge" id="mobile-cart-count">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <script src="static-products.js"></script>
+    <script src="cart.js"></script>
+    <script type="module" src="firebase-utils.js"></script>
+    <script type="module" src="checkout.js"></script>
+</body>
+</html>

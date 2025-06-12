@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cart and Wishlist - Aziz Phone Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Firebase Core -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <!-- Firebase Services -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Config -->
+    <script src="firebase-config.js" defer></script>
+    
+    <!-- Products, Cart, and Wishlist Scripts -->
+    <script src="products.js" defer></script>
+    <script src="cart.js" defer></script>
+    <script src="wishlist.js" defer></script>
+    
+    <style>
+        .test-container {
+            margin-top: 80px;
+            margin-bottom: 80px;
+        }
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .product-image {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .product-image img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        .btn-wishlist {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        .btn-wishlist.active i {
+            color: red;
+        }
+        .status-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        .cart-count, .wishlist-count {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .log-container {
+            height: 150px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 3px;
+            border-bottom: 1px solid #eee;
+        }
+        .log-entry.success {
+            color: #28a745;
+        }
+        .log-entry.error {
+            color: #dc3545;
+        }
+        .log-entry.info {
+            color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container test-container">
+        <h1 class="mb-4">Test Cart and Wishlist Functionality</h1>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div>
+                                <strong>Cart Items:</strong> <span id="cart-count" class="cart-count">0</span>
+                            </div>
+                            <div>
+                                <strong>Wishlist Items:</strong> <span id="wishlist-count" class="wishlist-count">0</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <h6>Log:</h6>
+                            <div id="log-container" class="log-container"></div>
+                        </div>
+                        <div class="d-flex">
+                            <button id="clear-cart" class="btn btn-warning me-2">Clear Cart</button>
+                            <button id="clear-wishlist" class="btn btn-warning me-2">Clear Wishlist</button>
+                            <button id="clear-log" class="btn btn-secondary">Clear Log</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Test Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <button id="load-products" class="btn btn-primary mb-3">Load Products from Firebase</button>
+                        <button id="test-cart-add" class="btn btn-success mb-3">Test Add to Cart</button>
+                        <button id="test-wishlist-add" class="btn btn-danger mb-3">Test Add to Wishlist</button>
+                        <button id="view-cart" class="btn btn-info mb-3">View Cart Contents</button>
+                        <button id="view-wishlist" class="btn btn-info mb-3">View Wishlist Contents</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="mb-3">Products</h2>
+        <div id="products-container" class="row">
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Loading products...</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="status-container" id="status-container">
+        <div><strong>Cart:</strong> <span id="status-cart-count">0</span> items</div>
+        <div><strong>Wishlist:</strong> <span id="status-wishlist-count">0</span> items</div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    
+    <script>
+        // Log function
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('log-container');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.prepend(logEntry);
+        }
+        
+        // Update counts
+        function updateCounts() {
+            try {
+                // Cart count
+                let cartCount = 0;
+                if (window.cart) {
+                    cartCount = cart.getTotalQuantity();
+                } else if (window.cartInstance) {
+                    cartCount = cartInstance.getTotalQuantity();
+                }
+                
+                document.getElementById('cart-count').textContent = cartCount;
+                document.getElementById('status-cart-count').textContent = cartCount;
+                
+                // Wishlist count
+                let wishlistCount = 0;
+                if (window.wishlist) {
+                    wishlistCount = wishlist.items.length;
+                } else if (window.wishlistInstance) {
+                    wishlistCount = wishlistInstance.items.length;
+                }
+                
+                document.getElementById('wishlist-count').textContent = wishlistCount;
+                document.getElementById('status-wishlist-count').textContent = wishlistCount;
+            } catch (error) {
+                log(`Error updating counts: ${error.message}`, 'error');
+            }
+        }
+        
+        // Load products
+        function loadProducts() {
+            const productsContainer = document.getElementById('products-container');
+            
+            try {
+                if (typeof window.loadProductsFromFirestore === 'function') {
+                    log('Loading products from Firestore...');
+                    window.loadProductsFromFirestore()
+                        .then(products => {
+                            log(`Loaded ${Object.keys(products).length} products from Firestore`, 'success');
+                            displayProducts(products);
+                        })
+                        .catch(error => {
+                            log(`Error loading products: ${error.message}`, 'error');
+                            productsContainer.innerHTML = `
+                                <div class="col-12 text-center py-5">
+                                    <div class="alert alert-danger">
+                                        Error loading products: ${error.message}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                } else {
+                    log('loadProductsFromFirestore function not available', 'error');
+                    productsContainer.innerHTML = `
+                        <div class="col-12 text-center py-5">
+                            <div class="alert alert-warning">
+                                Products module not loaded properly. Please check console for errors.
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                log(`Error in loadProducts: ${error.message}`, 'error');
+                productsContainer.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="alert alert-danger">
+                            ${error.message}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Display products
+        function displayProducts(products) {
+            const productsContainer = document.getElementById('products-container');
+            
+            if (!products || Object.keys(products).length === 0) {
+                productsContainer.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="alert alert-info">
+                            No products found.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            productsContainer.innerHTML = '';
+            
+            Object.values(products).slice(0, 8).forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'col-md-3 mb-4';
+                
+                // Check if product is in wishlist
+                const isInWishlist = window.isInWishlist ? window.isInWishlist(product.id) : false;
+                const wishlistIconClass = isInWishlist ? 'fas fa-heart text-danger' : 'far fa-heart';
+                
+                productCard.innerHTML = `
+                    <div class="product-card position-relative">
+                        <button class="btn-wishlist ${isInWishlist ? 'active' : ''}" data-product-id="${product.id}" title="Add to Wishlist">
+                            <i class="${wishlistIconClass}"></i>
+                        </button>
+                        <div class="product-image">
+                            <img src="${product.image || 'https://placehold.co/300x300?text=No+Image'}" alt="${product.name}" class="img-fluid">
+                        </div>
+                        <h5 class="product-title">${product.name}</h5>
+                        <div class="product-price mb-3">${product.price}</div>
+                        <div class="d-flex">
+                            <button class="btn btn-sm btn-primary add-to-cart me-2" data-product-id="${product.id}">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
+                            <button class="btn btn-sm btn-success buy-now" data-product-id="${product.id}">
+                                <i class="fas fa-bolt"></i> Buy Now
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                productsContainer.appendChild(productCard);
+            });
+            
+            // Add event listeners to Add to Cart buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    addToCart(productId);
+                });
+            });
+            
+            // Add event listeners to Buy Now buttons
+            document.querySelectorAll('.buy-now').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    buyNow(productId);
+                });
+            });
+            
+            // Add event listeners to Wishlist buttons
+            document.querySelectorAll('.btn-wishlist').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    toggleWishlist(productId, this);
+                });
+            });
+        }
+        
+        // Add to cart
+        function addToCart(productId) {
+            try {
+                if (window.cart) {
+                    if (cart.addItem(productId)) {
+                        log(`Added product ${productId} to cart`, 'success');
+                        updateCounts();
+                        Swal.fire({
+                            title: 'Added to cart!',
+                            text: 'The item has been added to your cart.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        log(`Failed to add product ${productId} to cart`, 'error');
+                    }
+                } else if (window.cartInstance) {
+                    if (cartInstance.addItem(productId)) {
+                        log(`Added product ${productId} to cart`, 'success');
+                        updateCounts();
+                        Swal.fire({
+                            title: 'Added to cart!',
+                            text: 'The item has been added to your cart.',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        log(`Failed to add product ${productId} to cart`, 'error');
+                    }
+                } else {
+                    log('Cart module not loaded properly', 'error');
+                }
+            } catch (error) {
+                log(`Error adding to cart: ${error.message}`, 'error');
+            }
+        }
+        
+        // Buy now
+        function buyNow(productId) {
+            try {
+                if (window.cart) {
+                    cart.clearCart();
+                    if (cart.addItem(productId)) {
+                        log(`Added product ${productId} to cart for buy now`, 'success');
+                        updateCounts();
+                        Swal.fire({
+                            title: 'Ready for checkout!',
+                            text: 'Redirecting to checkout...',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        log(`Failed to add product ${productId} to cart for buy now`, 'error');
+                    }
+                } else if (window.cartInstance) {
+                    cartInstance.clearCart();
+                    if (cartInstance.addItem(productId)) {
+                        log(`Added product ${productId} to cart for buy now`, 'success');
+                        updateCounts();
+                        Swal.fire({
+                            title: 'Ready for checkout!',
+                            text: 'Redirecting to checkout...',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        log(`Failed to add product ${productId} to cart for buy now`, 'error');
+                    }
+                } else {
+                    log('Cart module not loaded properly', 'error');
+                }
+            } catch (error) {
+                log(`Error in buy now: ${error.message}`, 'error');
+            }
+        }
+        
+        // Toggle wishlist
+        function toggleWishlist(productId, button) {
+            try {
+                if (window.wishlist) {
+                    const isAdded = wishlist.toggleItem(productId);
+                    updateWishlistButton(button, isAdded);
+                    log(`${isAdded ? 'Added' : 'Removed'} product ${productId} ${isAdded ? 'to' : 'from'} wishlist`, isAdded ? 'success' : 'info');
+                    updateCounts();
+                } else if (window.wishlistInstance) {
+                    const isAdded = wishlistInstance.toggleItem(productId);
+                    updateWishlistButton(button, isAdded);
+                    log(`${isAdded ? 'Added' : 'Removed'} product ${productId} ${isAdded ? 'to' : 'from'} wishlist`, isAdded ? 'success' : 'info');
+                    updateCounts();
+                } else {
+                    log('Wishlist module not loaded properly', 'error');
+                }
+            } catch (error) {
+                log(`Error toggling wishlist: ${error.message}`, 'error');
+            }
+        }
+        
+        // Update wishlist button
+        function updateWishlistButton(button, isAdded) {
+            if (isAdded) {
+                button.classList.add('active');
+                button.querySelector('i').className = 'fas fa-heart text-danger';
+            } else {
+                button.classList.remove('active');
+                button.querySelector('i').className = 'far fa-heart';
+            }
+        }
+        
+        // View cart contents
+        function viewCartContents() {
+            try {
+                let cartItems = [];
+                
+                if (window.cart) {
+                    cartItems = cart.items;
+                } else if (window.cartInstance) {
+                    cartItems = cartInstance.items;
+                }
+                
+                if (cartItems.length === 0) {
+                    Swal.fire({
+                        title: 'Cart is empty',
+                        text: 'Your cart is currently empty.',
+                        icon: 'info'
+                    });
+                    return;
+                }
+                
+                let cartContent = '<div class="table-responsive"><table class="table table-striped">';
+                cartContent += '<thead><tr><th>ID</th><th>Name</th><th>Quantity</th><th>Price</th></tr></thead><tbody>';
+                
+                cartItems.forEach(item => {
+                    cartContent += `<tr>
+                        <td>${item.id}</td>
+                        <td>${item.name || 'Unknown'}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.price || 'N/A'}</td>
+                    </tr>`;
+                });
+                
+                cartContent += '</tbody></table></div>';
+                
+                Swal.fire({
+                    title: 'Cart Contents',
+                    html: cartContent,
+                    width: 800
+                });
+            } catch (error) {
+                log(`Error viewing cart: ${error.message}`, 'error');
+            }
+        }
+        
+        // View wishlist contents
+        function viewWishlistContents() {
+            try {
+                let wishlistItems = [];
+                
+                if (window.wishlist) {
+                    wishlistItems = wishlist.items;
+                } else if (window.wishlistInstance) {
+                    wishlistItems = wishlistInstance.items;
+                }
+                
+                if (wishlistItems.length === 0) {
+                    Swal.fire({
+                        title: 'Wishlist is empty',
+                        text: 'Your wishlist is currently empty.',
+                        icon: 'info'
+                    });
+                    return;
+                }
+                
+                // Get wishlist products from localStorage
+                const wishlistProducts = JSON.parse(localStorage.getItem('wishlistProducts') || '{}');
+                
+                let wishlistContent = '<div class="table-responsive"><table class="table table-striped">';
+                wishlistContent += '<thead><tr><th>ID</th><th>Name</th><th>Price</th></tr></thead><tbody>';
+                
+                wishlistItems.forEach(id => {
+                    const product = wishlistProducts[id] || { id, name: 'Unknown', price: 'N/A' };
+                    wishlistContent += `<tr>
+                        <td>${id}</td>
+                        <td>${product.name || 'Unknown'}</td>
+                        <td>${product.price || 'N/A'}</td>
+                    </tr>`;
+                });
+                
+                wishlistContent += '</tbody></table></div>';
+                
+                Swal.fire({
+                    title: 'Wishlist Contents',
+                    html: wishlistContent,
+                    width: 800
+                });
+            } catch (error) {
+                log(`Error viewing wishlist: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test add to cart
+        function testAddToCart() {
+            try {
+                // Get first product
+                const products = window.getAllProducts ? window.getAllProducts() : [];
+                
+                if (products.length === 0) {
+                    log('No products available for testing', 'error');
+                    return;
+                }
+                
+                const product = products[0];
+                
+                if (window.cart) {
+                    if (cart.addItem(product)) {
+                        log(`Test: Added product ${product.id} to cart`, 'success');
+                        updateCounts();
+                    } else {
+                        log(`Test: Failed to add product ${product.id} to cart`, 'error');
+                    }
+                } else if (window.cartInstance) {
+                    if (cartInstance.addItem(product)) {
+                        log(`Test: Added product ${product.id} to cart`, 'success');
+                        updateCounts();
+                    } else {
+                        log(`Test: Failed to add product ${product.id} to cart`, 'error');
+                    }
+                } else {
+                    log('Test: Cart module not loaded properly', 'error');
+                }
+            } catch (error) {
+                log(`Test error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test add to wishlist
+        function testAddToWishlist() {
+            try {
+                // Get first product
+                const products = window.getAllProducts ? window.getAllProducts() : [];
+                
+                if (products.length === 0) {
+                    log('No products available for testing', 'error');
+                    return;
+                }
+                
+                const product = products[0];
+                
+                if (window.wishlist) {
+                    if (wishlist.addItem(product)) {
+                        log(`Test: Added product ${product.id} to wishlist`, 'success');
+                        updateCounts();
+                    } else {
+                        log(`Test: Failed to add product ${product.id} to wishlist`, 'error');
+                    }
+                } else if (window.wishlistInstance) {
+                    if (wishlistInstance.addItem(product)) {
+                        log(`Test: Added product ${product.id} to wishlist`, 'success');
+                        updateCounts();
+                    } else {
+                        log(`Test: Failed to add product ${product.id} to wishlist`, 'error');
+                    }
+                } else {
+                    log('Test: Wishlist module not loaded properly', 'error');
+                }
+            } catch (error) {
+                log(`Test error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Clear cart
+        function clearCart() {
+            try {
+                if (window.cart) {
+                    cart.clearCart();
+                    log('Cart cleared', 'info');
+                    updateCounts();
+                } else if (window.cartInstance) {
+                    cartInstance.clearCart();
+                    log('Cart cleared', 'info');
+                    updateCounts();
+                } else {
+                    log('Cart module not loaded properly', 'error');
+                }
+            } catch (error) {
+                log(`Error clearing cart: ${error.message}`, 'error');
+            }
+        }
+        
+        // Clear wishlist
+        function clearWishlist() {
+            try {
+                if (window.wishlist) {
+                    wishlist.items = [];
+                    wishlist.saveWishlist();
+                    log('Wishlist cleared', 'info');
+                    updateCounts();
+                } else if (window.wishlistInstance) {
+                    wishlistInstance.items = [];
+                    wishlistInstance.saveWishlist();
+                    log('Wishlist cleared', 'info');
+                    updateCounts();
+                } else {
+                    log('Wishlist module not loaded properly', 'error');
+                }
+            } catch (error) {
+                log(`Error clearing wishlist: ${error.message}`, 'error');
+            }
+        }
+        
+        // Clear log
+        function clearLog() {
+            document.getElementById('log-container').innerHTML = '';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Page loaded');
+            
+            // Wait for Firebase and modules to initialize
+            setTimeout(() => {
+                updateCounts();
+                loadProducts();
+            }, 1000);
+            
+            // Event listeners
+            document.getElementById('load-products').addEventListener('click', loadProducts);
+            document.getElementById('test-cart-add').addEventListener('click', testAddToCart);
+            document.getElementById('test-wishlist-add').addEventListener('click', testAddToWishlist);
+            document.getElementById('view-cart').addEventListener('click', viewCartContents);
+            document.getElementById('view-wishlist').addEventListener('click', viewWishlistContents);
+            document.getElementById('clear-cart').addEventListener('click', clearCart);
+            document.getElementById('clear-wishlist').addEventListener('click', clearWishlist);
+            document.getElementById('clear-log').addEventListener('click', clearLog);
+            
+            // Set up interval to update counts
+            setInterval(updateCounts, 2000);
+        });
+    </script>
+</body>
+</html>

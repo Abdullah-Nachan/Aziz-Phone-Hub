@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="product-title">Product - Aziz Phone Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <!-- Lightbox CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Static Products JS -->
+    <script src="static-products.js"></script>
+    <!-- Cart JS -->
+    <script src="cart.js" defer></script>
+    <!-- Wishlist JS -->
+    <script src="wishlist.js" defer></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+        <div class="container position-relative">
+            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand mx-auto mx-lg-0 order-2" href="index.html">
+                <div class="logo-container">
+                    <img src="./images/AzizPhoneHub.webp" alt="Aziz Phone Hub">
+                </div>
+            </a>
+            <div class="d-lg-none order-3 position-absolute end-0 top-50 translate-middle-y" style="right: 1rem;">
+                <a href="cart.html" class="nav-link p-0"><i class="fas fa-shopping-cart fa-lg"></i><span class="cart-count-badge" id="mobile-nav-cart-count">0</span></a>
+            </div>
+            <div class="collapse navbar-collapse order-lg-2" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Electronics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Fashion</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <form class="d-none d-lg-flex ms-3 search-box-form" role="search">
+                    <div class="search-box w-100">
+                        <input type="text" placeholder="Search products..." aria-label="Search">
+                        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+                <a href="cart.html" class="nav-link d-none d-lg-block ms-3"><i class="fas fa-shopping-cart fa-lg"></i><span class="cart-count-badge" id="desktop-cart-count">0</span></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Slide-out Menu -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="shop.html">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" href="wishlist.html">Wishlist</a></li>
+                <li class="nav-item"><a class="nav-link" href="cart.html">Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+                <li class="nav-item"><hr class="dropdown-divider"></li>
+                <li class="nav-item"><a class="nav-link" href="auth.html" id="mobileLoginSignupBtn">Login</a></li>
+                <li class="nav-item"><a class="nav-link text-danger" href="#" id="mobileLogoutBtn">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Product Not Found Message -->
+    <div id="product-not-found" class="container py-5 mt-5 text-center d-none">
+        <div class="alert alert-warning p-5 shadow-sm">
+            <h2><i class="fas fa-exclamation-triangle me-2"></i> Product Not Found</h2>
+            <p class="mt-3">Sorry, we couldn't find the product you're looking for.</p>
+            <a href="index.html" class="btn btn-primary mt-3">Return to Home</a>
+        </div>
+    </div>
+
+    <!-- Product Details Section -->
+    <section id="product-details" class="product-details py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Product Images (Left) -->
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="product-gallery">
+                        <!-- Main Image Swiper -->
+                        <div class="swiper mainSwiper mb-3">
+                            <div class="swiper-wrapper" id="main-image-swiper">
+                                <!-- Images will be dynamically inserted here -->
+                            </div>
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
+                        </div>
+                        <!-- Thumbnail Swiper -->
+                        <div class="swiper thumbSwiper">
+                            <div class="swiper-wrapper" id="thumbnail-swiper">
+                                <!-- Thumbnails will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product Info Card (Right) -->
+                <div class="col-lg-6">
+                    <div class="product-info-card bg-white p-4 rounded shadow-sm mb-4">
+                        <h1 class="product-title" id="product-name">Product Name</h1>
+                        <div class="product-rating mb-3">
+                            <span class="rating-stars" id="product-rating-stars">
+                                <!-- Rating stars will be dynamically inserted here -->
+                            </span>
+                            <span class="rating-count" id="product-rating-count">(0 ratings)</span>
+                        </div>
+                        <div class="product-price mb-4">
+                            <span class="current-price" id="product-current-price">₹0</span>
+                            <span class="original-price" id="product-original-price">₹0</span>
+                            <span class="discount" id="product-discount">0% off</span>
+                        </div>
+                        <h5>Highlights</h5>
+                        <ul class="highlights-list mb-4" id="product-highlights">
+                            <!-- Highlights will be dynamically inserted here -->
+                        </ul>
+                        <!-- <div class="product-actions">
+                            <button class="btn btn-primary btn-lg me-2" id="add-to-cart-top">Add to Cart</button>
+                            <button class="btn btn-outline-primary btn-lg" id="buy-now-top">Buy Now</button>
+                        </div> -->
+                    </div>
+                    <!-- Color Variant Row -->
+                    <div class="product-color-variants mt-3 mb-3">
+                        <div class="color-variant-list d-flex flex-row gap-3 justify-content-center align-items-center" id="product-colors">
+                            <!-- Color variants will be dynamically inserted here -->
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 mt-4">
+                        <button class="btn btn-primary btn-lg flex-grow-1" id="add-to-cart-bottom">Add to Cart</button>
+                        <button class="btn btn-outline-primary btn-lg flex-grow-1 w-100" id="buy-now-bottom">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Description -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="product-description">
+                        <h3>Product Description</h3>
+                        <div class="description-content">
+                            <p id="product-description">Product description will be displayed here.</p>
+                            
+                            <h4>Key Features:</h4>
+                            <ul id="product-features">
+                                <!-- Features will be dynamically inserted here -->
+                            </ul>
+
+                            <h4>Specifications:</h4>
+                            <table class="table">
+                                <tbody id="product-specifications">
+                                    <!-- Specifications will be dynamically inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Similar Products Section -->
+    <section class="similar-products py-5 bg-light">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title mb-0">Similar Products</h2>
+                <div class="swiper-navigation d-none d-md-flex" style="display: flex !important; gap: 8px;">
+                    <button class="btn btn-sm btn-outline-primary similar-swiper-prev" style="margin: 0; padding: 0; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary similar-swiper-next" style="margin: 0; padding: 0; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- This container will be filled dynamically with similar products -->
+            <div class="similar-products-row horizontal-scroll">
+                <!-- Products will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section class="reviews-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="reviews-summary bg-white p-4 rounded shadow-sm">
+                        <h3 class="mb-4">Customer Reviews</h3>
+                        <div class="overall-rating text-center mb-4">
+                            <div class="rating-number display-4 fw-bold text-primary" id="overall-rating">4.5</div>
+                            <div class="rating-stars mb-2" id="overall-rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <div class="rating-count text-muted" id="overall-rating-count">Based on 2,345 reviews</div>
+                        </div>
+                        <div class="rating-bars">
+                            <div class="rating-bar-item d-flex align-items-center mb-2">
+                                <span class="me-2">5★</span>
+                                <div class="progress flex-grow-1" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 70%"></div>
+                                </div>
+                                <span class="ms-2">70%</span>
+                            </div>
+                            <div class="rating-bar-item d-flex align-items-center mb-2">
+                                <span class="me-2">4★</span>
+                                <div class="progress flex-grow-1" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 20%"></div>
+                                </div>
+                                <span class="ms-2">20%</span>
+                            </div>
+                            <div class="rating-bar-item d-flex align-items-center mb-2">
+                                <span class="me-2">3★</span>
+                                <div class="progress flex-grow-1" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" style="width: 5%"></div>
+                                </div>
+                                <span class="ms-2">5%</span>
+                            </div>
+                            <div class="rating-bar-item d-flex align-items-center mb-2">
+                                <span class="me-2">2★</span>
+                                <div class="progress flex-grow-1" style="height: 8px;">
+                                    <div class="progress-bar bg-danger" style="width: 3%"></div>
+                                </div>
+                                <span class="ms-2">3%</span>
+                            </div>
+                            <div class="rating-bar-item d-flex align-items-center">
+                                <span class="me-2">1★</span>
+                                <div class="progress flex-grow-1" style="height: 8px;">
+                                    <div class="progress-bar bg-danger" style="width: 2%"></div>
+                                </div>
+                                <span class="ms-2">2%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <!-- Review Submission Form -->
+                    <div class="review-form bg-white p-4 rounded shadow-sm mb-4">
+                        <h4 class="mb-3">Write a Review</h4>
+                        <form id="customerReviewForm">
+                            <div class="mb-3">
+                                <label for="reviewerName" class="form-label">Your Name</label>
+                                <input type="text" class="form-control" id="reviewerName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Your Rating</label>
+                                <div id="reviewRating" class="star-rating-input mb-2">
+                                    <i class="far fa-star" data-value="1"></i>
+                                    <i class="far fa-star" data-value="2"></i>
+                                    <i class="far fa-star" data-value="3"></i>
+                                    <i class="far fa-star" data-value="4"></i>
+                                    <i class="far fa-star" data-value="5"></i>
+                                </div>
+                                <input type="hidden" id="reviewerRating" value="0" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reviewText" class="form-label">Your Review</label>
+                                <textarea class="form-control" id="reviewText" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reviewMedia" class="form-label">Upload Photo/Video</label>
+                                <input class="form-control" type="file" id="reviewMedia" accept="image/*,video/*" multiple>
+                                <div id="mediaPreview" class="d-flex flex-wrap mt-2"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
+                    </div>
+                    <div class="reviews-list" id="reviewsList">
+                        <!-- Reviews will be kept static for now -->
+                        <!-- Review 1 -->
+                        <div class="review-item bg-white p-4 rounded shadow-sm mb-4">
+                            <div class="review-header d-flex justify-content-between align-items-center mb-3">
+                                <div class="reviewer-info">
+                                    <h5 class="mb-1">Rahul Sharma</h5>
+                                    <div class="rating-stars text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <div class="review-date text-muted">2 days ago</div>
+                            </div>
+                            <div class="review-content">
+                                <p>Excellent product! The sound quality is amazing and the battery life is impressive. The active noise cancellation works perfectly. Highly recommended!</p>
+                            </div>
+                            <div class="review-images mt-3">
+                                <img src="images/placeholder.svg" alt="Review Image" class="review-image me-2" style="width: 80px; height: 80px; object-fit: cover;">
+                                <img src="images/placeholder.svg" alt="Review Image" class="review-image" style="width: 80px; height: 80px; object-fit: cover;">
+                            </div>
+                        </div>
+
+                        <!-- Review 2 -->
+                        <div class="review-item bg-white p-4 rounded shadow-sm mb-4">
+                            <div class="review-header d-flex justify-content-between align-items-center mb-3">
+                                <div class="reviewer-info">
+                                    <h5 class="mb-1">Priya Patel</h5>
+                                    <div class="rating-stars text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </div>
+                                </div>
+                                <div class="review-date text-muted">1 week ago</div>
+                            </div>
+                            <div class="review-content">
+                                <p>Great product overall. The fit is comfortable and the sound quality is good. However, the battery life could be better. The charging case is very convenient.</p>
+                            </div>
+                        </div>
+
+                        <!-- Review 3 -->
+                        <div class="review-item bg-white p-4 rounded shadow-sm">
+                            <div class="review-header d-flex justify-content-between align-items-center mb-3">
+                                <div class="reviewer-info">
+                                    <h5 class="mb-1">Amit Kumar</h5>
+                                    <div class="rating-stars text-warning">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                </div>
+                                <div class="review-date text-muted">2 weeks ago</div>
+                            </div>
+                            <div class="review-content">
+                                <p>Very satisfied with the purchase. The noise cancellation is impressive and the sound quality is excellent. The only minor issue is that it sometimes takes a few seconds to connect to my phone.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fixed Bottom Navigation Footer -->
+    <footer class="fixed-bottom-footer d-lg-none">
+        <div class="container-fluid h-100">
+            <div class="row h-100">
+                <div class="col text-center">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-home"></i><span>Home</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="shop.html" class="nav-link">
+                        <i class="fas fa-shop"></i><span>Shop</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="wishlist.html" class="nav-link">
+                        <i class="fas fa-heart"></i><span>Wishlist</span>
+                        <span class="wishlist-count-badge" id="mobile-wishlist-count">0</span>
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <a href="cart.html" class="nav-link">
+                        <i class="fas fa-shopping-cart"></i><span>Cart</span>
+                        <span class="cart-count-badge" id="mobile-cart-count">0</span>
+                    </a>
+                </div>
+                <div class="col text-center dropdown">
+                    <a href="#" class="nav-link" id="mobileFooterProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle"></i><span>Profile</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileFooterProfileDropdown">
+                        <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                        <li><a class="dropdown-item" href="orders.html"><i class="fas fa-box me-2"></i>My Orders</a></li>
+                        <li><a class="dropdown-item" href="wishlist.html"><i class="fas fa-heart me-2"></i>Wishlist <span class="badge bg-danger rounded-pill" id="mobile-footer-wishlist-count">0</span></a></li>
+                        <li><a class="dropdown-item" href="cart.html"><i class="fas fa-shopping-cart me-2"></i>Cart <span class="badge bg-danger rounded-pill" id="mobile-footer-cart-count">0</span></a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="auth.html" id="mobileFooterLoginSignupBtn"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
+                        <li><a class="dropdown-item text-danger" href="#" id="mobileFooterLogoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Aziz Phone Hub</h3>
+                    <p>Your one-stop shop for premium electronics and fashion products.</p>
+                </div>
+                <div class="col-md-4">
+                    <h3>Quick Links</h3>
+                    <ul class="list-unstyled">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#">Electronics</a></li>
+                        <li><a href="#">Fashion</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h3>Contact Us</h3>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone"></i> +91 1234567890</li>
+                        <li><i class="fas fa-envelope"></i> info@azizphonehub.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Your Address Here</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- Core Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    
+    <!-- Application Scripts -->
+    
+    <script src="product-script.js"></script>
+    <script src="product-detail.js"></script>
+    <script src="buy-now.js"></script>
+    <script src="cart-module.js"></script>
+    <script src="search.js"></script>
+</body>
+</html>
