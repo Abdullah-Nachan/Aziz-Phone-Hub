@@ -30,13 +30,13 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
         <div class="container position-relative">
             <!-- Hamburger (left on mobile) -->
-            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <!-- Logo (center on mobile, left on desktop) -->
             <a class="navbar-brand mx-auto mx-lg-0 order-2" href="index.html">
                 <div class="logo-container">
-                    <img src="https://res.cloudinary.com/dcnawxif9/image/upload/v1748688934/logo_qn8fgh.jpg" alt="Aziz Phone Hub">
+                    <img src="./images/AzizPhoneHub.webp" alt="Aziz Phone Hub">
                 </div>
             </a>
             <!-- Mobile Icons (right on mobile) -->
@@ -90,6 +90,26 @@
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Slide-out Menu -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="shop.html">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" href="wishlist.html">Wishlist</a></li>
+                <li class="nav-item"><a class="nav-link" href="cart.html">Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+                <li class="nav-item"><hr class="dropdown-divider"></li>
+                <li class="nav-item"><a class="nav-link" href="auth.html" id="mobileLoginSignupBtn">Login</a></li>
+                <li class="nav-item"><a class="nav-link text-danger" href="#" id="mobileLogoutBtn">Logout</a></li>
+            </ul>
+        </div>
+    </div>
 
     <!-- Mobile Search Box -->
     <div class="container d-lg-none mt-2">

@@ -6,15 +6,10 @@
 // Wishlist Operations Handler
 console.log('Script firestore-wishlist.js loaded');
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if Firebase is initialized
-    const checkFirebase = setInterval(() => {
-        if (window.firebaseInitialized) {
-            clearInterval(checkFirebase);
-            console.log("Firebase ready for wishlist operations");
-            loadWishlistItems();
-        }
-    }, 500);
+// Load wishlist items once auth state is known
+firebase.auth().onAuthStateChanged(function(user) {
+    console.log('[Wishlist] Auth state changed, loading items');
+    loadWishlistItems();
 });
 
 // Get the appropriate user reference based on authentication status
@@ -46,6 +41,10 @@ async function loadWishlistItems() {
         
         const wishlist = userDoc.data().wishlist;
         
+        // Debug: log wishlist IDs and static-products keys
+        console.log('[Debug][Wishlist] Wishlist IDs:', wishlist.map(i => i.productId || i.id));
+        console.log('[Debug][Wishlist] Static product keys:', Object.keys(window.products || {}));
+        
         // Show wishlist content
         if (emptyWishlistDiv) emptyWishlistDiv.classList.add('d-none');
         if (wishlistContentDiv) wishlistContentDiv.classList.remove('d-none');
@@ -53,40 +52,30 @@ async function loadWishlistItems() {
         // Clear existing items
         if (wishlistItemsDiv) wishlistItemsDiv.innerHTML = '';
         
-        // Fetch product details for all wishlist items concurrently
-        const productPromises = wishlist.map(item => firebase.firestore().collection('products').doc(item.productId).get());
-        const productDocs = await Promise.all(productPromises);
-        
-        // Add each item to the wishlist
-        wishlist.forEach((item, index) => {
-            const productDoc = productDocs[index];
-            if (productDoc.exists) {
-                const product = productDoc.data();
-                if (wishlistItemsDiv) {
-                    wishlistItemsDiv.innerHTML += `
+        // Render wishlist items using static product data
+        wishlist.forEach(item => {
+            const product = window.products && window.products[item.productId];
+            if (product && wishlistItemsDiv) {
+                wishlistItemsDiv.innerHTML += `
                     <div class="col-6 col-md-4 col-lg-3 mb-4 wishlist-item" data-product-id="${item.productId}">
-                        <div class="card h-100">
+                        <div class="card h-100 position-relative">
+                            <button class="btn remove-from-wishlist p-2 position-absolute top-0 end-0 bg-transparent border-0" data-product-id="${item.productId}">
+                                <i class="fas fa-heart text-danger"></i>
+                            </button>
+                            <a href="product.html?id=${item.productId}" class="stretched-link"></a>
                             <img src="${product.image}" class="card-img-top" alt="${product.name}">
                             <div class="card-body">
                                 <h5 class="card-title">${product.name}</h5>
-                                <p class="card-text text-primary fw-bold">₹${product.price}</p>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-primary add-to-cart" data-product-id="${item.productId}">
-                                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
-                                    </button>
-                                    <button class="btn btn-outline-danger remove-from-wishlist" data-product-id="${item.productId}">
-                                        <i class="fas fa-heart"></i> Remove
-                                    </button>
-                                </div>
+                                <p class="card-text text-primary fw-bold">${product.price}</p>
+                                <button class="btn btn-primary add-to-cart" data-product-id="${item.productId}">
+                                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                </button>
                             </div>
                         </div>
                     </div>
                 `;
-                }
             } else {
-                console.warn(`Product not found for wishlist item with ID: ${item.productId}`);
-                // Optionally, display a placeholder or remove the invalid item from the wishlist
-                // For now, we'll just skip displaying it and log a warning.
+                console.warn(`Product not found in static-products.js for wishlist item with ID: ${item.productId}`);
             }
         });
         

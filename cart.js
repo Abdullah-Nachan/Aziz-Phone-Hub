@@ -558,7 +558,7 @@ function updateWishlistUI() {
     // Update wishlist count badges
     const wishlistCountElements = document.querySelectorAll('.wishlist-count-badge');
     // Check if wishlist is initialized
-    const wishlistCount = typeof wishlist !== 'undefined' ? wishlist.getCount() : 0;
+    const wishlistCount = typeof wishlist !== 'undefined' && typeof wishlist.getCount === 'function' ? wishlist.getCount() : 0;
     
     wishlistCountElements.forEach(element => {
         element.textContent = wishlistCount;

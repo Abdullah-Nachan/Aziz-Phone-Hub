@@ -61,27 +61,24 @@ document.addEventListener('DOMContentLoaded', function() {
             currentPage: window.location.href
         });
 
-        // Desktop UI
-        if (desktopLogoutLi) {
-            // Use direct style manipulation for more reliable display control
-            desktopLogoutLi.style.display = isAuthenticatedUser ? 'block' : 'none';
-            console.log('Desktop logout button display set to:', desktopLogoutLi.style.display);
-        }
-        
-        if (desktopLoginLi) {
-            desktopLoginLi.style.display = isAuthenticatedUser ? 'none' : 'block';
-            console.log('Desktop login button display set to:', desktopLoginLi.style.display);
+        // Desktop UI: Show ONLY one button at a time
+        if (desktopLogoutLi) desktopLogoutLi.style.display = isAuthenticatedUser ? 'block' : 'none';
+        if (desktopLoginLi) desktopLoginLi.style.display = isAuthenticatedUser ? 'none' : 'block';
+
+        // Hide both if state is unknown (should not happen, for safety)
+        if (!isAuthenticatedUser && !user) {
+            if (desktopLogoutLi) desktopLogoutLi.style.display = 'none';
+            if (desktopLoginLi) desktopLoginLi.style.display = 'block';
         }
 
-        // Mobile UI
-        if (mobileLogoutLi) {
-            mobileLogoutLi.style.display = isAuthenticatedUser ? 'block' : 'none';
-            console.log('Mobile logout button display set to:', mobileLogoutLi.style.display);
-        }
-        
-        if (mobileLoginLi) {
-            mobileLoginLi.style.display = isAuthenticatedUser ? 'none' : 'block';
-            console.log('Mobile login button display set to:', mobileLoginLi.style.display);
+        // Mobile UI: Show ONLY one button at a time
+        if (mobileLogoutLi) mobileLogoutLi.style.display = isAuthenticatedUser ? 'block' : 'none';
+        if (mobileLoginLi) mobileLoginLi.style.display = isAuthenticatedUser ? 'none' : 'block';
+
+        // Hide both if state is unknown (should not happen, for safety)
+        if (!isAuthenticatedUser && !user) {
+            if (mobileLogoutLi) mobileLogoutLi.style.display = 'none';
+            if (mobileLoginLi) mobileLoginLi.style.display = 'block';
         }
     }
 
@@ -139,6 +136,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Listen for auth state changes
     firebase.auth().onAuthStateChanged((user) => {
+        // If on auth.html and user is logged in, redirect to home
+        if ((window.location.pathname.endsWith('auth.html') || window.location.pathname.endsWith('/auth.html')) && user && !user.isAnonymous) {
+            window.location.href = 'index.html';
+            return;
+        }
         console.log('Auth state changed listener triggered:', user ? `User signed in: ${user.email || 'no email'} (${user.isAnonymous ? 'anonymous' : 'authenticated'})` : 'No user', 'on page:', window.location.href);
             
         if (user) {

@@ -13,6 +13,10 @@ function generateGuestId() {
 
 // Wishlist class
 class Wishlist {
+    // Return the number of items in the wishlist (for UI badges etc.)
+    getCount() {
+        return Array.isArray(this.items) ? this.items.length : 0;
+    }
     constructor() {
         console.log('Creating wishlist instance');
         this.items = []; // Local cache of wishlist item IDs, populated from Firebase
@@ -22,6 +26,11 @@ class Wishlist {
     }
 
     async init() {
+        // Defensive: ensure wishlistItemsContainer exists before manipulating
+        if (typeof document !== 'undefined') {
+            const wishlistItemsContainer = document.getElementById('wishlist-items');
+            if (wishlistItemsContainer) wishlistItemsContainer.innerHTML = '';
+        }
         console.log('[Wishlist] Initializing instance data and UI...');
         // Fetch initial items based on current auth state (which is resolved by now)
         this.items = await this.getWishlistItems().then(fetchedItems => fetchedItems.map(item => item.id));
@@ -81,7 +90,9 @@ class Wishlist {
 
             // Only add if not already present based on productObj.id
             if (!currentWishlist.some(item => item && item.id === productObj.id)) {
-                currentWishlist.push(productObj); // Store the full product object
+                // Store only {id, productId}, not the full product object
+                const minimalWishlistItem = { id: productObj.id, productId: productObj.id };
+                currentWishlist.push(minimalWishlistItem);
                 await wishlistDocRef.set({ [fieldToUpdate]: currentWishlist }, { merge: true });
                 
                 // Update local cache and UI
@@ -361,17 +372,25 @@ async function renderWishlistPage() {
     const wishlistItemsContainer = document.getElementById('wishlist-items');
     const emptyWishlist = document.getElementById('empty-wishlist');
     const wishlistContent = document.getElementById('wishlist-content');
-    wishlistItemsContainer.innerHTML = '';
+    if (wishlistItemsContainer) wishlistItemsContainer.innerHTML = '';
     
-    // Use the locally cached item IDs and map them to full product objects from window.products
+    // Use the locally cached item IDs
     const productIdsInWishlist = wishlistInstance.items;
-    
-    const itemsToRender = productIdsInWishlist
-        .map(id => window.products[id]) // Map IDs to full product objects from window.products
-        .filter(product => product); // Filter out any null/undefined if product not found
-
-    console.log('[Wishlist Page] Items prepared for rendering from cache:', itemsToRender);
-
+    if (!productIdsInWishlist || productIdsInWishlist.length === 0) {
+        emptyWishlist.classList.remove('d-none');
+        wishlistContent.classList.add('d-none');
+        return;
+    }
+    // Fetch product details from window.products (static data) for each ID
+    let itemsToRender = [];
+    for (const id of productIdsInWishlist) {
+        if (window.products && window.products[id]) {
+            itemsToRender.push(window.products[id]);
+        } else {
+            console.warn('[Wishlist Page] Product not found in static-products.js:', id);
+        }
+    }
+    console.log('[Wishlist Page] Items prepared for rendering from static-products.js:', itemsToRender);
     if (!itemsToRender || itemsToRender.length === 0) {
         emptyWishlist.classList.remove('d-none');
         wishlistContent.classList.add('d-none');
@@ -381,12 +400,8 @@ async function renderWishlistPage() {
         itemsToRender.forEach(product => {
             console.log('[Wishlist Page] Rendering product:', product);
             const card = createWishlistProductCard(product);
-            console.log('[Wishlist Page] Created card element:', card); // Log the created element
-            if (card && card.nodeType === 1) { // Ensure it's a valid element before appending
+            if (card && card.nodeType === 1) {
                 wishlistItemsContainer.appendChild(card);
-                console.log('[Wishlist Page] Appended card to container.', wishlistItemsContainer.children.length, 'total children.'); // Confirm append
-            } else {
-                console.error('[Wishlist Page] Card element is invalid, not appending:', card);
             }
         });
     }

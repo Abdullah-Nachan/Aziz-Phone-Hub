@@ -16,13 +16,13 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
         <div class="container position-relative">
             <!-- Hamburger (left on mobile) -->
-            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <!-- Logo (center on mobile, left on desktop) -->
             <a class="navbar-brand mx-auto mx-lg-0 order-2" href="index.html">
                 <div class="logo-container">
-                    <img src="./images/aziz logo.svg" alt="Aziz Phone Hub">
+                    <img src="./images/AzizPhoneHub.webp" alt="Aziz Phone Hub">
                 </div>
             </a>
             <!-- Cart Icon (right on mobile) -->
@@ -63,6 +63,24 @@
             </div>
         </div>
     </nav>
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="shop.html">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" href="wishlist.html">Wishlist</a></li>
+                <li class="nav-item"><a class="nav-link" href="cart.html">Cart</a></li>
+                <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+                <li class="nav-item"><hr class="dropdown-divider"></li>
+                <li class="nav-item"><a class="nav-link" href="auth.html">Login</a></li>
+                <li class="nav-item"><a class="nav-link text-danger" href="#">Logout</a></li>
+            </ul>
+        </div>
+    </div>
 
     <!-- Profile Section -->
     <section class="profile-section py-5">
@@ -73,7 +91,7 @@
                     <div class="card">
                         <div class="card-body text-center">
                             <div class="profile-image mb-3">
-                                <img src="./images/placeholder.svg" alt="Profile" class="rounded-circle" id="profileImage">
+                                <img src="./images/AzizPhoneHub.webp" alt="Profile" class="rounded-circle" id="profileImage">
                             </div>
                             <h5 class="mb-1" id="profileName"></h5>
                             <p class="text-muted mb-3" id="profileEmail"></p>

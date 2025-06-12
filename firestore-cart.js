@@ -129,12 +129,18 @@ async function loadCartItems() {
         
     } catch (error) {
         console.error('Error loading cart:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'There was a problem loading your cart.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
+        // Only show the error modal if NOT on the homepage
+        if (!window.location.pathname.endsWith('index.html') && !window.location.pathname.endsWith('/index.html')) {
+            Swal.fire({
+                title: 'Error',
+                text: 'There was a problem loading your cart.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        } else {
+            // On homepage, just log the error silently
+            console.warn('Cart loading error suppressed on homepage:', error);
+        }
     }
 }
 

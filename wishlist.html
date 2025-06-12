@@ -18,13 +18,13 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
         <div class="container position-relative">
             <!-- Hamburger (left on mobile) -->
-            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <!-- Logo (center on mobile, left on desktop) -->
             <a class="navbar-brand mx-auto mx-lg-0 order-2" href="index.html">
                 <div class="logo-container">
-                    <img src="./images/aziz logo.svg" alt="Aziz Phone Hub">
+                    <img src="./images/AzizPhoneHub.webp" alt="Aziz Phone Hub">
                 </div>
             </a>
             <!-- Cart Icon (right on mobile) -->
@@ -71,6 +71,37 @@
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Slide-out Menu -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="shop.html">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mobileCategories">Categories <i class="fas fa-chevron-down float-end"></i></a>
+                    <div class="collapse" id="mobileCategories">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item"><a class="nav-link" href="category.html?cat=airpods">AirPods</a></li>
+                            <li class="nav-item"><a class="nav-link" href="category.html?cat=smartwatches">Smart Watches</a></li>
+                            <li class="nav-item"><a class="nav-link" href="category.html?cat=headphones">Headphones</a></li>
+                            <li class="nav-item"><a class="nav-link" href="category.html?cat=accessories">Accessories</a></li>
+                            <li class="nav-item"><a class="nav-link" href="category.html?cat=shoes">Shoes</a></li>
+                            <li class="nav-item"><a class="nav-link" href="category.html?cat=crocs">Crocs</a></li>
+                            <li class="nav-item"><a class="nav-link" href="category.html?cat=casualwatch">Casual Watch</a></li>
+                            <li class="nav-item"><a class="nav-link" href="category.html?cat=combo-offers">Combo Offers</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item"><hr class="dropdown-divider"></li>
+                <li class="nav-item"><a class="nav-link" href="auth.html" id="mobileLoginSignupBtn">Login</a></li>
+                <li class="nav-item"><a class="nav-link text-danger" href="#" id="mobileLogoutBtn">Logout</a></li>
+            </ul>
+        </div>
+    </div>
 
     <!-- Wishlist Section -->
     <section class="wishlist-section py-5">
@@ -156,6 +187,5 @@
     <script src="firestore-wishlist.js"></script>
     <script src="cart-wishlist-auth.js"></script>
     <script src="script.js"></script>
-    <script src="wishlist.js"></script>
 </body>
 </html>

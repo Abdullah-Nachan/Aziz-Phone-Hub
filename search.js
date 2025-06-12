@@ -30,6 +30,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 200);
         });
         
+        // Save on form submit
+        const form = searchBox.closest('form');
+        if (form) {
+            form.addEventListener('submit', function() {
+                const v = input.value.trim();
+                if (v) saveSearchTerm(v);
+            });
+        }
+        
         // Add keyboard navigation
         input.addEventListener('keydown', function(e) {
             const suggestionsContainer = searchBox.querySelector('.search-suggestions');
@@ -88,6 +97,17 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
     
+    // Recent searches helpers
+    function getRecentSearches() {
+        return JSON.parse(localStorage.getItem('recentSearches') || '[]');
+    }
+    function saveSearchTerm(term) {
+        let rec = getRecentSearches().filter(t => t.toLowerCase() !== term.toLowerCase());
+        rec.unshift(term);
+        rec = rec.slice(0,5);
+        localStorage.setItem('recentSearches', JSON.stringify(rec));
+    }
+    
     // Handle search input
     function handleSearchInput(e) {
         const input = e.target;
@@ -101,9 +121,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear previous suggestions
         suggestionsContainer.innerHTML = '';
         
-        // If search term is empty, hide suggestions
+        // If search term is empty, show recent searches
         if (searchTerm.length === 0) {
-            suggestionsContainer.style.display = 'none';
+            const recents = getRecentSearches();
+            if (recents.length) {
+                suggestionsContainer.style.display = 'block';
+                recents.forEach(term => {
+                    const item = createSuggestionItem(term, `shop.html?search=${encodeURIComponent(term)}`, 'recent');
+                    suggestionsContainer.appendChild(item);
+                });
+            } else {
+                suggestionsContainer.style.display = 'none';
+            }
             return;
         }
         
@@ -170,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create a suggestion item
     function createSuggestionItem(name, link, type, price = null) {
         const item = document.createElement('a');
-        item.className = 'suggestion-item';
+        item.className = `suggestion-item ${type}`;
         item.href = link;
         
         let icon = '';
@@ -241,6 +270,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Redirect to search results page
                 window.location.href = `shop.html?search=${encodeURIComponent(searchTerm)}`;
             }
+        });
+    });
+    
+    // Handle suggestion click
+    const suggestionsContainers = document.querySelectorAll('.search-suggestions');
+    suggestionsContainers.forEach(suggestionsContainer => {
+        suggestionsContainer.addEventListener('click', e => {
+            if (!e.target.matches('.suggestion-item')) return;
+            const term = e.target.textContent;
+            saveSearchTerm(term);
+            const input = suggestionsContainer.closest('.search-box').querySelector('input');
+            input.value = term;
+            suggestionsContainer.innerHTML = '';
+            // you can optionally submit form or redirect here
         });
     });
 });

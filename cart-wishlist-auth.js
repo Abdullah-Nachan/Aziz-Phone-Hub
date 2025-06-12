@@ -120,111 +120,37 @@ async function handleCartAction(productId) {
 // Handle wishlist action
 async function handleWishlistAction(productId, buttonElement) {
     try {
-        // Get product details from static-products.js
+        // Get product details
         const product = typeof getProductById === 'function' ? getProductById(productId) : (window.products ? window.products[productId] : null);
         if (!product) {
-            Swal.fire({
-                title: 'Error',
-                text: 'Product not found!',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
+            Swal.fire({ title: 'Error', text: 'Product not found!', icon: 'error', confirmButtonText: 'OK' });
             return;
         }
-        const user = firebase.auth().currentUser;
-        let wishlist = [];
-        let productObj = {
-            productId: product.id || productId,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            addedAt: new Date().toISOString()
-        };
-
-        if (!user) {
-            // Guest user: Use localStorage
-            const wishlistKey = 'guest_wishlist';
-            wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
-// Clean up any old/invalid items (IDs, nulls, etc.)
-wishlist = wishlist.filter(item => item && typeof item === 'object' && 'productId' in item);
-            const existingItemIndex = wishlist.findIndex(item => item.productId === productId);
-            if (existingItemIndex >= 0) {
-                wishlist.splice(existingItemIndex, 1);
-                if (buttonElement) {
-                    buttonElement.classList.remove('active');
-                    buttonElement.querySelector('i').classList.remove('text-danger');
-                }
-                Swal.fire({
-                    title: 'Removed from Wishlist',
-                    text: `${product.name} has been removed from your wishlist.`,
-                    icon: 'info',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            } else {
-                wishlist.push(productObj);
-                if (buttonElement) {
-                    buttonElement.classList.add('active');
-                    buttonElement.querySelector('i').classList.add('text-danger');
-                }
-                Swal.fire({
-                    title: 'Added to Wishlist!',
-                    text: `${product.name} has been added to your wishlist.`,
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            }
-            localStorage.setItem(wishlistKey, JSON.stringify(wishlist));
-            updateWishlistCountBadge(wishlist.length);
-            return;
-        }
-
-        // Authenticated user: Firestore
+        // Get Firestore ref for current (or guest) user
         const userRef = getUserRef();
         const userDoc = await userRef.get();
-        if (userDoc.exists) {
-            const userData = userDoc.data();
-            wishlist = userData.wishlist || [];
+        // Initialize wishlist array
+        let wishlist = [];
+        if (userDoc.exists && Array.isArray(userDoc.data().wishlist)) {
+            wishlist = userDoc.data().wishlist;
         }
-        const existingItemIndex = wishlist.findIndex(item => item.productId === productId);
-        if (existingItemIndex >= 0) {
-            wishlist.splice(existingItemIndex, 1);
-            if (buttonElement) {
-                buttonElement.classList.remove('active');
-                buttonElement.querySelector('i').classList.remove('text-danger');
-            }
-            Swal.fire({
-                title: 'Removed from Wishlist',
-                text: `${product.name} has been removed from your wishlist.`,
-                icon: 'info',
-                timer: 2000,
-                showConfirmButton: false
-            });
+        // Toggle item
+        const idx = wishlist.findIndex(item => item.productId === productId);
+        if (idx >= 0) {
+            wishlist.splice(idx, 1);
+            if (buttonElement) buttonElement.classList.remove('active');
+            Swal.fire({ title: 'Removed from Wishlist', text: `${product.name} has been removed.`, icon: 'info', timer: 2000, showConfirmButton: false });
         } else {
-            wishlist.push(productObj);
-            if (buttonElement) {
-                buttonElement.classList.add('active');
-                buttonElement.querySelector('i').classList.add('text-danger');
-            }
-            Swal.fire({
-                title: 'Added to Wishlist!',
-                text: `${product.name} has been added to your wishlist.`,
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-            });
+            wishlist.push({ productId: product.id || productId, name: product.name, price: product.price, image: product.image, addedAt: new Date().toISOString() });
+            if (buttonElement) buttonElement.classList.add('active');
+            Swal.fire({ title: 'Added to Wishlist!', text: `${product.name} has been added.`, icon: 'success', timer: 2000, showConfirmButton: false });
         }
+        // Persist changes
         await userRef.set({ wishlist: wishlist }, { merge: true });
         updateWishlistCountBadge(wishlist.length);
     } catch (error) {
         console.error('Error updating wishlist:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'There was a problem updating your wishlist.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
+        Swal.fire({ title: 'Error', text: 'There was a problem updating your wishlist.', icon: 'error', confirmButtonText: 'OK' });
     }
 }
 

@@ -15,6 +15,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 try {
+    if (typeof firebase === 'undefined') {
+        console.error('Firebase library not loaded! Make sure the <script> tag is present and before this config.');
+        throw new Error('Firebase not loaded');
+    }
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
         console.log('Firebase initialized successfully');
