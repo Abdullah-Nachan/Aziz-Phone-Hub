@@ -174,12 +174,6 @@
                         <span class="wishlist-count-badge" id="mobile-wishlist-count">0</span>
                     </a>
                 </div>
-                <div class="col text-center">
-                    <a href="cart.html" class="nav-link active">
-                        <i class="fas fa-shopping-cart"></i><span>Cart</span>
-                        <span class="cart-count-badge" id="mobile-cart-count">0</span>
-                    </a>
-                </div>
                 <div class="col text-center dropdown">
                     <a href="#" class="nav-link" id="mobileFooterProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-user-circle"></i><span>Profile</span>
@@ -194,6 +188,7 @@
                         <li><a class="dropdown-item text-danger" href="#" id="mobileFooterLogoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                     </ul>
                 </div>
+                <div class="col text-center">
             </div>
         </div>
     </footer>
@@ -213,19 +208,8 @@
     <!-- App Scripts -->
     <script src="static-products.js"></script>
     <script src="search.js"></script>
-    <script src="js/cart-handler.js"></script>
     <script src="firestore-cart.js"></script>
-    <script>
-        // Initialize cart when Firebase is ready
-        document.addEventListener('firebaseInitialized', function() {
-            console.log('Firebase initialized in cart.html');
-            if (typeof loadCartItems === 'function') {
-                loadCartItems();
-            } else {
-                console.error('loadCartItems function not found');
-            }
-        });
-    </script>
+    <script src="cart-wishlist-auth.js"></script>
     
 </body>
 </html>

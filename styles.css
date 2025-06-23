@@ -796,7 +796,7 @@
     --light-color: #f8f9fa;
     --dark-color: #343a40;
     --text-color: #212529; /* Consider changing this too if needed */
-    --background-color: #f5f5f5; /* New background color */
+    --background-color: #fffbf8; /* New default background color */
     --white: #ffffff;
 }
 
@@ -842,7 +842,7 @@ body {
 }
 
 .nav-link {
-    color: white !important;
+    color: black !important;
     font-weight: 500;
     padding: 0.5rem 1rem !important;
     transition: color 0.3s ease;
@@ -2265,4 +2265,113 @@ body {
 /* Remove line under 'Shop by Category' on homepage */
 h2.section-title.text-center.mb-4:after {
         display: none !important;
+}
+
+.fixed-bottom-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  background: #626262;
+  z-index: 1050;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.07);
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0;
+  gap: 0.5rem;
+}
+.fixed-bottom-footer a, .fixed-bottom-footer span, .fixed-bottom-footer i {
+  color: #000 !important;
+  text-align: center;
+  font-size: 1rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: 0.25rem;
+  position: relative;
+}
+.fixed-bottom-footer a {
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 44px;
+  min-height: 36px;
+}
+.fixed-bottom-footer i {
+  font-size: 1.3rem;
+}
+.fixed-bottom-footer .cart-count-badge,
+.fixed-bottom-footer .wishlist-count-badge {
+  background: #000 !important;
+  color: #fff !important;
+  font-size: 0.8rem;
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  z-index: 2;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+@media (min-width: 992px) {
+  .fixed-bottom-footer {
+    display: none !important;
+  }
+}
+
+.fixed-bottom-footer .row {
+  flex-wrap: nowrap !important;
+  gap: 0.1rem !important;
+}
+.fixed-bottom-footer .col {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.fixed-bottom-footer {
+  gap: 0.1rem !important;
+}
+
+.offcanvas.offcanvas-start {
+  background: #626262 !important;
+  width: 50vw !important;
+  max-width: 320px;
+  color: #fff;
+}
+.offcanvas.offcanvas-start .offcanvas-body,
+.offcanvas.offcanvas-start .offcanvas-header {
+  color: #fff;
+}
+.offcanvas.offcanvas-start .nav-link {
+  color: #fff !important;
+}
+
+@media (max-width: 991.98px) {
+  .fixed-filter-sort-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 72px; /* Increased from 56px for more space above footer */
+    width: 100vw;
+    z-index: 1060;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.07);
+  }
+  .fixed-bottom-footer {
+    z-index: 1050;
+  }
 }
