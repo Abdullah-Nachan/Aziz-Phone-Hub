@@ -11,7 +11,7 @@ if (!window.products) window.products = {
     id: "airpods01",
     brand: "Apple",
     name: "AirPods Gen 4 (ANC)",
-    image: "images/airpods_gen4.jpg",
+    image: "images/airpods4.jpg",
     images: [
       "images/airpods-images/airpods_gen4/1.webp",
       "images/airpods-images/airpods_gen4/2.webp",
@@ -29,7 +29,7 @@ if (!window.products) window.products = {
     id: "airpods-pro-2",
     brand: "Apple",
     name: "AirPods Pro 2",
-    image: "images/airpods_pro2.jpeg",
+    image: "images/airpods2pro.jpg",
     images: [
       "images/airpods-images/aripods_pro2/1.webp",
       "images/airpods-images/aripods_pro2/2.webp",
@@ -46,7 +46,7 @@ if (!window.products) window.products = {
   "airpods-pro-2-display": {
     id: "airpods-pro-2-display",
     name: "AirPods Pro 2 with Display",
-    image: "images/airpods_pro2_display.png",
+    image: "images/airpods-2pro-display.jpg",
     images: [
       "images/airpods-images/airpods_display/1.webp",
       "images/airpods-images/airpods_display/2.webp",
@@ -63,7 +63,7 @@ if (!window.products) window.products = {
   "airpods-3": {
     id: "airpods-3",
     name: "AirPods 3rd Generation",
-    image: "images/Airpods3_buds.jpeg",
+    image: "images/airpods-gen3.jpg",
     images: [
       "images/airpods-images/airpods_3buds/1.webp",
       "images/airpods-images/airpods_3buds/2.webp",
@@ -80,7 +80,7 @@ if (!window.products) window.products = {
   "airpods-2": {
     id: "airpods-2",
     name: "AirPods 2nd Generation",
-    image: "images/Airpods2_buds.jpg",
+    image: "images/airpods-gen2.jpg",
     images: [
       "images/airpods-images/airpods_2buds/1.webp",
       "images/airpods-images/airpods_2buds/2.webp",
@@ -97,7 +97,7 @@ if (!window.products) window.products = {
     id: "galaxy-buds-2-pro",
     brand: "Samsung",
     name: "Samsung Galaxy Buds 2 Pro",
-    image: "images/galaxy_buds_2pro.jpeg",
+    image: "images/galaxy-buds2-pro.jpg",
     images: [
       "images/airpods-images/galaxy_buds2_pro/1.webp",
       "images/airpods-images/galaxy_buds2_pro/2.webp",
@@ -115,7 +115,7 @@ if (!window.products) window.products = {
     id: "airpods-max",
     brand: "Apple",
     name: "AirPods Max",
-    image: "images/headphone_airpods_max.jpg",
+    image: "images/airpods-max.jpg",
     images: [
       "images/Headphone-images/Airpod max/1.webp",
       "images/Headphone-images/Airpod max/2.webp",
@@ -131,7 +131,7 @@ if (!window.products) window.products = {
     id: "bose-qc-ultra",
     brand: "Bose",
     name: "Bose QC Ultra",
-    image: "images/headphone_bose_qc_ultra.jpg",
+    image: "images/bose-qc-ultra.jpg",
     images: [
       "images/Headphone-images/Bose qc/1.webp",
       "images/Headphone-images/Bose qc/2.webp",
@@ -149,7 +149,7 @@ if (!window.products) window.products = {
     id: "samsung-watch-ultra",
     brand: "Samsung",
     name: "Samsung Watch Ultra",
-    image: "images/smartwatch_samsung_ultra.jpg",
+    image: "images/samsung-watch-ultra.jpg",
     images: [
       "images/smartwatch-images/samsung-watch-ultra/1.webp",
       "images/smartwatch-images/samsung-watch-ultra/2.webp",
@@ -166,7 +166,7 @@ if (!window.products) window.products = {
     id: "active-2-smartwatch",
     brand: "Samsung",
     name: "Active 2 Smartwatch",
-    image: "images/smartwatch_active2.jpeg",
+    image: "images/active2-smartwatch.jpg",
     images: [
       "images/smartwatch-images/active2/1.webp",
       "images/smartwatch-images/active2/2.webp",
@@ -183,7 +183,7 @@ if (!window.products) window.products = {
     id: "gen-9-pro",
     brand: "Generic",
     name: "Gen 9 Pro Bluetooth Calling Smartwatch",
-    image: "images/smartwatch_gen9pro.jpeg",
+    image: "images/gen9-pro-smartwatch.jpg",
     images: [
       "images/smartwatch-images/gen-9pro/1.webp",
       "images/smartwatch-images/gen-9pro/2.webp",
@@ -200,7 +200,7 @@ if (!window.products) window.products = {
     id: "t10-ultra",
     brand: "Generic",
     name: "T10 Ultra Bluetooth Smartwatch",
-    image: "images/smartwatch_t10ultra.jpeg",
+    image: "images/t10-ultra-smartwatch.jpg",
     images: [
       "images/smartwatch-images/T10 Ultra/1.webp",
       "images/smartwatch-images/T10 Ultra/2.webp",
@@ -219,7 +219,7 @@ if (!window.products) window.products = {
     id: "z86-pro-max",
     brand: "Generic",
     name: "Z86 Pro Max Smartwatch",
-    image: "images/smartwatch_z86promax.jpeg",
+    image: "images/z86-pro-max-smartwatch.jpg",
     images: [
       "images/smartwatch-images/Z86 pro max/1.webp",
       "images/smartwatch-images/Z86 pro max/2.webp",
@@ -237,7 +237,7 @@ if (!window.products) window.products = {
     id: "apple-watch-series-10",
     brand: "Apple",
     name: "Apple Watch Series 10",
-    image: "images/smartwatch_series10.jpg",
+    image: "images/apple-series10.jpg",
     images: [
       "images/smartwatch-images/series 10/1.webp",
       "images/smartwatch-images/series 10/2.webp",
@@ -249,13 +249,13 @@ if (!window.products) window.products = {
     ],
     price: "₹3,999",
     description: "The latest Apple Watch with advanced health monitoring and fitness tracking features.",
-    category: "watches"
+    category: "smartwatches"
   },
   "hk9-ultra": {
     id: "hk9-ultra",
     brand: "HK9",
     name: "HK9 Ultra Smartwatch",
-    image: "images/smartwatch_hk9.jpg",
+    image: "images/hk9-ultra-smartwatch.jpg",
     images: [
       "images/smartwatch-images/Hk9-ultra/1.webp",
       "images/smartwatch-images/Hk9-ultra/2.webp",
@@ -273,7 +273,7 @@ if (!window.products) window.products = {
     id: "s9-pro-max",
     brand: "Generic",
     name: "S9 Pro Max Smartwatch",
-    image: "images/smartwatch_s9promax.jpeg",
+    image: "images/s9-pro-max-smartwatch.jpg",
     images: [
       "images/smartwatch-images/S9 pro max/1.webp",
       "images/smartwatch-images/S9 pro max/2.webp",
@@ -291,7 +291,7 @@ if (!window.products) window.products = {
     id: "x90-max",
     brand: "Generic",
     name: "X90 Max Smartwatch",
-    image: "images/smartwatch_x90max.jpeg",
+    image: "images/x90-max-smartwatch.jpg",
     images: [
       "images/smartwatch-images/Z86 pro max/1.webp",
       "images/smartwatch-images/Z86 pro max/2.webp",
@@ -309,7 +309,7 @@ if (!window.products) window.products = {
     id: "nike-vomero-black",
     brand: "Nike",
     name: "Nike Zoom Vomero Triple Black",
-    image: "images/shoes_nike_vomero_black.jpg",
+    image: "images/nike-zoom-vomero-triple-black.jpg",
     images: [
       "images/shoes-images/nike-zoom-vomero-triple-black/1.jpg",
       "images/shoes-images/nike-zoom-vomero-triple-black/2.jpg",
@@ -328,7 +328,7 @@ if (!window.products) window.products = {
     id: "nike-vomero-white",
     brand: "Nike",
     name: "Nike Zoom Vomero White-Black",
-    image: "images/shoes_nike_vomero_white.jpg",
+    image: "images/nike-zoom-vomero-white-black.jpg",
     images: [
       "images/shoes-images/nike-zoom-vomero-white-black/1.jpg",
       "images/shoes-images/nike-zoom-vomero-white-black/2.jpg",
@@ -343,7 +343,7 @@ if (!window.products) window.products = {
     id: "puma-suede-crush",
     brand: "Puma",
     name: "Puma XL Suede Crush Black White",
-    image: "images/shoes_puma_suede.jpg",
+    image: "images/puma-suede-crush.jpg",
     images: [
       "images/shoes-images/puma-suede-crush/1.jpg",
       "images/shoes-images/puma-suede-crush/2.jpg",
@@ -359,7 +359,7 @@ if (!window.products) window.products = {
     id: "nike-airmax",
     brand: "Nike",
     name: "Nike Air Max 90",
-    image: "images/shoes_nike_airmax.jpg",
+    image: "images/nike-air-max.jpg",
     images: [
       "images/shoes-images/nike-air-max90/1.jpg",
       "images/shoes-images/nike-air-max90/2.jpg",
@@ -374,7 +374,7 @@ if (!window.products) window.products = {
     id: "nike-dunk-unc",
     brand: "Nike",
     name: "Nike Dunk Low UNC",
-    image: "images/shoes_nike_dunk.jpg",
+    image: "images/nike-dunk-low.jpg",
     images: [
       "images/shoes-images/nike-dunk-low-UNC/1.jpg",
       "images/shoes-images/nike-dunk-low-UNC/2.jpg",
@@ -389,7 +389,7 @@ if (!window.products) window.products = {
     id: "boss-hugo",
     brand: "Boss",
     name: "Boss Hugo",
-    image: "images/watch_boss.jpg",
+    image: "images/boss-hugo.jpg",
     images: [
       "images/watch-images/boss-hugo/1.jpg",
       "images/watch-images/boss-hugo/3.jpg",
@@ -402,7 +402,7 @@ if (!window.products) window.products = {
     id: "cartier-roman",
     brand: "Cartier",
     name: "Cartier Roman Dial",
-    image: "images/watch_cartier.jpg",
+    image: "images/cartier-roman-dial.jpg",
     images: [
       "images/watch-images/cartier-roman-dial/1.jpg",
       "images/watch-images/cartier-roman-dial/2.jpg",
@@ -416,7 +416,7 @@ if (!window.products) window.products = {
     id: "gshock-manga",
     brand: "G-Shock",
     name: "G-Shock Manga Edition",
-    image: "images/watch_gshock.jpg",
+    image: "images/gshock-manga.jpg",
     images: [
       "images/watch-images/g-shock-manga/1.jpg",
       "images/watch-images/g-shock-manga/2.jpg",
@@ -432,7 +432,7 @@ if (!window.products) window.products = {
     id: "omega-seamaster",
     brand: "Omega",
     name: "Omega Seamaster",
-    image: "images/watch_omega.jpg",
+    image: "images/omega-seamaster.jpg",
     images: [
       "images/watch-images/omega-seamaster/1.jpg",
       "images/watch-images/omega-seamaster/2.jpg",
@@ -447,7 +447,7 @@ if (!window.products) window.products = {
   "tissot-trace": {
     id: "tissot-trace",
     name: "Tissot T-race Chronograph",
-    image: "images/watch_tissot.jpg",
+    image: "images/tissot-trace.jpg",
     images: [
       "images/watch-images/tissot-t-race/1.jpg",
       "images/watch-images/tissot-t-race/2.jpg",
@@ -460,7 +460,7 @@ if (!window.products) window.products = {
   "crocs-literide-360": {
     id: "crocs-literide-360",
     name: "Crocs LiteRide 360",
-    image: "images/crocs_literide360.jpeg",
+    image: "images/crocs-literide-360.jpg",
     images: [
       "images/crocs_literide360.jpeg",
       "images/crocs.jpeg",
@@ -476,7 +476,7 @@ if (!window.products) window.products = {
   "bayband": {
     id: "bayband",
     name: "Crocs Bayaband Clog",
-    image: "images/crocs_bayband.jpeg",
+    image: "images/crocs-bayband.jpg",
     images: [
       "images/crocs_bayband.jpeg",
       "images/crocs_bayband_flip.jpeg",
@@ -492,7 +492,7 @@ if (!window.products) window.products = {
   "bayband-flip": {
     id: "bayband-flip",
     name: "Crocs Bayaband Flip",
-    image: "images/crocs_bayband_flip.jpeg",
+    image: "images/crocs-bayband-flip.jpg",
     images: [
       "images/crocs_bayband_flip.jpeg",
       "images/crocs_bayband.jpeg",
@@ -508,7 +508,7 @@ if (!window.products) window.products = {
   "yukon": {
     id: "yukon",
     name: "Crocs Yukon",
-    image: "images/crocs_yukon.jpeg",
+    image: "images/crocs-yukon.jpg",
     images: [
       "images/crocs_yukon.jpeg",
       "images/crocs_echo_clog.jpeg",
@@ -524,7 +524,7 @@ if (!window.products) window.products = {
     id: "apple-power-adapter",
     brand: "Apple",
     name: "Apple 20W USB-C Power Adapter",
-    image: "images/moreproduct_adapter.jpg",
+    image: "images/apple-adapter.jpg",
     images: [
       "images/Accessories-images/adapter/1.webp",
       "images/Accessories-images/adapter/2.webp",
@@ -540,7 +540,7 @@ if (!window.products) window.products = {
     id: "type-c-cable",
     brand: "Apple",
     name: "Apple Type C to C Cable",
-    image: "images/moreproduct_cable_C.jpeg",
+    image: "images/c-to-c-cable.jpg",
     images: [
       "images/Accessories-images/C to C cable/1.webp",
       "images/Accessories-images/C to C cable/2.webp",
@@ -555,7 +555,7 @@ if (!window.products) window.products = {
     id: "type-c-lightning-cable",
     brand: "Apple",
     name: "Apple Type C to Lightning Cable",
-    image: "images/moreproduct_cable.jpg",
+    image: "images/c-to-lightning-cable.jpg",
     images: [
       "images/Accessories-images/C to lightining Cable/1.webp",
       "images/Accessories-images/C to lightining Cable/2.webp",
@@ -570,7 +570,7 @@ if (!window.products) window.products = {
     id: "magsafe",
     brand: "Apple",
     name: "Apple MagSafe Battery Pack 5000 Mah",
-    image: "images/magsafe.jpeg",
+    image: "images/apple-magsafe.jpg",
     images: [
       "images/Accessories-images/Magsafe/1.webp",
       "images/Accessories-images/Magsafe/2.webp",

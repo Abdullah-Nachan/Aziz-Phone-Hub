@@ -107,6 +107,11 @@
     <section class="wishlist-section py-5">
         <div class="container">
             <h2 class="section-title mb-4">My Wishlist</h2>
+            <!-- Login Prompt for unauthenticated users -->
+            <div id="login-prompt" class="text-center py-5 d-none">
+                <h3>Please sign in to view your wishlist.</h3>
+                <a href="auth.html" class="btn btn-primary">Login</a>
+            </div>
             
             <!-- Empty Wishlist Message (shown when wishlist is empty) -->
             <div id="empty-wishlist" class="text-center py-5 d-none">
@@ -179,13 +184,53 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="profile.js"></script>
     
-    <!-- App Scripts -->
+    <!-- Load static products first -->
     <script src="static-products.js"></script>
-    <script src="search.js"></script>
     <script src="firestore-wishlist.js"></script>
+    <script src="js/cart-handler.js"></script>
+    <script src="firestore-cart.js"></script>
     <script src="cart-wishlist-auth.js"></script>
+    
+    <!-- Load wishlist functionality after products are loaded -->
+    <script>
+        // Wait for both Firebase auth and products to be ready before loading wishlist scripts
+        function waitForAuthAndProducts(callback) {
+            function checkReady() {
+                // Check if Firebase and products are ready
+                const user = (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser);
+                const productsReady = window.products && Object.keys(window.products).length > 0;
+                if (user && productsReady) {
+                    callback();
+                } else {
+                    setTimeout(checkReady, 100);
+                }
+            }
+            checkReady();
+        }
+
+        // Helper function to load scripts
+        function loadScript(src) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.async = false; // Load synchronously to maintain order
+            document.body.appendChild(script);
+        }
+
+        // Start initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, waiting for auth and products...');
+            waitForAuthAndProducts(() => {
+                console.log('Auth and products ready, loading wishlist scripts...');
+                loadScript('firestore-wishlist.js');
+                loadScript('cart-wishlist-auth.js');
+            });
+        });
+    </script>
+    
+    <!-- Other scripts that might be needed -->
+    <script src="search.js"></script>
+    <script src="profile.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

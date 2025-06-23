@@ -18,13 +18,13 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
         <div class="container position-relative">
             <!-- Hamburger (left on mobile) -->
-            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <!-- Logo (center on mobile, left on desktop) -->
             <a class="navbar-brand mx-auto mx-lg-0 order-2" href="index.html">
                 <div class="logo-container">
-                    <img src="./images/AzizPhoneHub.webp" alt="Aziz Phone Hub">
+                    <img src="./images/aziz logo.webp" alt="Aziz Phone Hub">
                 </div>
             </a>
             <!-- Cart Icon (right on mobile) -->
@@ -68,36 +68,6 @@
             </div>
         </div>
     </nav>
-    <!-- Mobile Slide-out Menu -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="shop.html">Shop</a></li>
-                <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#mobileCategories">Categories <i class="fas fa-chevron-down float-end"></i></a>
-                    <div class="collapse" id="mobileCategories">
-                        <ul class="nav flex-column ms-3">
-                            <li class="nav-item"><a class="nav-link" href="category.html?cat=airpods">AirPods</a></li>
-                            <li class="nav-item"><a class="nav-link" href="category.html?cat=smartwatches">Smart Watches</a></li>
-                            <li class="nav-item"><a class="nav-link" href="category.html?cat=headphones">Headphones</a></li>
-                            <li class="nav-item"><a class="nav-link" href="category.html?cat=accessories">Accessories</a></li>
-                            <li class="nav-item"><a class="nav-link" href="category.html?cat=shoes">Shoes</a></li>
-                            <li class="nav-item"><a class="nav-link" href="category.html?cat=crocs">Crocs</a></li>
-                            <li class="nav-item"><a class="nav-link" href="category.html?cat=casualwatch">Casual Watch</a></li>
-                            <li class="nav-item"><a class="nav-link" href="category.html?cat=combo-offers">Combo Offers</a></li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item"><hr class="dropdown-divider"></li>
-                <li class="nav-item"><a class="nav-link" href="auth.html" id="mobileLoginSignupBtn">Login</a></li>
-                <li class="nav-item"><a class="nav-link text-danger" href="#" id="mobileLogoutBtn">Logout</a></li>
-            </ul>
-        </div>
-    </div>
 
     <!-- Filter, Search, and Sort Row -->
     <div class="container mt-2">
@@ -128,44 +98,65 @@
         </div>
     </section>
 
-    <!-- Fixed Bottom Sort and Filter Bar -->
-    <div class="fixed-bottom-sort-filter d-lg-none">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-6">
-                    <button class="btn btn-outline-primary w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterPanel">
-                        <i class="fas fa-filter"></i> Filter
-                    </button>
+    <!-- Filter and Sort Footer -->
+    <div class="filter-sort-footer fixed-bottom bg-white shadow-lg py-2 d-flex justify-content-around">
+        <button class="btn btn-outline-primary" id="filter-btn" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas">
+            <i class="fas fa-filter me-2"></i>Filter
+        </button>
+        <button class="btn btn-outline-primary" id="sort-btn" data-bs-toggle="offcanvas" data-bs-target="#sortOffcanvas">
+            <i class="fas fa-sort me-2"></i>Sort
+        </button>
+    </div>
+
+    <!-- Main Footer -->
+    <footer class="footer bg-dark text-white pt-5 pb-4">
+        <div class="container text-center text-md-start">
+            <div class="row align-items-center">
+                <div class="col-md-7 col-lg-8">
+                    <p class="mb-0">© <span id="copyright-year"></span> Your Company. All rights reserved.</p>
                 </div>
-                <div class="col-6">
-                    <button class="btn btn-outline-primary w-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#sortPanel">
-                        <i class="fas fa-sort"></i> Sort
-                    </button>
+                <div class="col-md-5 col-lg-4">
+                    <div class="text-center text-md-end">
+                        <ul class="list-unstyled list-inline mb-0">
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-white" style="font-size: 23px;"><i class="fab fa-facebook"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-white" style="font-size: 23px;"><i class="fab fa-twitter"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-white" style="font-size: 23px;"><i class="fab fa-google-plus"></i></a>
+                            </li>
+                            <li class="list-inline-item">
+                                <a href="#" class="btn-floating btn-sm text-white" style="font-size: 23px;"><i class="fab fa-linkedin-in"></i></a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </footer>
 
     <!-- Sort Panel (Offcanvas) -->
-    <div class="offcanvas offcanvas-bottom" tabindex="-1" id="sortPanel" aria-labelledby="sortPanelLabel">
+    <div class="offcanvas offcanvas-bottom" tabindex="-1" id="sortOffcanvas" aria-labelledby="sortOffcanvasLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="sortPanelLabel">Sort By</h5>
+            <h5 class="offcanvas-title" id="sortOffcanvasLabel">Sort By</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
             <div class="sort-options">
-                <button class="btn btn-outline-primary w-100 mb-2">Popularity</button>
-                <button class="btn btn-outline-primary w-100 mb-2">Price: Low to High</button>
-                <button class="btn btn-outline-primary w-100 mb-2">Price: High to Low</button>
-                <button class="btn btn-outline-primary w-100">Newest First</button>
+                <button class="btn btn-outline-primary w-100 mb-2" data-sort="popularity">Popularity</button>
+                <button class="btn btn-outline-primary w-100 mb-2" data-sort="price-low">Price: Low to High</button>
+                <button class="btn btn-outline-primary w-100 mb-2" data-sort="price-high">Price: High to Low</button>
+                <button class="btn btn-outline-primary w-100" data-sort="newest">Newest First</button>
             </div>
         </div>
     </div>
 
     <!-- Filter Panel (Offcanvas) -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="filterPanel" aria-labelledby="filterPanelLabel">
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="filterOffcanvas" aria-labelledby="filterOffcanvasLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="filterPanelLabel">Filter Products</h5>
+            <h5 class="offcanvas-title" id="filterOffcanvasLabel">Filter Products</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -259,8 +250,9 @@
     <!-- App Scripts -->
     <script src="static-products.js"></script>
     <script src="search.js"></script>
-    <script src="cart.js"></script>
     <script src="cart-wishlist-auth.js"></script>
+    <script src="js/cart-handler.js"></script>
+    <script src="firestore-cart.js"></script>
     <script src="shop-script.js"></script>
 </body>
 </html>

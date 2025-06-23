@@ -1,0 +1,144 @@
+/* Watches Tabs Section Styling */
+#watchesTabsSection {
+  background: #faf9f7;
+  padding: 40px 0;
+  margin: 0;
+  width: 100%;
+  display: block;
+}
+
+.watches-tabs-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  overflow-x: auto;
+  padding: 0 16px 12px 16px;
+  border-bottom: 2px solid #e0dcd7;
+  margin: 0 auto 18px;
+  max-width: 100%;
+  width: 100%;
+  scrollbar-width: thin;
+  scroll-padding: 0 16px;
+}
+
+.watches-tab-btn {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #b9a387;
+  cursor: pointer;
+  padding: 0 8px 8px 8px;
+  transition: color 0.2s, border-bottom 0.2s;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.watches-tab-btn.active {
+  color: #222;
+  border-bottom: 3px solid #b9a387;
+}
+
+.watches-products-cards-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 0 8px;
+  margin: 12px 0;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.watches-product-card {
+  background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.watches-product-card:hover {
+  transform: translateY(-2px);
+}
+
+.watches-card-img {
+  width: 100%;
+  height: 360px;
+  object-fit: contain;
+  padding: 4px;
+  background: transparent;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.watches-card-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  margin: 12px 0 6px 0;
+  padding: 0 4px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 2.4em;
+  text-align: center;
+  width: 100%;
+}
+
+.watches-card-price {
+  font-size: 0.95rem;
+  color: #000;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+  padding: 0 4px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .watches-tabs-row {
+    gap: 10px;
+    font-size: 0.85rem;
+    padding: 0 16px 8px;
+    justify-content: flex-start;
+  }
+  
+  .watches-tab-btn {
+    font-size: 1rem;
+    padding: 6px 12px;
+  }
+  
+  .watches-products-cards-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 0 8px;
+  }
+  
+  .watches-card-img {
+    height: 120px;
+    padding: 10px;
+  }
+  
+  .watches-card-title {
+    font-size: 0.8rem;
+    margin: 8px 0 4px 0;
+  }
+  
+  .watches-card-price {
+    font-size: 0.85rem;
+    margin: 0 0 4px 0;
+  }
+}

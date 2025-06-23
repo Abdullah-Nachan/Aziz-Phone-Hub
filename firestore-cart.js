@@ -29,94 +29,119 @@ function getUserRef() {
 
 // Load cart items from Firestore
 async function loadCartItems() {
-    const userRef = getUserRef();
+    const user = firebase.auth().currentUser;
+    // Get all necessary elements
+    const loginPrompt = document.getElementById('login-prompt');
     const emptyCartDiv = document.getElementById('empty-cart');
     const cartContentDiv = document.getElementById('cart-content');
     const cartItemsDiv = document.getElementById('cart-items');
+    const priceBreakdown = document.getElementById('cart-item-prices');
+    const subtotalElement = document.getElementById('cart-subtotal');
+    const taxElement = document.getElementById('cart-tax');
+    const totalElement = document.getElementById('cart-total');
+
+    // This function can be called from any page. Some pages (like index.html) will not have the cart elements.
+    // We should only attempt to RENDER the cart if the main container exists.
+    const isCartPage = cartItemsDiv && priceBreakdown && subtotalElement;
+
+    // Prompt login if not signed in (only on cart page)
+    if (!user) {
+        if (isCartPage) {
+            if (loginPrompt) loginPrompt.classList.remove('d-none');
+            if (emptyCartDiv) emptyCartDiv.classList.add('d-none');
+            if (cartContentDiv) cartContentDiv.classList.add('d-none');
+        }
+        return; // Exit if not logged in
+    } else {
+        if (isCartPage && loginPrompt) loginPrompt.classList.add('d-none');
+    }
+    
+    const userRef = getUserRef();
     
     try {
         const userDoc = await userRef.get();
+        const cart = (userDoc.exists && userDoc.data().cart) || [];
+
+        // Always update the cart count badge on all pages
+        updateCartCountBadge(cart);
+
+        // If we are not on the cart page, we don't need to do anything else.
+        if (!isCartPage) {
+            return;
+        }
         
-        if (!userDoc.exists || !userDoc.data().cart || userDoc.data().cart.length === 0) {
+        if (cart.length === 0) {
             // Show empty cart message
             if (emptyCartDiv) emptyCartDiv.classList.remove('d-none');
             if (cartContentDiv) cartContentDiv.classList.add('d-none');
             return;
         }
         
-        const cart = userDoc.data().cart;
-        
         // Show cart content
         if (emptyCartDiv) emptyCartDiv.classList.add('d-none');
         if (cartContentDiv) cartContentDiv.classList.remove('d-none');
         
         // Clear existing items
-        if (cartItemsDiv) cartItemsDiv.innerHTML = '';
+        cartItemsDiv.innerHTML = '';
+        priceBreakdown.innerHTML = ''; // Clear existing breakdown
         
         // Calculate totals and update price breakdown
         let subtotal = 0;
-        const priceBreakdown = document.getElementById('cart-item-prices');
-        priceBreakdown.innerHTML = ''; // Clear existing breakdown
         
         // Add each item to the cart and price breakdown
         cart.forEach(item => {
-            const itemTotal = item.price * item.quantity;
+            const itemPrice = parseFloat(item.price) || 0;
+            const itemQuantity = parseInt(item.quantity) || 0;
+            const itemTotal = itemPrice * itemQuantity;
             subtotal += itemTotal;
             
             // Add to price breakdown
             const itemRow = document.createElement('div');
             itemRow.className = 'd-flex justify-content-between mb-1';
             itemRow.innerHTML = `
-                <span>${item.name} (${item.quantity} × ₹${item.price})</span>
-                <span>₹${itemTotal}</span>
+                <span>${item.name} (${itemQuantity} × ₹${itemPrice})</span>
+                <span>₹${itemTotal.toFixed(2)}</span>
             `;
             priceBreakdown.appendChild(itemRow);
             
-            if (cartItemsDiv) {
-                cartItemsDiv.innerHTML += `
-                    <div class="cart-item mb-3" data-product-id="${item.id}">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row align-items-center">
-                                    <div class="col-3 col-md-2">
-                                        <img src="${item.image}" class="img-fluid rounded" alt="${item.name}">
+            cartItemsDiv.innerHTML += `
+                <div class="cart-item mb-3" data-product-id="${item.id}">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-3 col-md-2">
+                                    <img src="${item.image}" class="img-fluid rounded" alt="${item.name}">
+                                </div>
+                                <div class="col-9 col-md-4">
+                                    <h5 class="card-title mb-1">${item.name}</h5>
+                                    <p class="text-muted mb-0">₹${itemPrice}</p>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary" type="button" onclick="updateCartItemQuantity('${item.id}', -1)">-</button>
+                                        <input type="text" class="form-control text-center" value="${itemQuantity}" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" onclick="updateCartItemQuantity('${item.id}', 1)">+</button>
                                     </div>
-                                    <div class="col-9 col-md-4">
-                                        <h5 class="card-title mb-1">${item.name}</h5>
-                                        <p class="text-muted mb-0">₹${item.price}</p>
-                                    </div>
-                                    <div class="col-6 col-md-3">
-                                        <div class="input-group">
-                                            <button class="btn btn-outline-secondary" type="button" onclick="updateCartItemQuantity('${item.id}', -1)">-</button>
-                                            <input type="text" class="form-control text-center" value="${item.quantity}" readonly>
-                                            <button class="btn btn-outline-secondary" type="button" onclick="updateCartItemQuantity('${item.id}', 1)">+</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-md-2 text-end">
-                                        <p class="mb-0">₹${itemTotal}</p>
-                                        <button class="btn btn-link text-danger p-0 remove-from-cart" data-product-id="${item.id}">
-                                            <i class="fas fa-trash"></i> Remove
-                                        </button>
-                                    </div>
+                                </div>
+                                <div class="col-6 col-md-2 text-end">
+                                    <p class="mb-0">₹${itemTotal.toFixed(2)}</p>
+                                    <button class="btn btn-link text-danger p-0 remove-from-cart" data-product-id="${item.id}">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                `;
-            }
+                </div>
+            `;
         });
         
         // Update price summary
-        const tax = subtotal * 0.1; // 10% tax
-        const total = subtotal + tax;
-        
-        const subtotalElement = document.getElementById('cart-subtotal');
-        const taxElement = document.getElementById('cart-tax');
-        const totalElement = document.getElementById('cart-total');
-        
-        if (subtotalElement) subtotalElement.textContent = `₹${subtotal}`;
-        if (taxElement) taxElement.textContent = `₹${tax}`;
-        if (totalElement) totalElement.textContent = `₹${total}`;
+        const tax = 0; // No tax
+        const total = subtotal; // No extra charges
+        if (subtotalElement) subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+        if (taxElement) taxElement.textContent = `₹${tax.toFixed(2)}`;
+        if (totalElement) totalElement.textContent = `₹${total.toFixed(2)}`;
         
         // Add event listeners to the new remove buttons
         document.querySelectorAll('.remove-from-cart').forEach(button => {
@@ -129,17 +154,14 @@ async function loadCartItems() {
         
     } catch (error) {
         console.error('Error loading cart:', error);
-        // Only show the error modal if NOT on the homepage
-        if (!window.location.pathname.endsWith('index.html') && !window.location.pathname.endsWith('/index.html')) {
+        // Only show the error modal if on the cart page
+        if (isCartPage) {
             Swal.fire({
                 title: 'Error',
                 text: 'There was a problem loading your cart.',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
-        } else {
-            // On homepage, just log the error silently
-            console.warn('Cart loading error suppressed on homepage:', error);
         }
     }
 }
@@ -173,7 +195,7 @@ async function updateCartItemQuantity(productId, change) {
             loadCartItems();
             
             // Update cart count badge
-            updateCartCountBadge(cart.length);
+            updateCartCountBadge(cart);
         }
     } catch (error) {
         console.error('Error updating cart:', error);
@@ -213,7 +235,7 @@ async function removeFromCart(productId) {
 
             const updatedDoc = await userRef.get();
             if (updatedDoc.exists) {
-                updateCartCountBadge(cart.length);
+                updateCartCountBadge(cart);
                 loadCartItems();
             }
 
@@ -295,16 +317,14 @@ function showErrorMessage(message) {
 }
 
 // Update cart count badge
-function updateCartCountBadge(count) {
-    const desktopBadge = document.getElementById('desktop-nav-cart-count');
-    const mobileBadge = document.getElementById('mobile-nav-cart-count');
-    const footerBadge = document.getElementById('mobile-cart-count');
-    const mobileFooterBadge = document.getElementById('mobile-footer-cart-count');
+function updateCartCountBadge(cartItems) {
+    const count = cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
+    const badges = document.querySelectorAll('.cart-count-badge');
     
-    if (desktopBadge) desktopBadge.textContent = count;
-    if (mobileBadge) mobileBadge.textContent = count;
-    if (footerBadge) footerBadge.textContent = count;
-    if (mobileFooterBadge) mobileFooterBadge.textContent = count;
+    badges.forEach(badge => {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+    });
 }
 
 // Handle checkout
@@ -342,3 +362,66 @@ async function handleCheckout() {
         showErrorMessage("There was a problem processing your checkout. Please try again later.");
     }
 }
+
+// Global function to add items to cart using Firestore
+window.addToCartFirestore = async function(product, quantity = 1) {
+    console.log('addToCartFirestore called with product:', product);
+    if (!product || !product.id) {
+        console.error('Invalid product provided to addToCartFirestore');
+        Swal.fire({ title: 'Error', text: 'Cannot add invalid product to cart.', icon: 'error' });
+        return;
+    }
+
+    // Always store price as a number
+    let priceNum = product.price;
+    if (typeof priceNum === 'string') {
+        priceNum = parseFloat(priceNum.replace(/[^0-9.]/g, ''));
+    }
+    if (isNaN(priceNum)) priceNum = 0;
+
+    try {
+        const user = firebase.auth().currentUser;
+        if (!user) {
+            Swal.fire({ 
+                title: 'Sign In Required', 
+                text: 'Please sign in to add items to your cart.', 
+                icon: 'info', 
+                confirmButtonText: 'Sign In' 
+            }).then((result) => {
+                if(result.isConfirmed) {
+                    window.location.href = 'auth.html';
+                }
+            });
+            return;
+        }
+
+        const userRef = firebase.firestore().collection('users').doc(user.uid);
+        const userDoc = await userRef.get();
+        
+        if (!userDoc.exists) {
+             await userRef.set({ cart: [] }, { merge: true });
+        }
+
+        const cartItems = (userDoc.exists && userDoc.data().cart) ? userDoc.data().cart : [];
+        const existingCartItemIndex = cartItems.findIndex(item => item.id === product.id);
+
+        if (existingCartItemIndex > -1) {
+            cartItems[existingCartItemIndex].quantity += quantity;
+        } else {
+            cartItems.push({
+                id: product.id,
+                image: product.image,
+                name: product.name,
+                price: priceNum,
+                quantity: quantity
+            });
+        }
+
+        await userRef.update({ cart: cartItems });
+        updateCartCountBadge(cartItems);
+        Swal.fire({ title: 'Added to Cart!', text: `${product.name} has been added to your cart.`, icon: 'success', timer: 2000, showConfirmButton: false });
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        Swal.fire({ title: 'Error', text: 'There was a problem adding the item to your cart.', icon: 'error' });
+    }
+};

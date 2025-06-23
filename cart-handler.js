@@ -1,0 +1,1 @@
+// Remove all guest logic. Only handle authenticated users. If not signed in, show sign-in popup. 

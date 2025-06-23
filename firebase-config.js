@@ -96,16 +96,23 @@ try {
     window.ordersRef = db.collection('orders');
     window.usersRef = db.collection('users');
     
-    // Set flag to indicate Firebase is initialized
-    window.firebaseInitialized = true;
-    console.log('Firebase services exported to window');
+    // Log initialization status
+    console.log('Firebase configuration loaded successfully');
     
-    // Dispatch event when Firebase is ready
-    document.dispatchEvent(new Event('firebase-ready'));
+    // Set a flag to indicate Firebase is ready
+    window.firebaseInitialized = true;
+    
+    // Dispatch custom event for other scripts to listen to
+    const event = new Event('firebaseInitialized');
+    document.dispatchEvent(event);
+    
+    console.log('firebaseInitialized event dispatched');
+    
 } catch (error) {
-    console.error('Error initializing Firebase:', error);
-    // Dispatch error event
-    document.dispatchEvent(new CustomEvent('firebase-error', { detail: error }));
+    console.error('Firebase initialization error:', error);
+    // Still dispatch the event but with an error flag
+    const errorEvent = new CustomEvent('firebaseInitialized', { detail: { error: true, message: error.message } });
+    document.dispatchEvent(errorEvent);
 }
 
 /**

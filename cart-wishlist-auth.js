@@ -104,7 +104,7 @@ async function handleCartAction(productId) {
         });
         
         // Update cart count badge
-        updateCartCountBadge(cart.length);
+        updateCartCountBadge(cart);
         
     } catch (error) {
         console.error('Error adding to cart:', error);
@@ -174,17 +174,14 @@ function showEmptyStateMessage(message) {
 // Load cart and wishlist counts on page load
 async function loadUserCartWishlistCounts() {
     const userRef = getUserRef();
-    
     try {
         const userDoc = await userRef.get();
-        
         if (userDoc.exists) {
             const userData = userDoc.data();
-            const cartCount = userData.cart ? userData.cart.length : 0;
-            const wishlistCount = userData.wishlist ? userData.wishlist.length : 0;
-            
-            updateCartCountBadge(cartCount);
-            updateWishlistCountBadge(wishlistCount);
+            const cart = userData.cart || [];
+            const wishlist = userData.wishlist || [];
+            updateCartCountBadge(cart);
+            updateWishlistCountBadge(wishlist.length);
         } else {
             // Reset counts if no data exists
             updateCartCountBadge(0);
@@ -199,12 +196,18 @@ async function loadUserCartWishlistCounts() {
 }
 
 // Update cart count badge
-function updateCartCountBadge(count) {
+function updateCartCountBadge(cart) {
+    // cart can be an array or a number
+    let count = 0;
+    if (Array.isArray(cart)) {
+        count = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    } else if (typeof cart === 'number') {
+        count = cart;
+    }
     const desktopBadge = document.getElementById('desktop-nav-cart-count');
     const mobileBadge = document.getElementById('mobile-nav-cart-count');
     const footerBadge = document.getElementById('mobile-cart-count');
     const mobileFooterBadge = document.getElementById('mobile-footer-cart-count');
-    
     if (desktopBadge) desktopBadge.textContent = count;
     if (mobileBadge) mobileBadge.textContent = count;
     if (footerBadge) footerBadge.textContent = count;

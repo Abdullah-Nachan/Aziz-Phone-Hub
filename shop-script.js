@@ -63,14 +63,13 @@ async function fetchAndDisplayProducts(category = null, minPrice = null, maxPric
                 return priceB - priceA;
             });
         } else if (sort === 'newest') {
-            // If you have a 'createdAt' or similar property, sort by that; otherwise, leave as is or shuffle
-            filteredProducts = shuffleArray(filteredProducts);
-        } else if (sort === 'popularity') {
-            // If you have a 'popularity' property, sort by that; otherwise, shuffle
-            filteredProducts = shuffleArray(filteredProducts);
+            // If you have a 'createdAt' property, sort by that; otherwise, leave as is
+            // filteredProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            // If not, just leave as is
+        } else if (sort === 'popularity' || sort === 'default' || !sort) {
+            // Do nothing, show original order
         } else {
-            // Default: shuffle
-            filteredProducts = shuffleArray(filteredProducts);
+            // If some unknown sort, just leave as is
         }
 
         // Clear loading state
@@ -426,7 +425,6 @@ function updateProductCards() {
     });
     */
 }
-
 // Initialize filters
 function initializeFilters() {
     const categorySelect = document.getElementById('categoryFilter');
@@ -436,7 +434,7 @@ function initializeFilters() {
     const resetFilterBtn = document.getElementById('resetFiltersBtn'); // Corrected selector
     const sortSelectDesktop = document.getElementById('sortSelectDesktop');
     const sortSelectMobile = document.getElementById('sortSelectMobile');
-    const mobileSortButtons = document.querySelectorAll('#sortPanel .sort-options button');
+    const mobileSortButtons = document.querySelectorAll('#sortOffcanvas .sort-options button');
 
     // State variables to hold current filter/sort values
     let currentCategory = '';
@@ -524,21 +522,15 @@ function initializeFilters() {
     // Event listeners for mobile sort buttons
     mobileSortButtons.forEach(button => {
         button.addEventListener('click', function() {
-            // Determine sort value from button text
-            let sortValue = 'popularity'; // Default
-            const buttonText = this.textContent.toLowerCase();
-            if (buttonText.includes('price: low')) sortValue = 'price-low';
-            else if (buttonText.includes('price: high')) sortValue = 'price-high';
-            else if (buttonText.includes('newest first')) sortValue = 'newest';
-            else if (buttonText.includes('popularity')) sortValue = 'popularity';
-
+            // Use data-sort attribute for sort value
+            let sortValue = this.getAttribute('data-sort') || 'popularity';
             currentSort = sortValue;
 
             // Update active state for mobile buttons
             mobileSortButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
 
-             // Sync desktop and mobile select values
+            // Sync desktop and mobile select values if they exist
             if (sortSelectDesktop) sortSelectDesktop.value = currentSort;
             if (sortSelectMobile) sortSelectMobile.value = currentSort;
 
@@ -576,3 +568,4 @@ function initializeFilters() {
         });
     }
 }
+

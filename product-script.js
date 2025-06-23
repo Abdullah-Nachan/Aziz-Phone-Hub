@@ -71,6 +71,12 @@ function populateProductDetails(product) {
     // Set product name
     document.getElementById('product-name').textContent = product.name;
     
+    // Set product ID on Add to Cart button
+    var addToCartBtn = document.getElementById('add-to-cart-bottom');
+    if (addToCartBtn) {
+        addToCartBtn.setAttribute('data-product-id', product.id);
+    }
+    
     // Set product price information
     document.getElementById('product-current-price').textContent = product.price;
     
@@ -585,3 +591,15 @@ function initializeSwiper() {
         });
     }
 }
+
+// --- GLOBAL STUBS FOR CART HANDLER ---
+window.addToCartFirestore = async function(product, quantity) {
+    // For now, just log and resolve
+    console.log('addToCartFirestore called with:', product, quantity);
+    // Simulate async Firestore write
+    return Promise.resolve();
+};
+
+window.showError = function(title, message) {
+    alert(title + ': ' + message);
+};
