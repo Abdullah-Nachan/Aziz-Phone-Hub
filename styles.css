@@ -2273,6 +2273,8 @@ h2.section-title.text-center.mb-4:after {
   right: 0;
   bottom: 0;
   width: 100vw;
+  height: 60px;
+  padding: 0px;
   background: #626262;
   z-index: 1050;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.07);
@@ -2281,7 +2283,6 @@ h2.section-title.text-center.mb-4:after {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0;
   gap: 0.5rem;
 }
 .fixed-bottom-footer a, .fixed-bottom-footer span, .fixed-bottom-footer i {
