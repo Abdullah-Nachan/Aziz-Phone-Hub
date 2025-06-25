@@ -18,8 +18,13 @@
   margin: 0 auto 18px;
   max-width: 100%;
   width: 100%;
-  scrollbar-width: thin;
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+  -ms-overflow-style: none;  /* Hide scrollbar in IE and Edge */
   scroll-padding: 0 16px;
+}
+
+.watches-tabs-row::-webkit-scrollbar {
+  display: none; /* Hide scrollbar in Chrome, Safari, Opera */
 }
 
 .watches-tab-btn {
@@ -73,11 +78,11 @@
 
 .watches-card-img {
   width: 100%;
-  height: 360px;
+  height: 100%;
   object-fit: contain;
-  padding: 4px;
+  padding: 0px;
   background: transparent;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-radius: 10px;
 }
 
 .watches-card-title {
@@ -128,8 +133,9 @@
   }
   
   .watches-card-img {
-    height: 120px;
-    padding: 10px;
+    height: 100%;
+    padding: 0px;
+    border-radius: 15px;
   }
   
   .watches-card-title {
