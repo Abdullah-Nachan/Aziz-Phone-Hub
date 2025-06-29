@@ -15,20 +15,23 @@ const cartModule = (function() {
     
     // Public API
     return {
-        // Add item to cart
-        addItem: function(productId, quantity = 1) {
-            console.log('Adding item to cart:', productId);
+        // Add item to cart with full product details
+        addItem: function(product, quantity = 1) {
+            console.log('Adding item to cart:', product);
             
             // Find if item already exists in cart
-            const existingItem = items.find(item => item.id === productId);
+            const existingItem = items.find(item => item.id === product.id);
             
             if (existingItem) {
                 // Update quantity if item exists
                 existingItem.quantity += quantity;
             } else {
-                // Add new item
+                // Add new item with full product details
                 items.push({
-                    id: productId,
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
                     quantity: quantity,
                     addedAt: new Date().toISOString()
                 });
@@ -50,6 +53,11 @@ const cartModule = (function() {
             return items.reduce((total, item) => total + item.quantity, 0);
         },
         
+        // Get cart total
+        getTotal: function() {
+            return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+        },
+        
         // Clear cart
         clear: function() {
             items = [];
@@ -58,7 +66,7 @@ const cartModule = (function() {
         
         // Initialize cart
         init: function() {
-            console.log('Cart module initialized');
+            console.log('Cart module initialized with items:', items);
             return this;
         }
     };

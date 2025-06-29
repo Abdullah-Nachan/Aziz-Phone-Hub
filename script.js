@@ -32,7 +32,11 @@ function createProductCard(product) {
                     </h3>
                     <p class="price">${formattedPrice}</p>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-primary add-to-cart w-100" data-product-id="${product.id}">
+                        <button class="btn btn-primary add-to-cart w-100" 
+                            data-id="${product.id}"
+                            data-name="${product.name}"
+                            data-image="${product.image}"
+                            data-price="${price}">
                             <i class="fas fa-shopping-cart"></i> Add to Cart
                         </button>
                     </div>

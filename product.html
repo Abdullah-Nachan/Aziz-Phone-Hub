@@ -13,7 +13,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/product-detail.css">
-    <!-- Font Awesome -->
+    <!-- Font Awesome CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -178,6 +178,50 @@
                     </div>
                 </div>
             </div>
+            <div id="order-timeline-section" class="my-4"></div>
+
+            <!-- Product Info Accordion Section -->
+            <div class="accordion product-info-accordion my-4" id="productInfoAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingQuality">
+                        <button class="accordion-button d-flex align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuality" aria-expanded="true" aria-controls="collapseQuality">
+                            <i class="fas fa-check-square me-2"></i>
+                            <span>Quality assurance</span>
+                        </button>
+                    </h2>
+                    <div id="collapseQuality" class="accordion-collapse collapse show" aria-labelledby="headingQuality" data-bs-parent="#productInfoAccordion">
+                        <div class="accordion-body">
+                            Every order undergoes a rigorous quality and assurance check before being shipped out. We pride ourselves on delivering premium quality accessories that you will absolutely love.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingShipping">
+                        <button class="accordion-button collapsed d-flex align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapseShipping" aria-expanded="false" aria-controls="collapseShipping">
+                            <i class="fas fa-truck me-2"></i>
+                            <span>Shipping & Delivery</span>
+                        </button>
+                    </h2>
+                    <div id="collapseShipping" class="accordion-collapse collapse" aria-labelledby="headingShipping" data-bs-parent="#productInfoAccordion">
+                        <div class="accordion-body">
+                            🚚 Once Order is placed you will receive confirmation message through SMS and Email with the tracking link of your placed Order. <br><br>🚚 All orders are processed and shipped within 24 hours. <br><br>🚚 Delivery within 3-6 days. <br><br>🚚 All orders come with FREE SHIPPING! <br><br>🚚 In case if order is sent and gets delayed due to shipping company, shopunick will get your order delivered asap but no refund shall be processed.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingReplacement">
+                        <button class="accordion-button collapsed d-flex align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapseReplacement" aria-expanded="false" aria-controls="collapseReplacement">
+                            <i class="fas fa-undo-alt me-2"></i>
+                            <span>Replacement policy</span>
+                        </button>
+                    </h2>
+                    <div id="collapseReplacement" class="accordion-collapse collapse" aria-labelledby="headingReplacement" data-bs-parent="#productInfoAccordion">
+                        <div class="accordion-body">
+                            🔴 The video must be unboxing video fully shooted without cut, editing or any transitions. Atleast charge for 10 minutes before complaining about non working condition.<br><br>👆Only this kind of video will be taken into consideration for warranty.<br> <br>🔴 There shouldn't be any scratches or physical damage on the product otherwise it clearly indicates that its damage is due to physical harm.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -261,37 +305,6 @@
                     </div>
                 </div>
                 <div class="col-md-8">
-                    <!-- Review Submission Form -->
-                    <div class="review-form bg-white p-4 rounded shadow-sm mb-4">
-                        <h4 class="mb-3">Write a Review</h4>
-                        <form id="customerReviewForm">
-                            <div class="mb-3">
-                                <label for="reviewerName" class="form-label">Your Name</label>
-                                <input type="text" class="form-control" id="reviewerName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Your Rating</label>
-                                <div id="reviewRating" class="star-rating-input mb-2">
-                                    <i class="far fa-star" data-value="1"></i>
-                                    <i class="far fa-star" data-value="2"></i>
-                                    <i class="far fa-star" data-value="3"></i>
-                                    <i class="far fa-star" data-value="4"></i>
-                                    <i class="far fa-star" data-value="5"></i>
-                                </div>
-                                <input type="hidden" id="reviewerRating" value="0" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="reviewText" class="form-label">Your Review</label>
-                                <textarea class="form-control" id="reviewText" rows="3" required></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="reviewMedia" class="form-label">Upload Photo/Video</label>
-                                <input class="form-control" type="file" id="reviewMedia" accept="image/*,video/*" multiple>
-                                <div id="mediaPreview" class="d-flex flex-wrap mt-2"></div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit Review</button>
-                        </form>
-                    </div>
                     <div class="reviews-list" id="reviewsList">
                         <!-- Reviews will be kept static for now -->
                         <!-- Review 1 -->
@@ -357,6 +370,33 @@
                                 <p>Very satisfied with the purchase. The noise cancellation is impressive and the sound quality is excellent. The only minor issue is that it sometimes takes a few seconds to connect to my phone.</p>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Write a Review Section -->
+                    <div class="write-review-section mt-4">
+                        <h3 class="mb-3">Write a Review</h3>
+                        <form id="write-review-form">
+                            <div class="mb-3">
+                                <label for="reviewer-name" class="form-label">Your Name</label>
+                                <input type="text" class="form-control" id="reviewer-name" placeholder="Enter your name">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Rating</label>
+                                <select class="form-select" id="review-rating" required>
+                                    <option value="">Select rating</option>
+                                    <option value="5">★★★★★ (5)</option>
+                                    <option value="4">★★★★☆ (4)</option>
+                                    <option value="3">★★★☆☆ (3)</option>
+                                    <option value="2">★★☆☆☆ (2)</option>
+                                    <option value="1">★☆☆☆☆ (1)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="review-text" class="form-label">Your Review</label>
+                                <textarea class="form-control" id="review-text" rows="3" required placeholder="Share your experience..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -450,6 +490,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
     
     <!-- Application Scripts -->
+     <script src="script.js"></script>
     <script src="product-script.js"></script>
     <script src="product-detail.js"></script>
     <script src="buy-now.js"></script>
@@ -457,7 +498,9 @@
     <script src="firestore-wishlist.js"></script>
     <script src="js/cart-handler.js"></script>
     <script src="firestore-cart.js"></script>
-    <script src="cart-wishlist-auth.js"></script>
+    <!-- <script src="cart-wishlist-auth.js"></script> -->
     <script src="guest-cart-wishlist.js"></script>
+    <!-- Font Awesome JS for icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </body>
 </html>

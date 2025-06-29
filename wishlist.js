@@ -229,37 +229,32 @@ class Wishlist {
                 if (wishlistBtn) {
                     e.preventDefault();
                     const productId = wishlistBtn.dataset.productId;
-                    let product = productId; // Start with just the ID
-
-                    // Attempt to get the full product object from available global data
-                    if (window.currentProduct && window.currentProduct.id === productId) {
-                        product = window.currentProduct;
-                    } else if (window.filteredProducts) {
-                        const foundProduct = window.filteredProducts.find(p => p.id === productId);
-                        if (foundProduct) product = foundProduct;
-                    } else if (window.products) { // Try static products if other sources fail
-                        const staticProduct = window.products[productId];
-                        if (staticProduct) product = staticProduct;
-                    }
-
-                    if (typeof product === 'string' && window.products && window.products[product]) {
-                        // If still just an ID, try to get the full product object from static data
-                        product = window.products[product];
-                    } else if (typeof product === 'string') {
-                        // If it's still just a string ID and no product object was found,
-                        // we can't add full details. Log an error and prevent adding.
-                        console.error('Failed to get full product details for ID:', productId);
+                    if (!productId) {
+                        console.error('No productId found on wishlist button!', wishlistBtn);
                         Swal.fire({
                             title: 'Error',
-                            text: 'Could not get product details to add to wishlist.',
+                            text: 'Product ID not found.',
                             icon: 'error',
                             timer: 3000,
                             showConfirmButton: false
                         });
-                        return; // Prevent adding if product details can't be found
+                        return;
                     }
-
-                    await this.toggleItem(product);
+                    let product = window.products && window.products[productId];
+                    if (!product) {
+                        console.error('Product not found or invalid:', productId, product);
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Product not found or invalid.',
+                            icon: 'error',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                        return;
+                    }
+                    // Only store {id, productId} in wishlist
+                    const minimalProduct = { id: productId, productId: productId };
+                    await this.toggleItem(minimalProduct);
                     // Update button icon state based on the local 'this.items' cache
                     const icon = wishlistBtn.querySelector('i');
                     if (icon) {
@@ -331,31 +326,41 @@ class Wishlist {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOMContentLoaded fired for wishlist.js');
 
+    function renderForCurrentUser() {
+        if (!firebase.auth().currentUser) {
+            // Guest user: load wishlist from localStorage only
+            const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+            renderGuestWishlist(wishlist);
+        } else {
+            // Authenticated user: use Firestore logic as before
+            wishlistInstance = new Wishlist();
+            wishlistInstance.setupEventListeners();
+            wishlistInstance.init();
+            if (document.getElementById('wishlist-items')) {
+                renderWishlistPage();
+            }
+            window.isInWishlist = (productId) => wishlistInstance.hasItem(productId);
+            window.toggleWishlist = (product) => wishlistInstance.toggleItem(product);
+            window.addToWishlist = (product) => wishlistInstance.addItem(product);
+            window.removeFromWishlist = (productId) => wishlistInstance.removeItem(productId);
+            window.getWishlistItems = () => wishlistInstance.getWishlistItems();
+        }
+    }
+
     // Wait for window.products and Firebase to be ready
     const checkDependencies = () => {
         if (window.products && Object.keys(window.products).length > 0 && typeof firebase !== 'undefined' && firebase.auth) {
-            console.log('[Wishlist Module] All dependencies ready. Setting up Firebase auth state listener.');
             if (!window.wishlistInitialized) {
                 window.wishlistInitialized = true;
-                
-                // Listen for Firebase Auth state to be ready before initializing wishlistInstance
                 firebase.auth().onAuthStateChanged(function(user) {
-                    console.log('Firebase auth state resolved in DOMContentLoaded:', user ? user.uid : 'Guest');
-                    wishlistInstance = new Wishlist();
-                    wishlistInstance.setupEventListeners(); // Setup listeners once
-                    wishlistInstance.init(); // Call init to fetch data and render
-
-                    // After wishlist is initialized, if on the wishlist page, render it.
-                    if (document.getElementById('wishlist-items')) {
-                        renderWishlistPage();
+                    renderForCurrentUser();
+                });
+                // Listen for localStorage changes (from other tabs/windows)
+                window.addEventListener('storage', function(e) {
+                    if (e.key === 'wishlist' && !firebase.auth().currentUser) {
+                        const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+                        renderGuestWishlist(wishlist);
                     }
-
-                    // Make functions globally available
-                    window.isInWishlist = (productId) => wishlistInstance.hasItem(productId);
-                    window.toggleWishlist = (product) => wishlistInstance.toggleItem(product);
-                    window.addToWishlist = (product) => wishlistInstance.addItem(product);
-                    window.removeFromWishlist = (productId) => wishlistInstance.removeItem(productId);
-                    window.getWishlistItems = () => wishlistInstance.getWishlistItems();
                 });
             }
         } else {
@@ -441,5 +446,79 @@ function createWishlistProductCard(product) {
         renderWishlistPage(); // Re-render after removal
     });
     return col;
+}
+
+function renderGuestWishlist(wishlist) {
+    // Hide login prompt, show wishlist content
+    const loginPrompt = document.getElementById('login-prompt');
+    const wishlistContentDiv = document.getElementById('wishlist-content');
+    const emptyWishlistDiv = document.getElementById('empty-wishlist');
+    
+    if (loginPrompt) loginPrompt.classList.add('d-none');
+    if (wishlistContentDiv) wishlistContentDiv.classList.remove('d-none');
+    if (emptyWishlistDiv) emptyWishlistDiv.classList.toggle('d-none', wishlist.length > 0 ? true : false);
+    
+    // Render wishlist items
+    const wishlistItemsDiv = document.getElementById('wishlist-items');
+    if (wishlistItemsDiv) {
+        wishlistItemsDiv.innerHTML = '';
+        if (wishlist.length === 0) {
+            wishlistItemsDiv.innerHTML = '<div class="text-center">Your wishlist is empty.</div>';
+        } else {
+            wishlist.forEach(item => {
+                // Get product details from window.products if available
+                const product = window.products && window.products[item.id];
+                const productName = product ? product.name : `Product ${item.id}`;
+                const productImage = product ? product.image : 'images/placeholder.svg';
+                const productPrice = product ? product.price : 'N/A';
+                
+                wishlistItemsDiv.innerHTML += `
+                    <div class="col-md-4 col-sm-6 mb-4">
+                        <div class="product-card wishlist-item" data-product-id="${item.id}" style="cursor:pointer;" onclick="window.location.href='product.html?id=${item.id}'">
+                            <div class="product-image position-relative">
+                                <img src="${productImage}" alt="${productName}">
+                                <button class="btn btn-sm remove-from-wishlist position-absolute top-0 end-0 m-2" 
+                                    title="Remove from Wishlist" 
+                                    style="background:rgba(255,255,255,0.8); border-radius:50%;"
+                                    onclick="event.stopPropagation(); removeFromGuestWishlist('${item.id}')">
+                                    <i class="fas fa-heart text-danger"></i>
+                                </button>
+                            </div>
+                            <div class="product-info text-center mt-2">
+                                <h3 class="product-title mb-1" style="font-size:1.1rem; font-weight:500;">
+                                    ${productName}
+                                </h3>
+                                <div class="product-price fw-bold" style="font-size:1.05rem;">${productPrice}</div>
+                                <button class="btn btn-primary add-to-cart w-100 mt-2" 
+                                    data-id="${item.id}"
+                                    data-name="${productName}"
+                                    data-image="${productImage}"
+                                    data-price="${productPrice}"
+                                    onclick="event.stopPropagation();">
+                                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    }
+}
+
+// Guest wishlist functions
+function removeFromGuestWishlist(productId) {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    wishlist = wishlist.filter(item => item.id !== productId);
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    renderGuestWishlist(wishlist);
+    
+    Swal.fire({
+        title: 'Removed from Wishlist',
+        text: 'Item has been removed from your wishlist.',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false
+    });
 }
 

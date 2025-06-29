@@ -7,14 +7,10 @@
 console.log('Script firestore-cart.js loaded');
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if Firebase is initialized
-    const checkFirebase = setInterval(() => {
-        if (window.firebaseInitialized) {
-            clearInterval(checkFirebase);
-            console.log("Firebase ready for cart operations");
-            loadCartItems();
-        }
-    }, 500);
+    if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+        loadCartItems();
+    }
+    // For guests, do nothing here. guest-cart-wishlist.js will handle rendering.
 });
 
 // Get the appropriate user reference based on authentication status
@@ -23,41 +19,53 @@ function getUserRef() {
     if (user) {
         return firebase.firestore().collection('users').doc(user.uid);
     } else {
-        return firebase.firestore().collection('users').doc('guest');
+        throw new Error('User must be authenticated to access cart');
     }
 }
 
-// Load cart items from Firestore
+// Load cart items from Firestore or localStorage depending on auth state
 async function loadCartItems() {
     const user = firebase.auth().currentUser;
     // Get all necessary elements
-    const loginPrompt = document.getElementById('login-prompt');
-    const emptyCartDiv = document.getElementById('empty-cart');
-    const cartContentDiv = document.getElementById('cart-content');
     const cartItemsDiv = document.getElementById('cart-items');
     const priceBreakdown = document.getElementById('cart-item-prices');
     const subtotalElement = document.getElementById('cart-subtotal');
     const taxElement = document.getElementById('cart-tax');
     const totalElement = document.getElementById('cart-total');
+    const emptyCartDiv = document.getElementById('empty-cart');
+    const cartContentDiv = document.getElementById('cart-content');
 
-    // This function can be called from any page. Some pages (like index.html) will not have the cart elements.
-    // We should only attempt to RENDER the cart if the main container exists.
-    const isCartPage = cartItemsDiv && priceBreakdown && subtotalElement;
-
-    // Prompt login if not signed in (only on cart page)
+    // If not authenticated, render guest cart from localStorage
     if (!user) {
-        if (isCartPage) {
-            if (loginPrompt) loginPrompt.classList.remove('d-none');
-            if (emptyCartDiv) emptyCartDiv.classList.add('d-none');
+        // Hide sign-in required message if any
+        if (emptyCartDiv) emptyCartDiv.classList.add('d-none');
+        if (cartContentDiv) cartContentDiv.classList.remove('d-none');
+        // Render guest cart
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart.length === 0) {
+            if (emptyCartDiv) emptyCartDiv.classList.remove('d-none');
             if (cartContentDiv) cartContentDiv.classList.add('d-none');
+            return;
         }
-        return; // Exit if not logged in
-    } else {
-        if (isCartPage && loginPrompt) loginPrompt.classList.add('d-none');
+        // Use your existing renderGuestCart function if available
+        if (typeof renderGuestCart === 'function') {
+            renderGuestCart(cart);
+        } else if (cartItemsDiv) {
+            // Fallback: simple render
+            cartItemsDiv.innerHTML = cart.map(item => `<div>${item.name || item.id} x${item.quantity || 1}</div>`).join('');
+        }
+        // Update price summary
+        let subtotal = 0;
+        cart.forEach(item => {
+            subtotal += (item.price || 0) * (item.quantity || 1);
+        });
+        if (subtotalElement) subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+        if (taxElement) taxElement.textContent = `₹0.00`;
+        if (totalElement) totalElement.textContent = `₹${subtotal.toFixed(2)}`;
+        return;
     }
     
     const userRef = getUserRef();
-    
     try {
         const userDoc = await userRef.get();
         const cart = (userDoc.exists && userDoc.data().cart) || [];
@@ -66,6 +74,7 @@ async function loadCartItems() {
         updateCartCountBadge(cart);
 
         // If we are not on the cart page, we don't need to do anything else.
+        const isCartPage = cartItemsDiv && priceBreakdown && subtotalElement;
         if (!isCartPage) {
             return;
         }
@@ -151,18 +160,8 @@ async function loadCartItems() {
                 removeFromCart(productId);
             });
         });
-        
     } catch (error) {
         console.error('Error loading cart:', error);
-        // Only show the error modal if on the cart page
-        if (isCartPage) {
-            Swal.fire({
-                title: 'Error',
-                text: 'There was a problem loading your cart.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        }
     }
 }
 
@@ -331,32 +330,34 @@ function updateCartCountBadge(cartItems) {
 async function handleCheckout() {
     try {
         const user = firebase.auth().currentUser;
-        
         if (!user) {
-            showLoginRequiredMessage();
+            // Guest user: proceed to checkout (guest flow)
+            // Optionally, you can check if the guest cart is empty here
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                showErrorMessage("Your cart is empty. Please add items to your cart before checking out.");
+                return;
+            }
+            // Redirect to checkout page for guests
+            window.location.href = 'checkout.html';
             return;
         }
-        
+        // Authenticated user: proceed as before
         // Get cart items
         const userRef = firebase.firestore().collection('users').doc(user.uid);
         const userDoc = await userRef.get();
-        
         if (!userDoc.exists) {
             console.error('User document not found');
             return;
         }
-        
         const userData = userDoc.data();
         const cartItems = userData.cart || [];
-        
         if (cartItems.length === 0) {
             showErrorMessage("Your cart is empty. Please add items to your cart before checking out.");
             return;
         }
-        
         // Redirect to checkout page
         window.location.href = 'checkout.html';
-        
     } catch (error) {
         console.error('Error handling checkout:', error);
         showErrorMessage("There was a problem processing your checkout. Please try again later.");

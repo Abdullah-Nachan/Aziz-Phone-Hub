@@ -9,43 +9,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to initialize featured products
 function initializeFeaturedProducts() {
-    // Use event delegation for featured products container
+    // No Add to Cart logic here. Handled globally in cart-handler.js
     const featuredProductsContainer = document.querySelector('.featured-products-row');
     if (!featuredProductsContainer) {
         console.error('Featured products container (.featured-products-row) not found.');
         return;
     }
-
-    console.log('Attaching click listener to .featured-products-row');
-
-    featuredProductsContainer.addEventListener('click', function(e) {
-        console.log('Click detected inside featured products container.');
-        
-        const button = e.target.closest('.add-to-cart');
-        if (!button) {
-            return;
-        }
-
-        console.log('Add to Cart button was clicked.');
-
-        e.preventDefault();
-        const productId = button.dataset.productId;
-        console.log('Product ID from button:', productId);
-
-        const product = window.products && window.products[productId];
-        console.log('Found product object:', product);
-
-        if (product && typeof window.addToCartFirestore === 'function') {
-            console.log('Calling addToCartFirestore...');
-            window.addToCartFirestore(product, 1);
-        } else {
-            console.error('Could not add to cart. Product:', product, 'addToCartFirestore function exists:', typeof window.addToCartFirestore === 'function');
-            Swal.fire('Error', 'Could not add item to cart. Please try again.', 'error');
-        }
-    });
-
-    // Note: The logic for like and buy now buttons can be updated similarly if needed
-    // For now, only updating Add to Cart as requested.
+    // You can keep other logic here if needed, but do not add any event listeners for .add-to-cart
 }
 
 // Function to initialize Hero Swiper Slider
@@ -101,7 +71,7 @@ function initializeHeroSwiper() {
                 errorDiv.style.display = 'none';
             },
             slideChange: function() {
-                console.log('[Hero Swiper] Slide changed to', this.activeIndex);
+                // console.log('[Hero Swiper] Slide changed to', this.activeIndex);
             }
         }
     });

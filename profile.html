@@ -3,249 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - Aziz Phone Hub</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
+    <title>My Profile - E-commerce</title>
+    <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
-        <div class="container position-relative">
-            <!-- Hamburger (left on mobile) -->
-            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <!-- Logo (center on mobile, left on desktop) -->
-            <a class="navbar-brand mx-auto mx-lg-0 order-2" href="index.html">
-                <div class="logo-container">
-                    <img src="./images/AzizPhoneHub.webp" alt="Aziz Phone Hub">
-                </div>
-            </a>
-            <!-- Cart Icon (right on mobile) -->
-            <div class="d-lg-none order-3 position-absolute end-0 top-50 translate-middle-y" style="right: 1rem;">
-                <a href="cart.html" class="nav-link p-0"><i class="fas fa-shopping-cart fa-lg"></i></a>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">ShopKart</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for products, brands and more">
             </div>
-            <!-- Navbar links and search (desktop) -->
-            <div class="collapse navbar-collapse order-lg-2" id="navbarNav">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="shop.html">Shop</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Electronics</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Fashion</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
-                    </li>
-                </ul>
-                <!-- Desktop Search Box -->
-                <form class="d-none d-lg-flex ms-3 search-box-form" role="search">
-                    <div class="search-box w-100">
-                        <input type="text" placeholder="Search products..." aria-label="Search">
-                        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
-                    </div>
-                </form>
-                <!-- Cart Icon (desktop) -->
-                <a href="cart.html" class="nav-link d-none d-lg-block ms-3"><i class="fas fa-shopping-cart fa-lg"></i></a>
+            <div class="user-actions">
+                <span class="user-name">Abdullah</span>
+                <span>Cart</span>
             </div>
-        </div>
-    </nav>
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="mobileMenuLabel">Menu</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div class="offcanvas-body">
-            <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="shop.html">Shop</a></li>
-                <li class="nav-item"><a class="nav-link" href="wishlist.html">Wishlist</a></li>
-                <li class="nav-item"><a class="nav-link" href="cart.html">Cart</a></li>
-                <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
-                <li class="nav-item"><hr class="dropdown-divider"></li>
-                <li class="nav-item"><a class="nav-link" href="auth.html">Login</a></li>
-                <li class="nav-item"><a class="nav-link text-danger" href="#">Logout</a></li>
-            </ul>
         </div>
     </div>
 
-    <!-- Profile Section -->
-    <section class="profile-section py-5">
-        <div class="container">
-            <div class="row">
-                <!-- Profile Sidebar -->
-                <div class="col-lg-3 mb-4">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="profile-image mb-3">
-                                <img src="./images/AzizPhoneHub.webp" alt="Profile" class="rounded-circle" id="profileImage">
-                            </div>
-                            <h5 class="mb-1" id="profileName"></h5>
-                            <p class="text-muted mb-3" id="profileEmail"></p>
-                            <div class="list-group">
-                                <a href="#profile" class="list-group-item list-group-item-action active">
-                                    <i class="fas fa-user me-2"></i> Profile
-                                </a>
-                                <a href="#orders" class="list-group-item list-group-item-action">
-                                    <i class="fas fa-shopping-bag me-2"></i> Orders
-                                </a>
-                                <a href="#wishlist" class="list-group-item list-group-item-action">
-                                    <i class="fas fa-heart me-2"></i> Wishlist
-                                </a>
-                                <a href="#addresses" class="list-group-item list-group-item-action">
-                                    <i class="fas fa-map-marker-alt me-2"></i> Addresses
-                                </a>
-                                <a href="#settings" class="list-group-item list-group-item-action">
-                                    <i class="fas fa-cog me-2"></i> Settings
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+    <div class="container">
+        <!-- Desktop Sidebar -->
+        <div class="sidebar">
+            <div class="profile-header">
+                <div class="profile-avatar">A</div>
+                <div class="profile-info">
+                    <h3>Abdullah Nachan</h3>
+                    <p>Hello, Abdullah</p>
                 </div>
-
-                <!-- Profile Content -->
-                <div class="col-lg-9">
-                    <!-- Profile Information -->
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title mb-4">Profile Information</h5>
-                            <form>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">First Name</label>
-                                        <input type="text" class="form-control" id="firstName" value="">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Last Name</label>
-                                        <input type="text" class="form-control" id="lastName" value="">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" id="email" value="" readonly>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Phone</label>
-                                    <input type="tel" class="form-control" id="phone" value="">
-                                </div>
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                            </form>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-section">
+                    <div class="menu-item active" data-section="orders">
+                        <div class="menu-item-content">
+                            <div class="menu-icon">📦</div>
+                            <span>MY ORDERS</span>
+                        </div>
+                        <span>›</span>
+                    </div>
+                </li>
+                <li class="menu-section">
+                    <div class="menu-item" data-section="profile">
+                        <div class="menu-item-content">
+                            <div class="menu-icon">👤</div>
+                            <span>ACCOUNT SETTINGS</span>
                         </div>
                     </div>
-
-                    <!-- Recent Orders -->
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title mb-4">Recent Orders</h5>
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Order ID</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Total</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>#12345</td>
-                                            <td>2024-02-20</td>
-                                            <td><span class="badge bg-success">Delivered</span></td>
-                                            <td>₹3,078</td>
-                                            <td><a href="#" class="btn btn-sm btn-outline-primary">View</a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>#12344</td>
-                                            <td>2024-02-15</td>
-                                            <td><span class="badge bg-warning">Processing</span></td>
-                                            <td>₹1,999</td>
-                                            <td><a href="#" class="btn btn-sm btn-outline-primary">View</a></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                    <div class="menu-item sub-item" data-section="profile">
+                        <span>Profile Information</span>
+                    </div>
+                    <div class="menu-item sub-item" data-section="addresses">
+                        <span>Manage Addresses</span>
+                    </div>
+                </li>
+                <li class="menu-section">
+                    <div class="menu-item" data-section="wishlist">
+                        <div class="menu-item-content">
+                            <div class="menu-icon">❤️</div>
+                            <span>WISHLIST</span>
                         </div>
+                    </div>
+                </li>
+                <li class="menu-section">
+                    <div class="menu-item" data-section="cart">
+                        <div class="menu-item-content">
+                            <div class="menu-icon">🛒</div>
+                            <span>CART</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="menu-section">
+                    <div class="menu-item" data-section="help">
+                        <div class="menu-item-content">
+                            <div class="menu-icon">❓</div>
+                            <span>HELP CENTER</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <!-- Sidebar Auth Button -->
+            <div style="padding: 20px; text-align: center;">
+                <button id="sidebar-auth-btn" class="btn btn-primary" style="width: 100%;">Login</button>
+            </div>
+        </div>
+
+        <!-- Desktop Main Content -->
+        <div class="main-content">
+            <button id="mobile-back-btn" class="btn btn-secondary" style="display:none; margin: 10px 0 10px 0;">← Back</button>
+            <!-- Orders Section -->
+            <div class="section active" id="orders">
+                <div class="content-header">
+                    <h2>My Orders</h2>
+                </div>
+                <div class="content-body" id="orders-list-container">
+                    <!-- JS will inject orders here -->
+                    <div id="orders-list"></div>
+                    <div id="orders-empty" style="display:none;">
+                        <p>You have not placed any orders yet.</p>
+                        <button class="btn btn-primary" id="shop-now-btn">Shop Now</button>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Fixed Bottom Navigation Footer -->
-    <footer class="fixed-bottom-footer d-lg-none">
-        <div class="container-fluid h-100">
-            <div class="row h-100">
-                <div class="col text-center">
-                    <a href="index.html" class="nav-link">
-                        <i class="fas fa-home"></i><span>Home</span>
-                    </a>
+            <!-- Profile Section -->
+            <div class="section" id="profile">
+                <div class="content-header">
+                    <h2>Personal Information</h2>
+                    <button class="btn btn-secondary" id="edit-profile-btn">Edit</button>
+                    <button class="btn btn-primary" id="save-profile-btn" style="display:none;">Save</button>
+                    <button class="btn btn-secondary" id="cancel-profile-btn" style="display:none;">Cancel</button>
                 </div>
-                <div class="col text-center">
-                    <a href="shop.html" class="nav-link">
-                        <i class="fas fa-shop"></i><span>Shop</span>
-                    </a>
+                <div class="content-body" id="profile-info-container">
+                    <!-- JS will inject user info fields here -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" id="profile-first-name" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" id="profile-last-name" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="profile-gender" disabled>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="profile-email" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="tel" id="profile-phone" readonly>
+                    </div>
                 </div>
-                <div class="col text-center">
-                    <a href="wishlist.html" class="nav-link">
-                        <i class="fas fa-heart"></i><span>Wishlist</span>
-                        <span class="wishlist-count-badge" id="mobile-wishlist-count">0</span>
-                    </a>
+            </div>
+
+            <!-- Addresses Section -->
+            <div class="section" id="addresses">
+                <div class="content-header">
+                    <h2>Manage Addresses</h2>
+                    <button class="btn btn-primary" id="add-address-btn">Add New Address</button>
                 </div>
-                <div class="col text-center">
-                    <a href="cart.html" class="nav-link">
-                        <i class="fas fa-shopping-cart"></i><span>Cart</span>
-                        <span class="cart-count-badge" id="mobile-cart-count">0</span>
-                    </a>
+                <div class="content-body" id="addresses-list-container">
+                    <!-- JS will inject addresses here -->
+                    <div id="addresses-list"></div>
+                    <div id="addresses-empty" style="display:none;">
+                        <p>No addresses yet.</p>
+                        <button class="btn btn-primary" id="add-address-empty-btn">Add Address</button>
+                    </div>
                 </div>
-                <div class="col text-center dropdown">
-                    <a href="#" class="nav-link active" id="mobileFooterProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user-circle"></i><span>Profile</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileFooterProfileDropdown">
-                        <li><a class="dropdown-item active" href="profile.html"><i class="fas fa-user me-2"></i>My Profile</a></li>
-                        <li><a class="dropdown-item" href="orders.html"><i class="fas fa-box me-2"></i>My Orders</a></li>
-                        <li><a class="dropdown-item" href="wishlist.html"><i class="fas fa-heart me-2"></i>Wishlist <span class="badge bg-danger rounded-pill" id="mobile-footer-wishlist-count">0</span></a></li>
-                        <li><a class="dropdown-item" href="cart.html"><i class="fas fa-shopping-cart me-2"></i>Cart <span class="badge bg-danger rounded-pill" id="mobile-footer-cart-count">0</span></a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="auth.html" id="mobileFooterLoginSignupBtn"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
-                        <li><a class="dropdown-item text-danger" href="#" id="mobileFooterLogoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
+            </div>
+
+            <!-- Wishlist Section -->
+            <div class="section" id="wishlist">
+                <div class="content-header">
+                    <h2>My Wishlist</h2>
+                </div>
+                <div class="content-body">
+                    <button class="btn btn-primary" id="go-to-wishlist-btn">Go to Wishlist</button>
+                </div>
+            </div>
+
+            <!-- Cart Section -->
+            <div class="section" id="cart">
+                <div class="content-header">
+                    <h2>My Cart</h2>
+                </div>
+                <div class="content-body">
+                    <button class="btn btn-primary" id="go-to-cart-btn">Go to Cart</button>
+                </div>
+            </div>
+
+            <!-- Help Center Section -->
+            <div class="section" id="help">
+                <div class="content-header">
+                    <h2>Help Center</h2>
+                </div>
+                <div class="content-body">
+                    <div class="help-options">
+                        <div class="help-option" onclick="sendEmail()">
+                            <div class="help-option-icon">📧</div>
+                            <h4>Email Support</h4>
+                            <p>Send us an email and we'll get back to you</p>
+                        </div>
+                        <div class="help-option" onclick="callSupport()">
+                            <div class="help-option-icon">📞</div>
+                            <h4>Phone Support</h4>
+                            <p>Call us directly for immediate assistance</p>
+                        </div>
+                        <div class="help-option" onclick="openChat()">
+                            <div class="help-option-icon">💬</div>
+                            <h4>Live Chat</h4>
+                            <p>Chat with our support team in real-time</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ask a Question</label>
+                        <textarea placeholder="Type your question here..." rows="4"></textarea>
+                    </div>
+                    <button class="btn btn-primary">Submit Question</button>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-    
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <!-- Mobile View -->
+    <div class="mobile-sections">
+        <div class="mobile-menu">
+            <div class="profile-header">
+                <div class="profile-avatar">A</div>
+                <div class="profile-info">
+                    <h3>Shopping for Abdullah</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="mobile-menu">
+            <div class="mobile-grid">
+                <div class="mobile-option" onclick="showMobileSection('orders')">
+                    <div class="mobile-option-icon">📦</div>
+                    <div>Orders</div>
+                </div>
+                <div class="mobile-option" onclick="showMobileSection('help')">
+                    <div class="mobile-option-icon">❓</div>
+                    <div>Help Center</div>
+                </div>
+                <div class="mobile-option" onclick="showMobileSection('addresses')">
+                    <div class="mobile-option-icon">📍</div>
+                    <div>Address</div>
+                </div>
+                <div class="mobile-option" onclick="showMobileSection('wishlist')">
+                    <div class="mobile-option-icon">❤️</div>
+                    <div>Wishlist</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mobile-personal-info">
+            <h3 style="margin-bottom: 20px;">Personal Information</h3>
+            <div class="info-item">
+                <span class="info-label">First Name</span>
+                <span class="info-value">Abdullah</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Last Name</span>
+                <span class="info-value">Nachan</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Gender</span>
+                <span class="info-value">Male</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email</span>
+                <span class="info-value">nachanabdullah23@gmail.com</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Mobile</span>
+                <span class="info-value">+919721934560</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Place these just before </body> -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
-    <script src="profile.js"></script>
-    
-    <!-- App Scripts -->
-    <script src="products.js"></script>
-    <script src="search.js"></script>
-    <script src="script.js"></script>
-    <script type="module" src="./profile-details.js"></script>
+    <script src="profile-page.js"></script>
 </body>
 </html>

@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize image gallery
     initImageGallery();
+    
+    // Render Order Timeline Section
+    renderOrderTimeline();
 });
 
 // Load product details
@@ -187,6 +190,10 @@ function updateProductButtons(product) {
         if (btn) {
             btn.classList.add('add-to-cart', 'add-to-cart-btn');
             btn.dataset.productId = product.id;
+            btn.dataset.id = product.id;
+            btn.dataset.name = product.name;
+            btn.dataset.image = product.image;
+            btn.dataset.price = typeof product.price === 'string' ? product.price.replace(/[^0-9.]/g, '') : product.price;
             // Add icon if not already present
             if (!btn.querySelector('i.fa-shopping-cart')) {
                 btn.innerHTML = `<i class="fas fa-shopping-cart me-2"></i>${btn.textContent}`;
@@ -200,18 +207,7 @@ function updateProductButtons(product) {
             btn.classList.add('buy-now');
             btn.dataset.productId = product.id;
             btn.onclick = async function() {
-                // User check
                 const user = firebase.auth().currentUser;
-                if (!user) {
-                    if (typeof showLoginRequiredMessage === 'function') {
-                        showLoginRequiredMessage();
-                    } else {
-                        alert('Please log in to continue.');
-                    }
-                    return;
-                }
-                // Cart clear + add only this product
-                const userRef = firebase.firestore().collection('users').doc(user.uid);
                 // Always store price as number
                 let priceNum = product.price;
                 if (typeof priceNum === 'string') {
@@ -225,7 +221,14 @@ function updateProductButtons(product) {
                     price: priceNum,
                     quantity: 1
                 }];
-                await userRef.update({ cart: cartItems });
+                if (user) {
+                    // Authenticated user: update Firestore cart
+                    const userRef = firebase.firestore().collection('users').doc(user.uid);
+                    await userRef.update({ cart: cartItems });
+                } else {
+                    // Guest user: update localStorage cart
+                    localStorage.setItem('cart', JSON.stringify(cartItems));
+                }
                 // Redirect to checkout
                 window.location.href = 'checkout.html';
             };
@@ -347,4 +350,45 @@ function buyNow(productId, quantity = 1) {
     
     // Redirect to checkout
     window.location.href = 'checkout.html';
+}
+
+// Render Order Timeline Section
+function renderOrderTimeline() {
+    const section = document.getElementById('order-timeline-section');
+    if (!section) return;
+    const today = new Date();
+    const orderedDate = formatTimelineDate(today);
+    const orderReadyDate = formatTimelineDate(addDays(today, 1));
+    const deliveryStart = formatTimelineDate(addDays(today, 5));
+    const deliveryEnd = formatTimelineDate(addDays(today, 7));
+    section.innerHTML = `
+      <div class="order-timeline">
+        <div class="order-step active">
+          <div class="circle"><i class="fas fa-shopping-cart"></i></div>
+          <div class="timeline-date">${orderedDate}</div>
+          <div class="timeline-label">Ordered</div>
+        </div>
+        <div class="order-step">
+          <div class="circle"><i class="fas fa-truck"></i></div>
+          <div class="timeline-date">${orderReadyDate}</div>
+          <div class="timeline-label">Order Ready</div>
+        </div>
+        <div class="order-step">
+          <div class="circle"><i class="fas fa-gift"></i></div>
+          <div class="timeline-date">${deliveryStart} - ${deliveryEnd}</div>
+          <div class="timeline-label">Delivered</div>
+        </div>
+      </div>
+    `;
+}
+
+function addDays(date, days) {
+    const d = new Date(date);
+    d.setDate(d.getDate() + days);
+    return d;
+}
+
+function formatTimelineDate(date) {
+    const options = { month: 'short', day: '2-digit' };
+    return date.toLocaleDateString('en-US', options);
 }

@@ -18,27 +18,27 @@ function getUserRef() {
     if (user) {
         return firebase.firestore().collection('users').doc(user.uid);
     } else {
-        return firebase.firestore().collection('users').doc('guest');
+        throw new Error('User must be authenticated to access wishlist');
     }
 }
 
 // Load wishlist items from Firestore
 async function loadWishlistItems() {
     const user = firebase.auth().currentUser;
+    if (!user) {
+        // If not authenticated, do nothing (let guest logic handle guest wishlist)
+        return;
+    }
     const loginPrompt = document.getElementById('login-prompt');
     const emptyWishlistDiv = document.getElementById('empty-wishlist');
     const wishlistContentDiv = document.getElementById('wishlist-content');
     const wishlistItemsDiv = document.getElementById('wishlist-items');
 
     // Prompt login if not signed in
-    if (!user) {
-        if (loginPrompt) loginPrompt.classList.remove('d-none');
-        if (emptyWishlistDiv) emptyWishlistDiv.classList.add('d-none');
-        if (wishlistContentDiv) wishlistContentDiv.classList.add('d-none');
-        return;
-    } else {
-        if (loginPrompt) loginPrompt.classList.add('d-none');
-    }
+    if (loginPrompt) loginPrompt.classList.add('d-none');
+    if (emptyWishlistDiv) emptyWishlistDiv.classList.add('d-none');
+    if (wishlistContentDiv) wishlistContentDiv.classList.add('d-none');
+    
     const userRef = getUserRef();
     
     try {

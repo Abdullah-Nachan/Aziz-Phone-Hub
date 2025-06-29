@@ -101,6 +101,7 @@ try {
     
     // Set a flag to indicate Firebase is ready
     window.firebaseInitialized = true;
+    console.log('[DEBUG] window.firebaseInitialized set to true');
     
     // Dispatch custom event for other scripts to listen to
     const event = new Event('firebaseInitialized');

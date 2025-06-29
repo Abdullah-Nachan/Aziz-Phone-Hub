@@ -3,201 +3,362 @@
  * Handles checkout process and form validation
  */
 
-import { auth, db } from './firebase-utils.js';
-import { doc, collection, addDoc, updateDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js';
+// Global cart data
+let cartData = {
+    items: [],
+    total: 0
+};
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize checkout
-    initializeCheckout();
-    
-    // Setup event listeners
-    setupCheckoutEventListeners();
-
-    // Proceed to Payment button logic
-    const proceedBtn = document.getElementById('proceed-to-payment-btn');
-    const infoFormCard = document.querySelector('.card.mb-4.shadow-sm'); // Info form card
-    const paymentSection = document.getElementById('payment-section');
-
-    // Get references to checkout step elements
-    const stepInfo = document.getElementById('step-info');
-    const connectorPayment = document.getElementById('connector-payment');
-    const stepPayment = document.getElementById('step-payment');
-
-    if (proceedBtn && infoFormCard && paymentSection && stepInfo && connectorPayment && stepPayment) {
-        proceedBtn.addEventListener('click', function() {
-            // Validate info form before proceeding
-            if (!validateCheckoutForm()) return;
-
-            // Hide info form and show payment section
-            infoFormCard.classList.add('d-none');
-            paymentSection.classList.remove('d-none');
-            window.scrollTo({ top: paymentSection.offsetTop - 80, behavior: 'smooth' });
-
-            // Update checkout steps UI
-            stepInfo.classList.remove('active');
-            connectorPayment.classList.add('active');
-            stepPayment.classList.add('active');
-        });
-    }
-
-    // Back to Information button logic
-    const backToInfoBtn = document.getElementById('back-to-info-btn');
-    if (backToInfoBtn && infoFormCard && paymentSection && stepInfo && connectorPayment && stepPayment) {
-        backToInfoBtn.addEventListener('click', function() {
-            // Hide payment section and show info form
-            paymentSection.classList.add('d-none');
-            infoFormCard.classList.remove('d-none');
-            window.scrollTo({ top: infoFormCard.offsetTop - 80, behavior: 'smooth' });
-
-            // Update checkout steps UI
-            stepInfo.classList.add('active');
-            connectorPayment.classList.remove('active');
-            stepPayment.classList.remove('active');
-        });
-    }
-
-    // Payment form submit
-    const paymentForm = document.getElementById('payment-form');
-    if (paymentForm) {
-        paymentForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const selected = paymentForm.querySelector('input[name="payment-method"]:checked');
-            if (!selected) {
-                Swal.fire('Select Payment Method', 'Please select a payment method to continue.', 'warning');
-                return;
-            }
-            // Stub: Show selected payment method (replace with real integration)
-            Swal.fire('Payment Selected', `You selected: <b>${selected.labels[0].innerHTML}</b>`, 'info');
-        });
-    }
+    const checkFirebase = setInterval(() => {
+        if (window.firebaseInitialized) {
+            clearInterval(checkFirebase);
+            console.log('[DEBUG] Firebase initialized:', window.firebaseInitialized);
+            firebase.auth().onAuthStateChanged(async function(user) {
+                console.log('[DEBUG] onAuthStateChanged fired. User:', user);
+                if (!user) {
+                    // Guest user: load cart from localStorage and allow checkout
+                    let items = JSON.parse(localStorage.getItem('cart')) || [];
+                    if (!items || items.length === 0) {
+                        alert('Your cart is empty. Please add items to your cart.');
+                        window.location.href = 'cart.html';
+                        return;
+                    }
+                    cartData = {
+                        items,
+                        total: items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+                    };
+                    renderCheckoutItems(cartData.items);
+                    updateCheckoutSummary(cartData.items);
+                    setupCheckoutEventListeners();
+                    setupProceedButton(cartData.items);
+                    return;
+                }
+                try {
+                    const userRef = firebase.firestore().collection('users').doc(user.uid);
+                    const userDoc = await userRef.get();
+                    console.log('[DEBUG] Firestore user doc:', userDoc.exists ? userDoc.data() : null);
+                    let items = [];
+                    if (userDoc.exists) {
+                        items = userDoc.data().cart || [];
+                    }
+                    if (!items || items.length === 0) {
+                        alert('Your cart is empty in Firestore. Please add items to your cart.');
+                        window.location.href = 'cart.html';
+                        return;
+                    }
+                    cartData = {
+                        items,
+                        total: items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+                    };
+                    console.log('[DEBUG] Cart data for checkout:', cartData);
+                    renderCheckoutItems(cartData.items);
+                    updateCheckoutSummary(cartData.items);
+                    setupCheckoutEventListeners();
+                    setupProceedButton(cartData.items);
+                } catch (error) {
+                    console.error('[DEBUG] Error loading cart from Firestore:', error);
+                    alert('Error loading cart from Firestore. See console for details.');
+                    window.location.href = 'cart.html';
+                }
+            });
+        } else {
+            console.log('[DEBUG] Waiting for window.firebaseInitialized...');
+        }
+    }, 500);
 });
 
-// PhonePe payment integration (client-side, using Firebase Functions as API proxy)
-async function handlePayment() {
-    const user = auth.currentUser;
-    const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
-    const totalAmount = cart.getTotal();
-    const isPartialCOD = paymentMethod === 'cod';
-    const phonepeAmount = isPartialCOD ? 100 : totalAmount; // ₹100 for partial COD, else full
+function renderCheckoutItems(items) {
+    const checkoutItemsContainer = document.getElementById('checkout-items');
+    if (!checkoutItemsContainer || !items) return;
+    const itemsHTML = items.map(item => `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center">
+                <img src="${item.image}" alt="${item.name}" class="rounded me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                <div>
+                    <h6 class="mb-1">${item.name}</h6>
+                    <small class="text-muted">Qty: ${item.quantity}</small>
+                </div>
+            </div>
+            <div class="text-end">
+                <strong>₹${(item.price * item.quantity).toFixed(2)}</strong>
+            </div>
+        </div>
+    `).join('');
+    checkoutItemsContainer.innerHTML = itemsHTML;
+}
 
-    // Collect customer details
-    const customerDetails = {
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        address: document.getElementById('address').value,
-        country: document.getElementById('country').value,
-        state: document.getElementById('state').value,
-        zip: document.getElementById('zip').value
-    };
-    const orderItems = cart.items.map(item => ({
-        productId: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.image
-    }));
-    const shippingOption = document.querySelector('input[name="shipping-option"]:checked').value;
+function updateCheckoutSummary(items) {
+    const subtotalElement = document.getElementById('summary-subtotal');
+    const shippingElement = document.getElementById('summary-shipping');
+    const totalElement = document.getElementById('summary-total');
+    if (!subtotalElement || !shippingElement || !totalElement) return;
+    const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+    shippingElement.textContent = 'Free';
+    totalElement.textContent = `₹${subtotal.toFixed(2)}`;
+}
 
-    // Prepare order data
-    const orderData = {
-        userId: user ? user.uid : null,
-        customerDetails: customerDetails,
-        items: orderItems,
-        total: totalAmount,
-        paid: isPartialCOD ? 100 : totalAmount,
-        due: isPartialCOD ? (totalAmount - 100) : 0,
-        paymentMethod: isPartialCOD ? 'Partial COD' : 'PhonePe',
-        shippingOption: shippingOption,
-        status: 'pending',
-        createdAt: serverTimestamp()
-    };
-
-    try {
-        // 1. Call Firebase Function to create PhonePe order and get payment URL
-        const createPhonePeOrder = firebase.functions().httpsCallable('createPhonePeOrder');
-        const response = await createPhonePeOrder({
-            amount: phonepeAmount * 100, // paise
-            orderData: orderData
-        });
-        if (!response.data || !response.data.paymentUrl) throw new Error('Failed to create PhonePe order');
-
-        // 2. Redirect to PhonePe payment page
-        window.location.href = response.data.paymentUrl;
-        // After payment, PhonePe will redirect to callback page (payment-callback.html)
-        // There, verify payment and call saveOrderToFirestore(orderData, paymentStatus)
-    } catch (error) {
-        console.error('Payment initiation failed:', error);
-        Swal.fire('Error', 'Could not initiate payment. Please try again.', 'error');
+function setupProceedButton(items) {
+    const proceedBtn = document.getElementById('proceed-to-payment-btn');
+    if (proceedBtn) {
+        proceedBtn.onclick = function() {
+            if (!validateCheckoutForm()) {
+                alert('Please fill all required fields.');
+                return;
+            }
+            // Hide the entire contact info card, show payment section, update steps
+            document.getElementById('contact-info-card').style.display = 'none';
+            document.getElementById('payment-section').style.display = 'block';
+            updateCheckoutStepsForPayment();
+            // Setup payment method selection
+            setupPaymentMethodSelection(items);
+        };
     }
 }
 
-// After payment, on callback page, call this to save order
-async function saveOrderToFirestore(orderData, paymentStatus) {
-    // paymentStatus: 'PAID' or 'PARTIAL_PAID' or 'FAILED'
+function updateCheckoutStepsForPayment() {
+    // Set Payment step as active, previous as active, connectors as active
+    document.getElementById('step-payment').classList.add('active');
+    document.getElementById('connector-payment').classList.add('active');
+}
+
+function setupPaymentMethodSelection(items) {
+    const paymentOptions = document.querySelectorAll('.payment-option');
+    const availableMethods = document.getElementById('available-methods');
+    const codInfo = document.getElementById('cod-info');
+    const confirmBtn = document.getElementById('confirm-payment-method');
+    paymentOptions.forEach(option => {
+        option.onclick = function() {
+            paymentOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            if (radio.value === 'online') {
+                availableMethods.style.display = 'block';
+                if (codInfo) codInfo.style.display = 'none';
+            } else if (radio.value === 'cod') {
+                if (availableMethods) availableMethods.style.display = 'none';
+                if (codInfo) codInfo.style.display = 'block';
+            } else {
+                if (availableMethods) availableMethods.style.display = 'none';
+                if (codInfo) codInfo.style.display = 'none';
+            }
+        };
+    });
+    confirmBtn.onclick = function() {
+        const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
+        if (!selectedMethod) {
+            alert('Please select a payment method.');
+            return;
+        }
+        if (selectedMethod.value === 'cod') {
+            Swal.fire({
+                title: 'Partial Cash on Delivery',
+                html: `<p>To confirm your order, you need to pay <b>₹100</b> in advance.<br>This will be deducted from your total. The remaining amount will be paid on delivery.<br><br>For more information, contact <a href=\"tel:917219345601\">917219345601</a>.</p>`,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm & Pay ₹100',
+                cancelButtonText: 'Cancel',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    processPartialCOD(items);
+                }
+            });
+        } else if (selectedMethod.value === 'online') {
+            processCheckout(items);
+        }
+    };
+}
+
+// Add the COD info message and video to the payment section if not already present
+function ensureCODInfoSection() {
+    let codInfo = document.getElementById('cod-info');
+    if (!codInfo) {
+        const codOption = document.getElementById('cod-option');
+        codInfo = document.createElement('div');
+        codInfo.id = 'cod-info';
+        codInfo.style.display = 'none';
+        codInfo.className = 'mt-3';
+        codInfo.innerHTML = `
+            <div class="alert alert-info" style="white-space: pre-line;">
+                <strong>Partial Cash on Delivery – ₹100 Advance Required</strong><br>
+                Dear customer, to reduce fake & non-serious orders, we have implemented a Partial COD system.<br>
+                ✅ You only need to pay ₹100 in advance to confirm your order.
+                ✅ This amount will be adjusted in your total bill — so you're not paying anything extra.
+                ✅ The remaining amount can be paid in cash at the time of delivery.<br>
+                🧾 This small step helps us serve genuine buyers faster and reduces losses due to fake orders.<br>
+                📹 For full explanation, please watch the video below 👇<br>
+                ❓Have any questions? Feel free to contact us at 📞 +91 7219345601
+            </div>
+            <div class="text-center mb-3">
+                <!-- Placeholder video, replace src with your link -->
+                <video id="cod-info-video" width="320" height="180" controls style="max-width:100%;border-radius:10px;">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        `;
+        codOption.appendChild(codInfo);
+    }
+}
+document.addEventListener('DOMContentLoaded', ensureCODInfoSection);
+
+// Partial COD logic
+async function processPartialCOD(items) {
     try {
-        // Save to orders collection
-        const ordersRef = collection(db, 'orders');
-        const orderDoc = await addDoc(ordersRef, {
-            ...orderData,
-            status: paymentStatus === 'PAID' ? 'confirmed' : (paymentStatus === 'PARTIAL_PAID' ? 'partial_paid' : 'failed'),
-            paymentStatus: paymentStatus,
-            confirmedAt: serverTimestamp()
+        // Collect form data
+        const personalDetails = {
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            address: document.getElementById('address').value,
+            address2: document.getElementById('address2').value,
+            country: document.getElementById('country').value,
+            state: document.getElementById('state').value,
+            zip: document.getElementById('zip').value
+        };
+        const orderTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const orderData = {
+            orderId: generateOrderId(),
+            total: orderTotal,
+            customerDetails: personalDetails,
+            items: items,
+            paymentType: 'partial-cod'
+        };
+        // Open Razorpay for ₹100 advance
+        await processPartialCODWithRazorpay(orderData);
+    } catch (error) {
+        console.error('Partial COD error:', error);
+        Swal.fire({
+            title: 'Order Error',
+            text: 'There was an issue placing your order. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
         });
-        // If user is authenticated, also save to user orders
-        if (orderData.userId) {
-            const userOrdersRef = collection(db, 'users', orderData.userId, 'orders');
-            await addDoc(userOrdersRef, {
-                ...orderData,
-                orderId: orderDoc.id,
-                status: paymentStatus === 'PAID' ? 'confirmed' : (paymentStatus === 'PARTIAL_PAID' ? 'partial_paid' : 'failed'),
-                paymentStatus: paymentStatus,
-                confirmedAt: serverTimestamp()
-            });
-            // Optionally update user profile with latest info
-            const userDocRef = doc(db, 'users', orderData.userId);
-            await updateDoc(userDocRef, {
-                lastOrderAt: serverTimestamp(),
-                lastShipping: orderData.customerDetails
+    }
+}
+
+// Razorpay integration for Partial COD
+async function processPartialCODWithRazorpay(orderData) {
+    try {
+        // Ensure Razorpay script is loaded
+        if (typeof Razorpay === 'undefined') {
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
             });
         }
-        // Clear cart after order
-        cart.clearCart();
-        // Trigger email (Cloud Function callable)
-        try {
-            const sendOrderEmail = firebase.functions().httpsCallable('sendOrderEmail');
-            await sendOrderEmail({
-                orderId: orderDoc.id,
-                to: orderData.customerDetails.email
-            });
-        } catch (e) {
-            console.warn('Email not sent:', e);
-        }
-        Swal.fire('Order Confirmed!', 'Your order has been placed and a confirmation email sent.', 'success').then(() => {
+        // Prepare Razorpay options for ₹100
+        const options = {
+            key: RAZORPAY_TEST_CONFIG.key,
+            amount: 100 * 100, // ₹100 in paise
+            currency: RAZORPAY_TEST_CONFIG.currency,
+            name: RAZORPAY_TEST_CONFIG.name,
+            description: 'Advance for Partial COD',
+            image: RAZORPAY_TEST_CONFIG.image,
+            handler: async function(response) {
+                // On payment success, save order as partial COD
+                await handlePartialCODPaymentSuccess(response, orderData);
+            },
+            prefill: {
+                name: orderData.customerDetails.firstName + ' ' + orderData.customerDetails.lastName,
+                email: orderData.customerDetails.email,
+                contact: orderData.customerDetails.phone
+            },
+            notes: {
+                address: orderData.customerDetails.address,
+                order_id: orderData.orderId
+            },
+            theme: RAZORPAY_TEST_CONFIG.theme,
+            config: {
+                display: {
+                    blocks: {
+                        card: {
+                            name: "Pay with Card",
+                            instruments: [{ method: "card" }]
+                        },
+                        netbanking: {
+                            name: "Net Banking",
+                            instruments: [{ method: "netbanking" }]
+                        },
+                        upi: {
+                            name: "UPI",
+                            instruments: [{ method: "upi" }]
+                        },
+                        wallet: {
+                            name: "Wallets",
+                            instruments: [{ method: "wallet" }]
+                        }
+                    },
+                    sequence: ["block.card", "block.netbanking", "block.upi", "block.wallet"],
+                    preferences: {
+                        show_default_blocks: false
+                    }
+                }
+            }
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+    } catch (error) {
+        console.error('Partial COD Razorpay error:', error);
+        Swal.fire({
+            title: 'Payment Error',
+            text: 'Failed to initialize payment. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+}
+
+// Handle successful partial COD payment
+async function handlePartialCODPaymentSuccess(response, orderData) {
+    try {
+        // Prepare order details for partial COD
+        const advancePaid = 100;
+        const remainingAmount = orderData.total - advancePaid;
+        const orderDetails = {
+            items: orderData.items,
+            total: orderData.total, // Always keep the original total
+            status: 'pending',
+            paymentMethod: 'Partial COD',
+            paymentStatus: 'advance-paid',
+            advancePaid: advancePaid,
+            remainingAmount: remainingAmount,
+            paymentResponse: response
+        };
+        const personalDetailsForOrder = orderData.customerDetails;
+        // Save the order in Firestore
+        await saveOrder(orderData.orderId, orderDetails, personalDetailsForOrder);
+        // Show success message for Partial COD
+        Swal.fire({
+            title: 'Order Confirmed! 🎉',
+            html: `
+                <p>Your order has been confirmed with Partial COD!</p>
+                <p>Order ID: <strong>${orderData.orderId}</strong></p>
+                <p>Advance Paid: <strong>₹${advancePaid}</strong></p>
+                <p>Amount to Pay on Delivery: <strong>₹${remainingAmount}</strong></p>
+                <p>Thank you for shopping with Aziz Phone Hub! 🙏</p>
+            `,
+            icon: 'success',
+            confirmButtonText: 'Continue Shopping'
+        }).then(() => {
             window.location.href = 'index.html';
         });
     } catch (error) {
-        console.error('Error saving order:', error);
-        Swal.fire('Error', 'Could not save order. Please contact support.', 'error');
+        console.error('Partial COD payment success error:', error);
+        Swal.fire({
+            title: 'Order Error',
+            text: 'There was an issue saving your order. Please contact support.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
-}
-
-
-// Initialize checkout
-function initializeCheckout() {
-    // Check if cart is empty
-    if (cart.items.length === 0) {
-        // Redirect to cart page
-        window.location.href = 'cart.html';
-        return;
-    }
-    
-    // Render checkout items
-    renderCheckoutItems();
-    
-    // Update checkout summary
-    updateCheckoutSummary();
 }
 
 // Setup checkout event listeners
@@ -212,7 +373,7 @@ function setupCheckoutEventListeners() {
             // Validate form
             if (validateCheckoutForm()) {
                 // Process checkout
-                processCheckout();
+                processCheckout(cartData.items);
             }
         });
     }
@@ -223,7 +384,7 @@ function setupCheckoutEventListeners() {
     if (shippingOptions.length > 0) {
         shippingOptions.forEach(option => {
             option.addEventListener('change', function() {
-                updateCheckoutSummary();
+                updateCheckoutSummary(cartData.items);
             });
         });
     }
@@ -241,7 +402,6 @@ function setupCheckoutEventListeners() {
 
 // Validate checkout form
 function validateCheckoutForm() {
-    // Get form elements
     const email = document.getElementById('email');
     const phone = document.getElementById('phone');
     const firstName = document.getElementById('firstName');
@@ -250,155 +410,100 @@ function validateCheckoutForm() {
     const country = document.getElementById('country');
     const state = document.getElementById('state');
     const zip = document.getElementById('zip');
-    
-    // Validate email
-    if (!email.value || !isValidEmail(email.value)) {
-        showError('Please enter a valid email address');
+
+    if (!email.value.trim()) {
+        alert('Please enter your email address.');
         email.focus();
         return false;
     }
-    
-    // Validate phone
-    if (!phone.value || !isValidPhone(phone.value)) {
-        showError('Please enter a valid phone number');
+    if (!phone.value.trim()) {
+        alert('Please enter your phone number.');
         phone.focus();
         return false;
     }
-    
-    // Validate first name
     if (!firstName.value.trim()) {
-        showError('Please enter your first name');
+        alert('Please enter your first name.');
         firstName.focus();
         return false;
     }
-    
-    // Validate last name
     if (!lastName.value.trim()) {
-        showError('Please enter your last name');
+        alert('Please enter your last name.');
         lastName.focus();
         return false;
     }
-    
-    // Validate address
     if (!address.value.trim()) {
-        showError('Please enter your address');
+        alert('Please enter your address.');
         address.focus();
         return false;
     }
-    
-    // Validate country
-    if (!country.value) {
-        showError('Please select your country');
+    if (!country.value.trim()) {
+        alert('Please select your country.');
         country.focus();
         return false;
     }
-    
-    // Validate state
-    if (!state.value) {
-        showError('Please select your state');
+    if (!state.value.trim()) {
+        alert('Please select your state.');
         state.focus();
         return false;
     }
-    
-    // Validate zip
-    if (!zip.value.trim() || !isValidZip(zip.value)) {
-        showError('Please enter a valid pincode');
+    if (!zip.value.trim()) {
+        alert('Please enter your pincode.');
         zip.focus();
         return false;
     }
-    
     return true;
 }
 
-// Process checkout
-async function processCheckout() {
-    // Show loading
+// Process checkout - Updated for Razorpay integration with new database structure
+async function processCheckout(items) {
+    // Collect form data
+    const personalDetails = {
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        address: document.getElementById('address').value,
+        address2: document.getElementById('address2').value,
+        country: document.getElementById('country').value,
+        state: document.getElementById('state').value,
+        zip: document.getElementById('zip').value
+    };
+
+    // Prepare order data for Razorpay
+    const orderData = {
+        orderId: generateOrderId(),
+        total: items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+        customerDetails: personalDetails,
+        items: items
+    };
+
+    // Show loading (optional)
     Swal.fire({
         title: 'Processing...',
-        text: 'Please wait while we process your order',
+        text: 'Please wait while we prepare your payment.',
         allowOutsideClick: false,
         showConfirmButton: false,
         willOpen: () => {
             Swal.showLoading();
         }
     });
-    
-    // Simulate processing (in a real app, this would be an API call)
-    const user = auth.currentUser;
-
-    if (!user) {
-        Swal.fire('Error', 'You must be logged in to place an order.', 'error');
-        return;
-    }
-
-    const customerDetails = {
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        address: document.getElementById('address').value,
-        country: document.getElementById('country').value,
-        state: document.getElementById('state').value,
-        zip: document.getElementById('zip').value
-    };
-
-    const orderItems = cart.items.map(item => ({
-        productId: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.image
-    }));
-
-    const totalAmount = cart.getTotal();
-    const shippingOption = document.querySelector('input[name="shipping-option"]:checked').value;
-
-    const orderData = {
-        userId: user.uid,
-        customerDetails: customerDetails,
-        items: orderItems,
-        total: totalAmount,
-        shippingOption: shippingOption,
-        status: 'pending',
-        createdAt: serverTimestamp()
-    };
 
     try {
-        // Save order to the main 'orders' collection
-        const ordersRef = collection(db, 'orders');
-        const newOrderRef = await addDoc(ordersRef, orderData);
-
-        // Save order to a subcollection under the user's document
-        const userOrdersRef = collection(db, 'users', user.uid, 'orders');
-        await setDoc(doc(userOrdersRef, newOrderRef.id), orderData);
-
-        // Update user's cart and wishlist in Firestore to be empty after order
-        const userDocRef = doc(db, 'users', user.uid);
-        await updateDoc(userDocRef, {
-            cart: [],
-            wishlist: []
-        });
-
-        // Clear local cart
-        cart.clearCart();
-
-        Swal.fire({
-            title: 'Order Placed!',
-            html: `
-                <p>Your order has been successfully placed.</p>
-                <p>Order ID: <strong>${newOrderRef.id}</strong></p>
-                <p>Thank you for shopping with Aziz Phone Hub!</p>
-            `,
-            icon: 'success',
-            confirmButtonText: 'Continue Shopping'
-        }).then(() => {
-            window.location.href = 'index.html';
-        });
-
+        // Call your Razorpay integration (make sure processCheckoutWithRazorpay is loaded globally)
+        await processCheckoutWithRazorpay(orderData);
+        Swal.close();
     } catch (error) {
-        console.error('Error processing order:', error);
-        Swal.fire('Error', 'There was an error processing your order. Please try again.', 'error');
+        Swal.close();
+        showError('Payment initialization failed. Please try again.');
+        console.error('Razorpay error:', error);
     }
+}
+
+// Generate unique order ID
+function generateOrderId() {
+    const timestamp = new Date().getTime().toString().slice(-8);
+    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    return `AZ-${timestamp}-${random}`;
 }
 
 // Toggle billing address fields
@@ -435,35 +540,28 @@ function isValidZip(zip) {
     return /^\d{6}$/.test(zip.replace(/\D/g, ''));
 }
 
-// Generate order number
-function generateOrderNumber() {
-    const timestamp = new Date().getTime().toString().slice(-8);
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    return `AZ-${timestamp}-${random}`;
-}
+// Save order for both authenticated and guest users (copied from razorpay-test-integration.js)
+async function saveOrder(orderId, orderDetails, personalDetails) {
+    const user = firebase.auth().currentUser;
+    const db = firebase.firestore();
+    const orderDoc = {
+        "order-details": orderDetails,
+        "personal-details": personalDetails,
+        updatedAt: new Date()
+    };
 
-// Update checkout summary based on shipping option
-function updateCheckoutSummary() {
-    const subtotalElement = document.getElementById('summary-subtotal');
-    const shippingElement = document.getElementById('summary-shipping');
-    const totalElement = document.getElementById('summary-total');
-    
-    if (!subtotalElement || !shippingElement || !totalElement) return;
-    
-    const subtotal = cart.getTotal();
-    
-    // Get selected shipping option
-    const expressShipping = document.getElementById('express-shipping');
-    const shippingCost = expressShipping && expressShipping.checked ? 199 : 0;
-    
-    const total = subtotal + shippingCost;
-    
-    subtotalElement.textContent = formatCurrency(subtotal);
-    shippingElement.textContent = shippingCost > 0 ? formatCurrency(shippingCost) : 'Free';
-    totalElement.textContent = formatCurrency(total);
-}
-
-// Format currency
-function formatCurrency(amount) {
-    return '₹' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    if (user) {
+        // Authenticated user: Save in both places
+        const batch = db.batch();
+        // 1. Global orders collection
+        const globalOrderRef = db.collection('orders').doc(orderId);
+        batch.set(globalOrderRef, orderDoc, { merge: true });
+        // 2. User's orders subcollection
+        const userOrderRef = db.collection('users').doc(user.uid).collection('orders').doc(orderId);
+        batch.set(userOrderRef, orderDoc, { merge: true });
+        return batch.commit();
+    } else {
+        // Guest: Only global orders collection
+        return db.collection('orders').doc(orderId).set(orderDoc, { merge: true });
+    }
 }

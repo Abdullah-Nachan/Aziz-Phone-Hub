@@ -92,12 +92,6 @@
     <section class="cart-section py-5">
         <div class="container">
             <h2 class="section-title mb-4">Shopping Cart</h2>
-            <!-- Login Prompt for unauthenticated users -->
-            <div id="login-prompt" class="text-center py-5 d-none">
-                <h3>Please sign in to view your cart.</h3>
-                <a href="auth.html" class="btn btn-primary">Login</a>
-            </div>
-            
             <!-- Empty Cart Message (shown when cart is empty) -->
             <div id="empty-cart" class="text-center py-5 d-none">
                 <div class="empty-cart-container">
@@ -206,10 +200,12 @@
     <script src="profile.js"></script>
     
     <!-- App Scripts -->
+     <script src="cart-handler.js"></script>
+     <script src="firestore-cart.js"></script>
     <script src="static-products.js"></script>
     <script src="search.js"></script>
-    <script src="firestore-cart.js"></script>
     <script src="cart-wishlist-auth.js"></script>
+    <script src="guest-cart-wishlist.js"></script>
     
 </body>
 </html>
