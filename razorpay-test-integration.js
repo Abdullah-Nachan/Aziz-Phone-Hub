@@ -125,6 +125,32 @@ async function handlePaymentSuccess(response, orderData) {
             await saveOrder(orderData.orderId, orderDetails, personalDetails);
             // Update order status to confirmed (optional, if you want to keep status update logic)
             await updateOrderStatus(orderData.orderId, 'confirmed', response);
+            // Send email notification to backend
+            try {
+                console.log('Sending order notification to backend...');
+                fetch('http://localhost:3000/notify-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order: {
+                            orderId: orderData.orderId,
+                            total: orderData.total,
+                            customer: orderData.customerDetails,
+                            items: orderData.items,
+                            paymentId: response.razorpay_payment_id
+                        }
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Order notification response:', data);
+                })
+                .catch(err => {
+                    console.error('Order notification fetch error:', err);
+                });
+            } catch (err) {
+                console.error('Failed to notify backend for order email:', err);
+            }
             // Show success message (without WhatsApp)
             Swal.fire({
                 title: 'Payment Successful! 🎉',
@@ -233,7 +259,7 @@ Your order has been successfully placed!
 • Total Amount: ₹${orderData.total}
 • Payment Status: ✅ Confirmed
 
-🛍️ *Items Ordered:*
+��️ *Items Ordered:*
 ${orderData.items.map(item => `• ${item.name} - ₹${item.price} x ${item.quantity}`).join('\n')}
 
 📞 *Contact Support:* +91 1234567890

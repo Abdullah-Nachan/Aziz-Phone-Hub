@@ -27,12 +27,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-                console.log('User logged in:', userCredential.user);
-                await migrateLocalStorageToFirebase();
-                alert('Login successful!');
+                const user = userCredential.user;
+
+                // Ensure Firestore user document exists immediately after login
+                const userDocRef = firebase.firestore().collection('users').doc(user.uid);
+                const userDocSnap = await userDocRef.get();
+                if (!userDocSnap.exists) {
+                    await userDocRef.set({
+                        uid: user.uid,
+                        email: user.email,
+                        firstName: user.displayName ? user.displayName.split(' ')[0] : '',
+                        lastName: user.displayName ? user.displayName.split(' ').slice(1).join(' ') : '',
+                        phone: user.phoneNumber || '',
+                        displayName: user.displayName || '',
+                        emailVerified: user.emailVerified || false,
+                        profileComplete: false,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        cart: [],
+                        wishlist: [],
+                        orders: [],
+                        addresses: []
+                    });
+                }
+
+                // Now run migrateLocalStorageToFirebase in a try-catch so it doesn't block Firestore user creation
+                try {
+                    await migrateLocalStorageToFirebase();
+                } catch (migrateError) {
+                    console.error('Error migrating local storage:', migrateError);
+                }
                 window.location.href = 'index.html';
             } catch (error) {
-                console.error('Login error:', error.message);
                 alert('Login failed: ' + error.message);
             }
         });
@@ -42,7 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (signupForm) {
         signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             // Get form values
             const firstName = document.getElementById('signupFirstName').value.trim();
             const lastName = document.getElementById('signupLastName').value.trim();
@@ -54,18 +80,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('All fields are required');
                 return;
             }
-
             if (password.length < 6) {
                 alert('Password must be at least 6 characters');
                 return;
             }
-
             try {
-                // Create user with email and password
+                // 1. Create user with email and password
                 const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
 
-                // Create user document in Firestore
+                // 2. Prepare userData
                 const userData = {
                     uid: user.uid,
                     firstName: firstName,
@@ -84,20 +108,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     addresses: []
                 };
 
-                // Save to Firestore
-                await firebase.firestore().collection('users').doc(user.uid).set(userData);
+                // 3. Firestore write
+                try {
+                    await firebase.firestore().collection('users').doc(user.uid).set(userData);
+                } catch (firestoreError) {
+                    console.error('Signup: Firestore error:', firestoreError);
+                }
 
-                // Update user profile
-                await user.updateProfile({
-                    displayName: `${firstName} ${lastName}`
-                });
+                // 4. Profile update (optional, also in try-catch)
+                try {
+                    await user.updateProfile({
+                        displayName: `${firstName} ${lastName}`
+                    });
+                } catch (profileError) {
+                    console.error('Profile update error:', profileError);
+                }
 
                 alert('Registration successful! You can now log in.');
                 showLogin();
             } catch (error) {
-                console.error('Registration error:', error);
                 let errorMessage = 'Registration failed';
-
                 if (error.code === 'auth/email-already-in-use') {
                     errorMessage = 'This email is already registered. Please use a different email or login.';
                 } else if (error.code === 'auth/weak-password') {
@@ -105,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else if (error.code === 'auth/invalid-email') {
                     errorMessage = 'Invalid email address';
                 }
-
                 alert(errorMessage);
             }
         });
@@ -132,27 +161,36 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const userCredential = await firebase.auth().signInWithPopup(provider);
             const user = userCredential.user;
-            console.log('Google user logged in:', user);
-            // Check if user document exists, if not, create it
+            // Ensure Firestore user document exists immediately after Google login
             const userDocRef = firebase.firestore().collection('users').doc(user.uid);
             const userDocSnap = await userDocRef.get();
-
-            if (!userDocSnap.exists()) {
+            if (!userDocSnap.exists) {
                 await userDocRef.set({
+                    uid: user.uid,
                     firstName: user.displayName ? user.displayName.split(' ')[0] : '',
                     lastName: user.displayName ? user.displayName.split(' ').slice(1).join(' ') : '',
                     email: user.email,
                     phone: user.phoneNumber || '',
-                    createdAt: new Date(),
+                    displayName: user.displayName || '',
+                    emailVerified: user.emailVerified || false,
+                    profileComplete: false,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString(),
                     cart: [],
-                    wishlist: []
+                    wishlist: [],
+                    orders: [],
+                    addresses: []
                 });
             }
-            await migrateLocalStorageToFirebase();
-            alert('Login successful with Google!');
+            // Now run migrateLocalStorageToFirebase in a try-catch
+            try {
+                await migrateLocalStorageToFirebase();
+            } catch (migrateError) {
+                console.error('Error migrating local storage:', migrateError);
+            }
             window.location.href = 'index.html';
         } catch (error) {
-            console.error('Google login error:', error.message);
             alert('Google login failed: ' + error.message);
         }
     }

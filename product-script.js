@@ -203,7 +203,7 @@ function populateProductDetails(product) {
         mainImg.loading = 'lazy';
         mainImg.style.width = '100%';
         mainImg.style.height = 'auto';
-        mainImg.style.objectFit = 'contain';
+        mainImg.style.objectFit = 'cover';
         mainImg.onerror = function() {
             console.error(`Failed to load image: ${processedUrl}`);
             this.src = 'https://placehold.co/600x400?text=Image+Not+Available';
@@ -231,9 +231,12 @@ function populateProductDetails(product) {
     
     // Reinitialize swiper after adding images
     if (window.mainSwiper) {
-        window.mainSwiper.update();
-        window.thumbSwiper.update();
+        window.mainSwiper.destroy(true, true);
     }
+    if (window.thumbSwiper) {
+        window.thumbSwiper.destroy(true, true);
+    }
+    initializeSwiper();
     
     // Hide color variants section as we don't have this data
     const colorVariantsList = document.getElementById('product-colors');

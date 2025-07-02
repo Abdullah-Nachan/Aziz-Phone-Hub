@@ -3,31 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - E-commerce</title>
+    <title>My Profile - Aziz Phone Hub</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Main Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Profile-specific Styles -->
     <link rel="stylesheet" href="profile.css">
 </head>
 <body>
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">ShopKart</div>
-            <div class="search-bar">
-                <input type="text" placeholder="Search for products, brands and more">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top d-flex justify-content-center">
+        <div class="container position-relative">
+            <!-- Hamburger (left on mobile) -->
+            <button class="navbar-toggler order-1 d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Logo (center on mobile, left on desktop) -->
+            <a class="navbar-brand mx-auto mx-lg-0 order-2" href="index.html">
+                <div class="logo-container">
+                    <img src="./images/aziz logo.webp" alt="Aziz Phone Hub">
+                </div>
+            </a>
+            <!-- Cart Icon (right on mobile) -->
+            <div class="d-lg-none order-3 position-absolute end-0 top-50 translate-middle-y" style="right: 1rem;">
+                <a href="cart.html" class="nav-link p-0">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span class="cart-count-badge" id="mobile-nav-cart-count">0</span>
+                </a>
             </div>
-            <div class="user-actions">
-                <span class="user-name">Abdullah</span>
-                <span>Cart</span>
+            <!-- Navbar links and search (desktop) -->
+            <div class="collapse navbar-collapse order-lg-2" id="navbarNav">
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarCategoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarCategoriesDropdown">
+                            <li><a class="dropdown-item" href="category.html?cat=airpods">AirPods</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=smartwatches">Smart Watches</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=headphones">Headphones</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=accessories">Accessories</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=shoes">Shoes</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=crocs">Crocs</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=casualwatch">Casual Watch</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=combo-offers">Combo Offers</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <!-- Desktop Search Box -->
+                <form class="d-none d-lg-flex ms-3 search-box-form" role="search">
+                    <div class="search-box w-100">
+                        <input type="text" placeholder="Search products..." aria-label="Search">
+                        <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </form>
+                <!-- Cart Icon (desktop) -->
+                <a href="cart.html" class="nav-link d-none d-lg-block ms-3 position-relative">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span class="cart-count-badge" id="desktop-nav-cart-count">0</span>
+                </a>
             </div>
         </div>
-    </div>
+    </nav>
 
     <div class="container">
         <!-- Desktop Sidebar -->
         <div class="sidebar">
             <div class="profile-header">
-                <div class="profile-avatar">A</div>
+                <div class="profile-avatar" id="profile-avatar">A</div>
                 <div class="profile-info">
-                    <h3>Abdullah Nachan</h3>
-                    <p>Hello, Abdullah</p>
+                    <h3 id="profile-name">User Name</h3>
+                    <p id="profile-hello">Hello</p>
                 </div>
             </div>
             <ul class="sidebar-menu">
@@ -76,7 +133,7 @@
                             <div class="menu-icon">❓</div>
                             <span>HELP CENTER</span>
                         </div>
-                    </div>
+        </div>
                 </li>
             </ul>
             <!-- Sidebar Auth Button -->
@@ -94,16 +151,19 @@
                     <h2>My Orders</h2>
                 </div>
                 <div class="content-body" id="orders-list-container">
-                    <!-- JS will inject orders here -->
                     <div id="orders-list"></div>
                     <div id="orders-empty" style="display:none;">
                         <p>You have not placed any orders yet.</p>
                         <button class="btn btn-primary" id="shop-now-btn">Shop Now</button>
                     </div>
-                </div>
-            </div>
+                    <div id="orders-guest-message" style="display:none; text-align:center; margin:32px 0;">
+                        <p class="mb-3">Please sign in to view your orders.</p>
+                        <button class="btn btn-primary" onclick="window.location.href='auth.html'">Sign In</button>
+                    </div>
+        </div>
+    </div>
 
-            <!-- Profile Section -->
+    <!-- Profile Section -->
             <div class="section" id="profile">
                 <div class="content-header">
                     <h2>Personal Information</h2>
@@ -112,6 +172,10 @@
                     <button class="btn btn-secondary" id="cancel-profile-btn" style="display:none;">Cancel</button>
                 </div>
                 <div class="content-body" id="profile-info-container">
+                    <div id="profile-guest-message" style="display:none; text-align:center; margin:32px 0;">
+                        <p class="mb-3">Please sign in to view your profile information.</p>
+                        <button class="btn btn-primary" onclick="window.location.href='auth.html'">Sign In</button>
+                    </div>
                     <!-- JS will inject user info fields here -->
                     <div class="form-row">
                         <div class="form-group">
@@ -146,14 +210,34 @@
             <div class="section" id="addresses">
                 <div class="content-header">
                     <h2>Manage Addresses</h2>
-                    <button class="btn btn-primary" id="add-address-btn">Add New Address</button>
                 </div>
                 <div class="content-body" id="addresses-list-container">
-                    <!-- JS will inject addresses here -->
                     <div id="addresses-list"></div>
+                    <!-- Add Address Button (below list, only if addresses exist) -->
+                    <button class="btn btn-primary my-2" id="add-address-btn" style="display:none;">Add Address</button>
+                    <!-- Address Form (hidden by default) -->
+                    <form id="add-address-form" style="display:none; margin: 16px 0;">
+                        <div class="mb-2">
+                            <input type="text" id="address-fullname" class="form-control mb-2" placeholder="Full Name" required>
+                            <input type="tel" id="address-phone" class="form-control mb-2" placeholder="Phone Number" required>
+                            <input type="text" id="address-line" class="form-control mb-2" placeholder="Address Line" required>
+                            <input type="text" id="address-city" class="form-control mb-2" placeholder="City" required>
+                            <input type="text" id="address-state" class="form-control mb-2" placeholder="State" required>
+                            <input type="text" id="address-pincode" class="form-control mb-2" placeholder="Pincode" required>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-sm">Save</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="cancel-add-address">Cancel</button>
+                    </form>
                     <div id="addresses-empty" style="display:none;">
-                        <p>No addresses yet.</p>
-                        <button class="btn btn-primary" id="add-address-empty-btn">Add Address</button>
+                        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:120px;">
+                            <p>No addresses yet.</p>
+                            <button class="btn btn-primary" id="add-address-empty-btn">Add Address</button>
+                            </div>
+                            </div>
+                    <div id="addresses-guest-message" style="display:none;">
+                        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:120px;">
+                            <p class="mb-3">You are using guest mode. Addresses you add will be saved only on this device.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -164,7 +248,12 @@
                     <h2>My Wishlist</h2>
                 </div>
                 <div class="content-body">
-                    <button class="btn btn-primary" id="go-to-wishlist-btn">Go to Wishlist</button>
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:120px;">
+                        <div id="wishlist-guest-message" style="text-align:center; margin:24px 0;">
+                            <p>Click the button below to view your wishlist.</p>
+                        </div>
+                        <button class="btn btn-primary" id="go-to-wishlist-btn">Go to Wishlist</button>
+                    </div>
                 </div>
             </div>
 
@@ -174,9 +263,14 @@
                     <h2>My Cart</h2>
                 </div>
                 <div class="content-body">
-                    <button class="btn btn-primary" id="go-to-cart-btn">Go to Cart</button>
+                    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height:120px;">
+                        <div id="cart-guest-message" style="text-align:center; margin:24px 0;">
+                            <p>Click the button below to view your cart.</p>
+                        </div>
+                        <button class="btn btn-primary" id="go-to-cart-btn">Go to Cart</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
             <!-- Help Center Section -->
             <div class="section" id="help">
@@ -184,45 +278,76 @@
                     <h2>Help Center</h2>
                 </div>
                 <div class="content-body">
-                    <div class="help-options">
-                        <div class="help-option" onclick="sendEmail()">
-                            <div class="help-option-icon">📧</div>
-                            <h4>Email Support</h4>
-                            <p>Send us an email and we'll get back to you</p>
+                    <div class="row">
+                        <!-- Left: Get in Touch -->
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <h3 class="mb-4" style="font-weight:600;">Get in Touch</h3>
+                            <div class="mb-3 d-flex align-items-start">
+                                <span class="me-3" style="color:#0066ff; font-size:2rem;"><i class="fas fa-map-marker-alt"></i></span>
+                                <div>
+                                    <strong>Our Location</strong><br>
+                                    Your Address Here, City, State, Country
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex align-items-start">
+                                <span class="me-3" style="color:#0066ff; font-size:2rem;"><i class="fas fa-phone"></i></span>
+                                <div>
+                                    <strong>Phone Number</strong><br>
+                                    +91 1234567890
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex align-items-start">
+                                <span class="me-3" style="color:#0066ff; font-size:2rem;"><i class="fas fa-envelope"></i></span>
+                                <div>
+                                    <strong>Email Address</strong><br>
+                                    info@azizphonehub.com
+                                </div>
+                            </div>
+                            <div class="mb-3 d-flex align-items-start">
+                                <span class="me-3" style="color:#0066ff; font-size:2rem;"><i class="fas fa-clock"></i></span>
+                                <div>
+                                    <strong>Business Hours</strong><br>
+                                    Monday - Saturday: 10:00 AM - 8:00 PM
+                                </div>
+                            </div>
                         </div>
-                        <div class="help-option" onclick="callSupport()">
-                            <div class="help-option-icon">📞</div>
-                            <h4>Phone Support</h4>
-                            <p>Call us directly for immediate assistance</p>
-                        </div>
-                        <div class="help-option" onclick="openChat()">
-                            <div class="help-option-icon">💬</div>
-                            <h4>Live Chat</h4>
-                            <p>Chat with our support team in real-time</p>
+                        <!-- Right: Contact Us Form -->
+                        <div class="col-md-6">
+                            <h3 class="mb-4" style="font-weight:600;">Contact Us</h3>
+                            <h4 class="mb-3" style="font-weight:400;">Send us a Message</h4>
+                            <form>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Your Name" required>
+                                    </div>
+                                <div class="mb-3">
+                                    <input type="email" class="form-control" placeholder="Your Email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Subject" required>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" rows="4" placeholder="Your Message" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Send Message</button>
+                            </form>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Ask a Question</label>
-                        <textarea placeholder="Type your question here..." rows="4"></textarea>
-                    </div>
-                    <button class="btn btn-primary">Submit Question</button>
                 </div>
-            </div>
-        </div>
-    </div>
+                            </div>
+                        </div>
+                    </div>
 
     <!-- Mobile View -->
     <div class="mobile-sections">
-        <div class="mobile-menu">
+        <div class="mobile-menu" id="mobile-menu-header">
             <div class="profile-header">
-                <div class="profile-avatar">A</div>
+                <div class="profile-avatar" id="mobile-profile-avatar">A</div>
                 <div class="profile-info">
-                    <h3>Shopping for Abdullah</h3>
+                    <h3 id="mobile-profile-hello">Hello</h3>
                 </div>
             </div>
         </div>
-
-        <div class="mobile-menu">
+        <div class="mobile-menu" id="mobile-menu-column">
             <div class="mobile-grid">
                 <div class="mobile-option" onclick="showMobileSection('orders')">
                     <div class="mobile-option-icon">📦</div>
@@ -242,30 +367,29 @@
                 </div>
             </div>
         </div>
-
-        <div class="mobile-personal-info">
-            <h3 style="margin-bottom: 20px;">Personal Information</h3>
-            <div class="info-item">
-                <span class="info-label">First Name</span>
-                <span class="info-value">Abdullah</span>
+        <!-- Move personal info card outside menu column -->
+        <div class="mobile-personal-info card mt-3 mb-2 p-3" id="mobile-personal-info">
+            <div id="mobile-personal-info-auth" style="display:none;">
+                <div class="d-flex align-items-center mb-2">
+                    <div class="profile-avatar me-2" id="mobile-personal-avatar">A</div>
+                    <div>
+                        <div id="mobile-personal-name" style="font-weight:600;">User Name</div>
+                        <div id="mobile-personal-email" style="font-size:0.95rem; color:#555;">user@email.com</div>
+                    </div>
+                </div>
             </div>
-            <div class="info-item">
-                <span class="info-label">Last Name</span>
-                <span class="info-value">Nachan</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Gender</span>
-                <span class="info-value">Male</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Email</span>
-                <span class="info-value">nachanabdullah23@gmail.com</span>
-            </div>
-            <div class="info-item">
-                <span class="info-label">Mobile</span>
-                <span class="info-value">+919721934560</span>
+            <div id="mobile-personal-info-guest" style="display:none; text-align:center;">
+                <p class="mb-2">Sign in to view your profile information.</p>
+                <button class="btn btn-primary btn-sm" onclick="window.location.href='auth.html'">Sign In</button>
             </div>
         </div>
+        <!-- Mobile Sections: Use same IDs as desktop for unified JS logic -->
+        <div class="mobile-section" id="mobile-orders" style="display:none;"></div>
+        <div class="mobile-section" id="mobile-addresses" style="display:none;"></div>
+        <div class="mobile-section" id="mobile-wishlist" style="display:none;"></div>
+        <div class="mobile-section" id="mobile-cart" style="display:none;"></div>
+        <div class="mobile-section" id="mobile-help" style="display:none;"></div>
+        <!-- Add similar for profile and help if needed -->
     </div>
 
     <!-- Place these just before </body> -->
@@ -274,5 +398,265 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
     <script src="profile-page.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait for Firebase to be loaded
+        function updateProfileSidebar() {
+            if (typeof firebase === 'undefined' || !firebase.auth) return;
+            firebase.auth().onAuthStateChanged(function(user) {
+                // Desktop
+                const nameElem = document.getElementById('profile-name');
+                const helloElem = document.getElementById('profile-hello');
+                const avatarElem = document.getElementById('profile-avatar');
+                // Mobile
+                const mobileHelloElem = document.getElementById('mobile-profile-hello');
+                const mobileAvatarElem = document.getElementById('mobile-profile-avatar');
+                if (user && user.displayName) {
+                    nameElem.textContent = user.displayName;
+                    helloElem.textContent = 'Hello, ' + user.displayName.split(' ')[0];
+                    avatarElem.textContent = user.displayName.charAt(0).toUpperCase();
+                    // Mobile
+                    mobileHelloElem.textContent = 'Hello, ' + user.displayName.split(' ')[0];
+                    mobileAvatarElem.textContent = user.displayName.charAt(0).toUpperCase();
+                } else {
+                    nameElem.textContent = '';
+                    helloElem.textContent = 'Hello';
+                    avatarElem.innerHTML = '<i class="fas fa-user"></i>';
+                    // Mobile
+                    mobileHelloElem.textContent = 'Hello';
+                    mobileAvatarElem.innerHTML = '<i class="fas fa-user"></i>';
+                }
+                showHideSectionsForGuest(user);
+                // Update personal info card for mobile
+                const mobilePersonalInfoAuth = document.getElementById('mobile-personal-info-auth');
+                const mobilePersonalInfoGuest = document.getElementById('mobile-personal-info-guest');
+                const mobilePersonalAvatar = document.getElementById('mobile-personal-avatar');
+                const mobilePersonalName = document.getElementById('mobile-personal-name');
+                const mobilePersonalEmail = document.getElementById('mobile-personal-email');
+                if (user && user.displayName) {
+                    mobilePersonalInfoAuth.style.display = '';
+                    mobilePersonalInfoGuest.style.display = 'none';
+                    mobilePersonalAvatar.textContent = user.displayName.charAt(0).toUpperCase();
+                    mobilePersonalName.textContent = user.displayName;
+                    mobilePersonalEmail.textContent = user.email || '';
+                } else {
+                    mobilePersonalInfoAuth.style.display = 'none';
+                    mobilePersonalInfoGuest.style.display = '';
+                }
+            });
+        }
+        // Wait for firebase to be ready
+        if (window.firebaseInitialized) {
+            updateProfileSidebar();
+        } else {
+            const checkFirebase = setInterval(() => {
+                if (window.firebaseInitialized) {
+                    clearInterval(checkFirebase);
+                    updateProfileSidebar();
+                }
+            }, 100);
+        }
+        // Address handling for guests
+        function loadGuestAddresses() {
+            const addresses = JSON.parse(localStorage.getItem('guestAddresses') || '[]');
+            renderAddresses(addresses);
+        }
+        // NEW: Load addresses for authenticated user from Firestore
+        function loadUserAddresses(user) {
+            const list = document.getElementById('addresses-list');
+            list.innerHTML = '<div class="text-center py-4"><span class="spinner-border"></span> Loading...</div>';
+            firebase.firestore().collection('users').doc(user.uid).get()
+                .then(doc => {
+                    const data = doc.data();
+                    const addresses = (data && Array.isArray(data.addresses)) ? data.addresses : [];
+                    renderAddresses(addresses);
+                })
+                .catch(err => {
+                    list.innerHTML = '<div class="text-danger">Failed to load addresses.</div>';
+                });
+        }
+        // Render addresses (shared for guest and user)
+        function renderAddresses(addresses) {
+            const list = document.getElementById('addresses-list');
+            list.innerHTML = '';
+            if (!addresses || addresses.length === 0) {
+                document.getElementById('addresses-empty').style.display = '';
+                document.getElementById('add-address-btn').style.display = 'none';
+            } else {
+                document.getElementById('addresses-empty').style.display = 'none';
+                addresses.forEach(addr => {
+                    const div = document.createElement('div');
+                    div.className = 'address-item mb-3 p-2 border rounded';
+                    div.innerHTML = `
+                        <strong>${addr.fullname}</strong><br>
+                        ${addr.addressLine}<br>
+                        ${addr.city}, ${addr.state} - ${addr.pincode}<br>
+                        <span style='font-size:0.95em;color:#555;'>${addr.phone}</span>
+                    `;
+                    list.appendChild(div);
+                });
+                document.getElementById('add-address-btn').style.display = '';
+            }
+        }
+        // Show address form from below-list button
+        document.getElementById('add-address-btn').onclick = function() {
+            document.getElementById('add-address-form').style.display = '';
+            document.getElementById('address-fullname').focus();
+        };
+        // Show form from empty state
+        document.getElementById('add-address-empty-btn').onclick = function() {
+            document.getElementById('add-address-form').style.display = '';
+            document.getElementById('address-fullname').focus();
+        };
+        // Cancel add address
+        document.getElementById('cancel-add-address').onclick = function() {
+            document.getElementById('add-address-form').style.display = 'none';
+            document.getElementById('add-address-form').reset();
+        };
+        // Handle form submit
+        document.getElementById('add-address-form').onsubmit = function(e) {
+            e.preventDefault();
+            const addr = {
+                fullname: document.getElementById('address-fullname').value.trim(),
+                phone: document.getElementById('address-phone').value.trim(),
+                addressLine: document.getElementById('address-line').value.trim(),
+                city: document.getElementById('address-city').value.trim(),
+                state: document.getElementById('address-state').value.trim(),
+                pincode: document.getElementById('address-pincode').value.trim()
+            };
+            if (addr.fullname && addr.phone && addr.addressLine && addr.city && addr.state && addr.pincode) {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    // Authenticated: Save to Firestore
+                    const userDoc = firebase.firestore().collection('users').doc(user.uid);
+                    userDoc.get().then(doc => {
+                        let addresses = [];
+                        if (doc.exists && Array.isArray(doc.data().addresses)) {
+                            addresses = doc.data().addresses;
+                        }
+                        addresses.push(addr);
+                        userDoc.update({ addresses: addresses }).then(() => {
+                            loadUserAddresses(user);
+                        });
+                    });
+                } else {
+                    // Guest: Save to localStorage
+                    let addresses = JSON.parse(localStorage.getItem('guestAddresses') || '[]');
+                    addresses.push(addr);
+                    localStorage.setItem('guestAddresses', JSON.stringify(addresses));
+                    loadGuestAddresses();
+                }
+            }
+            document.getElementById('add-address-form').style.display = 'none';
+            document.getElementById('add-address-form').reset();
+        };
+        // On load, if not logged in, load guest addresses; if logged in, load user addresses
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (!user) {
+                loadGuestAddresses();
+            } else {
+                loadUserAddresses(user);
+            }
+        });
+    });
+
+    function showHideSectionsForGuest(user) {
+        // Orders
+        document.getElementById('orders-guest-message').style.display = user ? 'none' : 'block';
+        document.getElementById('orders-list').style.display = user ? '' : 'none';
+        document.getElementById('orders-empty').style.display = user ? '' : 'none';
+
+        // Profile
+        document.getElementById('profile-guest-message').style.display = user ? 'none' : 'block';
+        // Hide main content for guest in profile
+        document.querySelectorAll('#profile-info-container .form-row, #profile-info-container .form-group').forEach(el => {
+            el.style.display = user ? '' : 'none';
+        });
+
+        // Addresses
+        document.getElementById('addresses-guest-message').style.display = user ? 'none' : 'block';
+        // Wishlist & Cart messages are always shown, so no need to hide/show
+    }
+
+    // Mobile section show/hide logic
+    function showMobileSection(section) {
+        // Hide menu and header
+        document.getElementById('mobile-menu-header').style.display = 'none';
+        document.getElementById('mobile-menu-column').style.display = 'none';
+        document.getElementById('mobile-personal-info').style.display = 'none';
+        // Hide all sections
+        document.querySelectorAll('.mobile-section').forEach(sec => sec.style.display = 'none');
+        // Copy content from desktop section to mobile section
+        let desktopId = section;
+        let mobileId = 'mobile-' + section;
+        const desktopSection = document.getElementById(desktopId);
+        const mobileSection = document.getElementById(mobileId);
+        if (desktopSection && mobileSection) {
+            // Add back button
+            let backBtn = `<button class='btn btn-link' onclick='showMobileMenu()'>← Back</button>`;
+            // Copy header and body
+            let content = desktopSection.innerHTML;
+            mobileSection.innerHTML = backBtn + content;
+            mobileSection.style.display = '';
+            // Re-attach event listeners for add address, wishlist, cart, etc.
+            if (section === 'addresses') {
+                const addBtn = mobileSection.querySelector('#add-address-btn');
+                if (addBtn) {
+                    addBtn.onclick = function() {
+                        const addr = prompt('Enter new address:');
+                        if (addr) {
+                            let addresses = JSON.parse(localStorage.getItem('guestAddresses') || '[]');
+                            addresses.push(addr);
+                            localStorage.setItem('guestAddresses', JSON.stringify(addresses));
+                            loadGuestAddresses();
+                        }
+                    };
+                }
+                const addEmptyBtn = mobileSection.querySelector('#add-address-empty-btn');
+                if (addEmptyBtn) {
+                    addEmptyBtn.onclick = function() {
+                        mobileSection.querySelector('#add-address-btn').click();
+                    };
+                }
+            }
+            if (section === 'wishlist') {
+                const goBtn = mobileSection.querySelector('#go-to-wishlist-btn');
+                if (goBtn) goBtn.onclick = function() { window.location.href = 'wishlist.html'; };
+            }
+            if (section === 'cart') {
+                const goBtn = mobileSection.querySelector('#go-to-cart-btn');
+                if (goBtn) goBtn.onclick = function() { window.location.href = 'cart.html'; };
+            }
+            if (section === 'orders') {
+                const shopBtn = mobileSection.querySelector('#shop-now-btn');
+                if (shopBtn) shopBtn.onclick = function() { window.location.href = 'shop.html'; };
+            }
+            // No extra logic needed for help center
+        }
+    }
+
+    function showMobileMenu() {
+        // Show menu and header
+        document.getElementById('mobile-menu-header').style.display = '';
+        document.getElementById('mobile-menu-column').style.display = '';
+        document.getElementById('mobile-personal-info').style.display = '';
+        // Hide all sections
+        document.querySelectorAll('.mobile-section').forEach(sec => sec.style.display = 'none');
+    }
+
+    // Sync desktop and mobile section content and guest/auth logic
+    function syncMobileSections(user) {
+        // Orders
+        document.getElementById('mobile-orders-guest-message').style.display = user ? 'none' : 'block';
+        document.getElementById('mobile-orders-list').style.display = user ? '' : 'none';
+        document.getElementById('mobile-orders-empty').style.display = user ? '' : 'none';
+        // Addresses
+        document.getElementById('mobile-addresses-guest-message').style.display = user ? 'none' : 'block';
+        document.getElementById('mobile-addresses-list').style.display = user ? '' : 'none';
+        document.getElementById('mobile-addresses-empty').style.display = user ? '' : 'none';
+        // Wishlist & Cart messages always shown
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

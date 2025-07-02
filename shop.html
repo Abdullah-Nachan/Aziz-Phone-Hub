@@ -40,11 +40,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="index.html">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Electronics</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Fashion</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarCategoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarCategoriesDropdown">
+                            <li><a class="dropdown-item" href="category.html?cat=airpods">AirPods</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=smartwatches">Smart Watches</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=headphones">Headphones</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=accessories">Accessories</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=shoes">Shoes</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=crocs">Crocs</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=casualwatch">Casual Watch</a></li>
+                            <li><a class="dropdown-item" href="category.html?cat=combo-offers">Combo Offers</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">About</a>
@@ -270,6 +279,7 @@
     <!-- App Scripts -->
     <script src="static-products.js"></script>
     <script src="search.js"></script>
+    <script src="wishlist.js"></script>
     <script src="cart-wishlist-auth.js"></script>
     <script src="js/cart-handler.js"></script>
     <script src="firestore-cart.js"></script>

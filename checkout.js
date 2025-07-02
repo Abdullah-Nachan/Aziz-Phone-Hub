@@ -210,18 +210,18 @@ async function processPartialCOD(items) {
     try {
         // Collect form data
         const personalDetails = {
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
-            address: document.getElementById('address').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        address: document.getElementById('address').value,
             address2: document.getElementById('address2').value,
-            country: document.getElementById('country').value,
-            state: document.getElementById('state').value,
-            zip: document.getElementById('zip').value
-        };
+        country: document.getElementById('country').value,
+        state: document.getElementById('state').value,
+        zip: document.getElementById('zip').value
+    };
         const orderTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const orderData = {
+    const orderData = {
             orderId: generateOrderId(),
             total: orderTotal,
             customerDetails: personalDetails,
@@ -410,7 +410,7 @@ function validateCheckoutForm() {
     const country = document.getElementById('country');
     const state = document.getElementById('state');
     const zip = document.getElementById('zip');
-
+    
     if (!email.value.trim()) {
         alert('Please enter your email address.');
         email.focus();

@@ -545,7 +545,7 @@
 .navbar .nav-link[href*="cart"] i,
 .navbar .nav-link[href*="wishlist"] i {
     font-size: 1.25rem;
-    color: var(--primary-color); /* Change icon color to black */
+    color: black; /* Change icon color to black */
 }
 
 /* Badge Styling */
@@ -787,7 +787,7 @@
 }
 
 :root {
-    --primary-color: #000000; /* Change primary color to black */
+    --primary-color: #000000 !important;
     --secondary-color: #6c757d;
     --success-color: #28a745;
     --danger-color: #dc3545;
@@ -2130,9 +2130,9 @@ body {
 .offcanvas-title {
     font-size: 1.25rem;
     font-weight: 500;
-}
+    }
 
-.offcanvas-body {
+    .offcanvas-body {
     padding: 1.5rem;
 }
 
@@ -2188,7 +2188,7 @@ body {
 .checkout-steps {
     display: flex;
     align-items: center;
-  justify-content: center;
+    justify-content: center;
     margin-bottom: 2rem;
   gap: 0;
 }
@@ -2238,8 +2238,9 @@ body {
   height: 2px;
   background: #d1d5db;
   margin: 0 8px;
-    position: relative;
-  top: 20px;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 0;
 }
 
@@ -2280,26 +2281,26 @@ h2.section-title.text-center.mb-4:after {
   z-index: 1050;
   box-shadow: 0 -2px 8px rgba(0,0,0,0.07);
   border-top: 1px solid #e5e7eb;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
   gap: 0.5rem;
 }
 .fixed-bottom-footer a, .fixed-bottom-footer span, .fixed-bottom-footer i {
   color: #000 !important;
   text-align: center;
   font-size: 1rem;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   flex-direction: row;
   gap: 0.25rem;
   position: relative;
 }
 .fixed-bottom-footer a {
-  flex-direction: column;
+    flex-direction: column;
   gap: 0.1rem;
   min-width: 44px;
   min-height: 36px;
@@ -2315,15 +2316,15 @@ h2.section-title.text-center.mb-4:after {
   min-width: 18px;
   height: 18px;
   line-height: 18px;
-  border-radius: 50%;
+    border-radius: 50%;
   position: absolute;
   top: 2px;
   right: 10px;
   z-index: 2;
   padding: 0 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   font-weight: bold;
 }
 @media (min-width: 992px) {
@@ -2434,8 +2435,8 @@ h2.section-title.text-center.mb-4:after {
 }
 
 .method-item {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
     gap: 0.5rem;
     padding: 0.5rem;
     border-radius: 4px;
@@ -2519,7 +2520,7 @@ h2.section-title.text-center.mb-4:after {
 .order-step .timeline-date {
     font-weight: bold;
     margin-bottom: 0.25rem;
-    font-size: 1.1rem;
+        font-size: 1.1rem;
     color: #111;
     transition: color 0.2s;
 }

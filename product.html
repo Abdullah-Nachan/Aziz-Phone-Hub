@@ -254,6 +254,7 @@
                 <div class="col-md-4">
                     <div class="reviews-summary bg-white p-4 rounded shadow-sm">
                         <h3 class="mb-4">Customer Reviews</h3>
+                        <button id="rate-product-btn" class="btn btn-primary w-100 mb-3"><i class="fas fa-star me-2"></i>Rate Product</button>
                         <div class="overall-rating text-center mb-4">
                             <div class="rating-number display-4 fw-bold text-primary" id="overall-rating">4.5</div>
                             <div class="rating-stars mb-2" id="overall-rating-stars">
@@ -305,80 +306,26 @@
                     </div>
                 </div>
                 <div class="col-md-8">
+                    <!-- Media Gallery Row -->
+                    <div id="review-media-gallery" class="review-media-gallery mb-4 d-flex align-items-center overflow-auto" style="gap: 10px; min-height: 90px;"></div>
                     <div class="reviews-list" id="reviewsList">
                         <!-- Reviews will be kept static for now -->
-                        <!-- Review 1 -->
-                        <div class="review-item bg-white p-4 rounded shadow-sm mb-4">
-                            <div class="review-header d-flex justify-content-between align-items-center mb-3">
-                                <div class="reviewer-info">
-                                    <h5 class="mb-1">Rahul Sharma</h5>
-                                    <div class="rating-stars text-warning">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                </div>
-                                <div class="review-date text-muted">2 days ago</div>
-                            </div>
-                            <div class="review-content">
-                                <p>Excellent product! The sound quality is amazing and the battery life is impressive. The active noise cancellation works perfectly. Highly recommended!</p>
-                            </div>
-                            <div class="review-images mt-3">
-                                <img src="images/placeholder.svg" alt="Review Image" class="review-image me-2" style="width: 80px; height: 80px; object-fit: cover;">
-                                <img src="images/placeholder.svg" alt="Review Image" class="review-image" style="width: 80px; height: 80px; object-fit: cover;">
-                            </div>
-                        </div>
-
-                        <!-- Review 2 -->
-                        <div class="review-item bg-white p-4 rounded shadow-sm mb-4">
-                            <div class="review-header d-flex justify-content-between align-items-center mb-3">
-                                <div class="reviewer-info">
-                                    <h5 class="mb-1">Priya Patel</h5>
-                                    <div class="rating-stars text-warning">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                    </div>
-                                </div>
-                                <div class="review-date text-muted">1 week ago</div>
-                            </div>
-                            <div class="review-content">
-                                <p>Great product overall. The fit is comfortable and the sound quality is good. However, the battery life could be better. The charging case is very convenient.</p>
-                            </div>
-                        </div>
-
-                        <!-- Review 3 -->
-                        <div class="review-item bg-white p-4 rounded shadow-sm">
-                            <div class="review-header d-flex justify-content-between align-items-center mb-3">
-                                <div class="reviewer-info">
-                                    <h5 class="mb-1">Amit Kumar</h5>
-                                    <div class="rating-stars text-warning">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star-half-alt"></i>
-                                    </div>
-                                </div>
-                                <div class="review-date text-muted">2 weeks ago</div>
-                            </div>
-                            <div class="review-content">
-                                <p>Very satisfied with the purchase. The noise cancellation is impressive and the sound quality is excellent. The only minor issue is that it sometimes takes a few seconds to connect to my phone.</p>
-                            </div>
-                        </div>
+                        <!-- Remove all static review HTML blocks here -->
                     </div>
 
                     <!-- Write a Review Section -->
                     <div class="write-review-section mt-4">
                         <h3 class="mb-3">Write a Review</h3>
                         <form id="write-review-form">
-                            <div class="mb-3">
-                                <label for="reviewer-name" class="form-label">Your Name</label>
-                                <input type="text" class="form-control" id="reviewer-name" placeholder="Enter your name">
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-2 mb-md-0">
+                                    <label for="reviewer-firstname" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="reviewer-firstname" placeholder="Enter your first name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="reviewer-lastname" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="reviewer-lastname" placeholder="Enter your last name">
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Rating</label>

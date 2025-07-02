@@ -78,24 +78,37 @@ body {
 }
 
 .profile-header {
-    padding: 20px;
-    border-bottom: 1px solid #e0e0e0;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 18px;
+    margin-bottom: 24px;
 }
 
 .profile-avatar {
-    width: 50px;
-    height: 50px;
-    background: #000000;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
+    background: #111;
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fffbf8;
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.profile-info h3#profile-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0 0 2px 0;
+}
+
+.profile-info p#profile-hello {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+    color: #555;
 }
 
 .profile-info h3 {
@@ -474,5 +487,46 @@ body {
 
     .search-bar {
         display: none;
+    }
+}
+
+/* --- Review Media Gallery Styles --- */
+.review-media-gallery {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    min-height: 90px;
+}
+.review-media-gallery img,
+.review-media-gallery video {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    background: #fafafa;
+    margin-right: 4px;
+}
+.review-media-gallery video {
+    background: #000;
+}
+#rate-product-btn {
+    margin-bottom: 1rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(40,116,240,0.08);
+}
+@media (max-width: 768px) {
+    .review-media-gallery {
+        min-height: 70px;
+    }
+    .review-media-gallery img,
+    .review-media-gallery video {
+        width: 60px;
+        height: 60px;
     }
 } 

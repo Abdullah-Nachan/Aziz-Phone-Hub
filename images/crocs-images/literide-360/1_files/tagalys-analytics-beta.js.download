@@ -1,0 +1,313 @@
+(function() {
+
+  var q = window[window.TagalysAnalyticsObject].q
+  window[window.TagalysAnalyticsObject].q = [];
+
+  window[window.TagalysAnalyticsObject] = function () {
+    for (var i = 0; i < q.length; i++) {
+      ta_process.apply(window, q[i])
+    }
+    q = [];
+    ta_process.apply(window, arguments)
+  }
+
+  var ta_process = function() {
+    switch (arguments[0]) {
+      case 'init':
+        Tagalys.Context.apiServer = arguments[1].api_server;
+        Tagalys.Context.apiIdentification.client_code = arguments[1].client_code;
+        Tagalys.Context.apiIdentification.api_key = arguments[1].api_key;
+        Tagalys.Context.apiIdentification.store_id = arguments[1].store_id;
+        break;
+      case 'track':
+        switch (arguments[1]) {
+          case 'product_list':
+          case 'product_action':
+            Tagalys.Analytics.trackEvent(arguments[1], arguments[2]);
+            break;
+          case 'user_sign_in':
+            Tagalys.Analytics.trackUserIfRequired(arguments[2]);
+            break;
+          default:
+            break;
+        }
+      default:
+        break;
+    }
+  }
+
+  var Tagalys = {
+    internalVersion: '0.1'
+  };
+
+  Tagalys.Context = {
+    apiServer: 'http://localhost.tagalys.com:5001',
+    apiVersion: 1,
+    apiIdentification: {
+      client_code: "87214441B4D9DF64",
+      api_key: "9b816db777191029deebf3021f82f126",
+      store_id: "1"
+    },
+    userId: null
+  };
+
+  Tagalys.Analytics = {};
+
+  Tagalys.Analytics.rapidEventSequence = 0;
+  Tagalys.Analytics.lastEventTimestamp = false;
+
+  Tagalys.Analytics.createRequiredCookies = function() {
+    Tagalys.Utilities.Cookie.updateCookie('__ta_device', 63072000000);
+    Tagalys.Utilities.Cookie.updateCookie('__ta_visit', 1800000);
+  };
+
+  Tagalys.Analytics.track = function(endpoint, trackData, trackerVersion) {
+    if (Tagalys.Utilities.Cookie.cookiesEnabled()) {
+      if (typeof(trackerVersion) == 'undefined') {
+        trackerVersion = 3;
+      }
+      Tagalys.Analytics.createRequiredCookies();
+      var user = {
+        device_id: Tagalys.Utilities.Cookie.getCookie('__ta_device'),
+        visit_id: Tagalys.Utilities.Cookie.getCookie('__ta_visit')
+      }
+      var user_id = Tagalys.Utilities.Cookie.getCookie('__ta_user_id');
+      if (user_id != "") {
+        user.user_id = user_id
+      }
+      var ajax_url = Tagalys.Context.apiServer + '/v' + 1 + '/' + endpoint;
+      if (Tagalys.Analytics.lastEventTimestamp != false) {
+        var secondsSinceLastEvent = Math.floor((Date.now() - Tagalys.Analytics.lastEventTimestamp) / 1000);
+      } else {
+        var secondsSinceLastEvent = 999999;
+      }
+      if (secondsSinceLastEvent < 2) {
+        Tagalys.Analytics.rapidEventSequence += 1;
+      } else {
+        Tagalys.Analytics.rapidEventSequence = 0;
+      }
+      Tagalys.Analytics.lastEventTimestamp = Date.now();
+      var mergedData = trackData;
+      mergedData['rapid_event_sequence'] = Tagalys.Analytics.rapidEventSequence;
+      mergedData['tracker_version'] = trackerVersion;
+      mergedData['identification'] = Tagalys.Utilities.Misc.deepExtend({}, Tagalys.Context.apiIdentification, { user: user });
+      Tagalys.Utilities.Ajax.ajax({
+        method: 'POST',
+        url: ajax_url,
+        contentType: 'application/x-www-form-urlencoded',
+        data: JSON.stringify(mergedData),
+        includeInCallbacks: { trackData: trackData },
+        success: function(data, preservedContext) {
+          var dataParsed = JSON.parse(data);
+          if (preservedContext.trackData.hasOwnProperty('event_type')) {
+            if (preservedContext.trackData.event_type == 'product_action' && dataParsed.hasOwnProperty('timestamp')) {
+              Tagalys.Utilities.Cookie.setCookie('__ta_last_pa_time', dataParsed.timestamp.split('T')[1].substring(0,6), 1200000);
+            }
+          }
+        }
+      });
+    }
+  }
+
+  Tagalys.Analytics.trackEvent = function(event_type, details, trackerVersion) {
+    if (typeof(trackerVersion) == 'undefined') {
+      trackerVersion = 3;
+    }
+    Tagalys.Analytics.track('analytics/events/track', { event_type: event_type, details: details }, trackerVersion);
+  }
+
+  Tagalys.Analytics.trackUser = function(user_id, update_visit, trackerVersion) {
+    if (Tagalys.Utilities.Cookie.cookiesEnabled()) {
+      if (typeof(trackerVersion) == 'undefined') {
+        trackerVersion = 3;
+      }
+      if (typeof(update_visit) == 'undefined') {
+        update_visit = true;
+      }
+      if (update_visit) {
+        Tagalys.Analytics.track('analytics/users/track', { user_id: user_id }, trackerVersion);
+      }
+    }
+  }
+
+  Tagalys.Analytics.trackUserIfRequired = function (userId) {
+    var cookieName = '__ta_user_id';
+    if (userId == null) {
+      Tagalys.Utilities.Cookie.deleteCookie(cookieName);
+      return;
+    }
+    var trackedUserId = Tagalys.Utilities.Cookie.getCookie(cookieName);
+    if (trackedUserId != userId) {
+      Tagalys.Analytics.trackUser(userId, true);
+      Tagalys.Utilities.Cookie.setCookie(cookieName, userId, 63072000000);
+      Tagalys.Utilities.Cookie.updateCookie('__ta_device', 63072000000);
+    }
+  }
+
+  Tagalys.Api = {
+    call: function(endpoint, data, callback, failureCallback) {
+      data.identification = Tagalys.Context.apiIdentification;
+      data.identification.user = {
+        device_id: Tagalys.Utilities.Cookie.getCookie('__ta_device'),
+        visit_id: Tagalys.Utilities.Cookie.getCookie('__ta_visit')
+      };
+      if (Tagalys.Utilities.Cookie.cookiesEnabled()) {
+        data.last_pa_time = Tagalys.Utilities.Cookie.getCookie('__ta_last_pa_time');
+      }
+      Tagalys.Utilities.Ajax.ajax({
+        method: 'POST',
+        url: Tagalys.Context.apiServer + '/v' + Tagalys.Context.apiVersion + '/' + endpoint,
+        contentType: 'application/x-www-form-urlencoded',
+        data: Tagalys.Utilities.Misc.objectToFormData(data),
+        includeInCallbacks: {},
+        success: function (data, preservedContext) {
+          var dataParsed = JSON.parse(data);
+          callback(dataParsed);
+        },
+        failure: function(xhr, preservedContext) {
+          failureCallback(xhr, preservedContext)
+        }
+      });
+    }
+  };
+
+  Tagalys.Utilities = {};
+
+  Tagalys.Utilities.Ajax = {};
+  Tagalys.Utilities.Ajax.ajax = function (params) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(params.method, params.url);
+    xhr.setRequestHeader('Content-Type', params.contentType);
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        params.success(xhr.responseText, params.includeInCallbacks)
+      } else {
+        if(typeof(params.failure) != 'undefined') {
+          params.failure(xhr, params.includeInCallbacks);
+        }
+      }
+    };
+    xhr.onerror = function() {
+      if(typeof(params.failure) != 'undefined') {
+        params.failure(xhr, params.includeInCallbacks);
+      }
+    }
+    xhr.send(params.data);
+  };
+
+  Tagalys.Utilities.Cookie = {};
+
+  Tagalys.Utilities.Cookie.cookiesEnabled = function () {
+    var cookieEnabled = navigator.cookieEnabled;
+    if (!cookieEnabled) {
+      document.cookie = "testcookie";
+      cookieEnabled = document.cookie.indexOf("testcookie") != -1;
+    }
+    return cookieEnabled;
+  }
+
+  Tagalys.Utilities.Cookie.setCookie = function (cname, cvalue, extime) {
+    var d = new Date();
+    d.setTime(d.getTime() + extime);
+    var expires = "expires=" + d.toUTCString();
+    cvalue = cvalue.replace(/;/g, '%3B');
+    if (window.location.hostname.indexOf('.') === -1) {
+      document.cookie = cname + "=" + cvalue + "; " + expires + "; " + "path=/; " + "domain=" + window.location.hostname;
+    } else {
+      document.cookie = cname + "=" + cvalue + "; " + expires + "; " + "path=/; " + "domain=." + window.location.hostname;
+    }
+  };
+
+  Tagalys.Utilities.Cookie.getCookie = function (cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') c = c.substring(1);
+      if (c.indexOf(name) == 0) {
+        var cvalue = c.substring(name.length, c.length);
+        cvalue = cvalue.replace(/%3B/g, ';');
+        return cvalue
+      }
+    }
+    return "";
+  };
+
+  Tagalys.Utilities.Cookie.deleteCookie = function (cname) {
+    Tagalys.Utilities.Cookie.setCookie(cname, "", -1);
+  };
+
+  // Creates the cookie with cname if required. If the cookie already exists, update the expiration time to current_time + extm
+  Tagalys.Utilities.Cookie.updateCookie = function (cname, extm) {
+    var cvalue = Tagalys.Utilities.Cookie.getCookie(cname);
+    if (cvalue == "") {
+      cvalue = Tagalys.Utilities.Misc.randomId(32);
+    }
+    // The cookie can be expired after the above if check. So, setting it again!
+    Tagalys.Utilities.Cookie.setCookie(cname, cvalue, extm);
+  }
+
+  Tagalys.Utilities.Misc = {};
+
+  // http://stackoverflow.com/questions/10726909/random-alpha-numeric-string-in-javascript
+  Tagalys.Utilities.Misc.randomId = function  (length) {
+    var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var result = '';
+    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    return result;
+  };
+
+  Tagalys.Utilities.Misc.deepExtend = function(out) {
+    out = out || {};
+
+    for (var i = 1; i < arguments.length; i++) {
+      var obj = arguments[i];
+
+      if (!obj)
+        continue;
+
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          if (typeof obj[key] === 'object')
+            out[key] = Tagalys.Utilities.Misc.deepExtend(out[key], obj[key]);
+          else
+            out[key] = obj[key];
+        }
+      }
+    }
+
+    return out;
+  };
+
+  Tagalys.Utilities.Misc.flattenObject = function(ob) {
+    var toReturn = {};
+    for (var i in ob) {
+      if (!ob.hasOwnProperty(i)) continue;
+      if ((typeof ob[i]) == 'object' && ob[i] !== null) {
+        var flatObject = this.flattenObject(ob[i]);
+        for (var x in flatObject) {
+          if (!flatObject.hasOwnProperty(x)) continue;
+
+          toReturn[i + '.' + x] = flatObject[x];
+        }
+      } else {
+        toReturn[i] = ob[i];
+      }
+    }
+    return toReturn;
+  }
+  Tagalys.Utilities.Misc.objectToFormData = function (ob) {
+    var flattenedObject = this.flattenObject(ob);
+    var formData = Object.keys(flattenedObject).map(function(k) {
+      if(k.indexOf('.') == -1) {
+        var formatted = k;
+      } else {
+        var formatted = k.replace(/.\d+/g, '.').split('.').join('][').replace(']', '') + ']';
+      }
+      return encodeURIComponent(formatted) + '=' + encodeURIComponent(flattenedObject[k])
+    }).join('&');
+    return formData;
+  }
+
+  window[window.TagalysAnalyticsObject]();
+})()
