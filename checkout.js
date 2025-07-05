@@ -195,7 +195,7 @@ function ensureCODInfoSection() {
             <div class="text-center mb-3">
                 <!-- Placeholder video, replace src with your link -->
                 <video id="cod-info-video" width="320" height="180" controls style="max-width:100%;border-radius:10px;">
-                    <source src="" type="video/mp4">
+                    <source src="video/COD.mp4" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
@@ -244,7 +244,7 @@ async function processPartialCOD(items) {
 // Razorpay integration for Partial COD
 async function processPartialCODWithRazorpay(orderData) {
     try {
-        // Ensure Razorpay script is loaded
+        // Ensure Razorpay script is loaded (reuse logic from razorpay-integration.js)
         if (typeof Razorpay === 'undefined') {
             await new Promise((resolve, reject) => {
                 const script = document.createElement('script');
@@ -254,14 +254,30 @@ async function processPartialCODWithRazorpay(orderData) {
                 document.head.appendChild(script);
             });
         }
-        // Prepare Razorpay options for ₹100
+        
+        // First, create an order on the backend to get a proper order ID
+        const orderRes = await fetch(currentConfig.backendUrl.replace('/verify-payment', '/create-order'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                amount: 100, // ₹100 advance for partial COD
+                currency: 'INR',
+                payment_capture: 1 // Ensure auto-capture
+            })
+        });
+        
+        const order = await orderRes.json();
+        if (!order.id) throw new Error('Failed to create Razorpay order');
+
+        // Prepare Razorpay options for ₹100 advance
         const options = {
-            key: RAZORPAY_TEST_CONFIG.key,
+            key: currentConfig.key,
             amount: 100 * 100, // ₹100 in paise
-            currency: RAZORPAY_TEST_CONFIG.currency,
-            name: RAZORPAY_TEST_CONFIG.name,
+            currency: 'INR',
+            name: RAZORPAY_OPTIONS.name,
             description: 'Advance for Partial COD',
-            image: RAZORPAY_TEST_CONFIG.image,
+            image: RAZORPAY_OPTIONS.image,
+            order_id: order.id, // Use the server-generated order ID
             handler: async function(response) {
                 // On payment success, save order as partial COD
                 await handlePartialCODPaymentSuccess(response, orderData);
@@ -273,34 +289,27 @@ async function processPartialCODWithRazorpay(orderData) {
             },
             notes: {
                 address: orderData.customerDetails.address,
-                order_id: orderData.orderId
+                order_id: orderData.orderId,
+                payment_type: 'partial_cod_advance'
             },
-            theme: RAZORPAY_TEST_CONFIG.theme,
-            config: {
-                display: {
-                    blocks: {
-                        card: {
-                            name: "Pay with Card",
-                            instruments: [{ method: "card" }]
-                        },
-                        netbanking: {
-                            name: "Net Banking",
-                            instruments: [{ method: "netbanking" }]
-                        },
-                        upi: {
-                            name: "UPI",
-                            instruments: [{ method: "upi" }]
-                        },
-                        wallet: {
-                            name: "Wallets",
-                            instruments: [{ method: "wallet" }]
-                        }
-                    },
-                    sequence: ["block.card", "block.netbanking", "block.upi", "block.wallet"],
-                    preferences: {
-                        show_default_blocks: false
-                    }
-                }
+            theme: RAZORPAY_OPTIONS.theme,
+            // Ensure auto-capture is enabled
+            payment_capture: 1,
+            // Configure payment methods
+            method: {
+                netbanking: true,
+                card: true,
+                upi: true,
+                wallet: true,
+                emi: false,
+                paylater: false
+            },
+            // Set up a timeout to prevent hanging
+            timeout: 300, // 5 minutes
+            // Add retry configuration
+            retry: {
+                enabled: true,
+                max_count: 4
             }
         };
         const rzp = new Razorpay(options);
@@ -318,45 +327,92 @@ async function processPartialCODWithRazorpay(orderData) {
 
 // Handle successful partial COD payment
 async function handlePartialCODPaymentSuccess(response, orderData) {
+    const advancePaid = 100;
+    const remainingAmount = orderData.total - advancePaid;
+    
     try {
-        // Prepare order details for partial COD
-        const advancePaid = 100;
-        const remainingAmount = orderData.total - advancePaid;
+        // Save the order with pending status first
         const orderDetails = {
             items: orderData.items,
-            total: orderData.total, // Always keep the original total
-            status: 'pending',
+            total: orderData.total,
+            status: 'confirmed',
             paymentMethod: 'Partial COD',
-            paymentStatus: 'advance-paid',
+            paymentStatus: 'pending', // Changed from 'advance_paid' to 'pending'
             advancePaid: advancePaid,
             remainingAmount: remainingAmount,
-            paymentResponse: response
+            paymentResponse: response,
+            paymentVerified: false, // Changed from true to false
+            paymentInitiatedAt: new Date().toISOString(), // Changed from paymentVerifiedAt
+            razorpay: {
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                signature: response.razorpay_signature
+            }
         };
+        
         const personalDetailsForOrder = orderData.customerDetails;
-        // Save the order in Firestore
+        
+        // Save the order in Firestore with pending status
         await saveOrder(orderData.orderId, orderDetails, personalDetailsForOrder);
+        
+        // Clear the cart after successful order
+        if (typeof clearCart === 'function') {
+            await clearCart();
+        }
+        
         // Show success message for Partial COD
         Swal.fire({
             title: 'Order Confirmed! 🎉',
             html: `
-                <p>Your order has been confirmed with Partial COD!</p>
-                <p>Order ID: <strong>${orderData.orderId}</strong></p>
-                <p>Advance Paid: <strong>₹${advancePaid}</strong></p>
-                <p>Amount to Pay on Delivery: <strong>₹${remainingAmount}</strong></p>
-                <p>Thank you for shopping with Aziz Phone Hub! 🙏</p>
+                <div style="text-align: left;">
+                    <p>Your order has been confirmed with Partial COD!</p>
+                    <p><strong>Order ID:</strong> ${orderData.orderId}</p>
+                    <p><strong>Advance Paid:</strong> ₹${advancePaid}</p>
+                    <p><strong>Amount to Pay on Delivery:</strong> ₹${remainingAmount}</p>
+                    <p><strong>Payment ID:</strong> ${response.razorpay_payment_id}</p>
+                    <p>You will receive an order confirmation shortly.</p>
+                    <p>Thank you for shopping with Aziz Phone Hub! 🙏</p>
+                </div>
             `,
             icon: 'success',
-            confirmButtonText: 'Continue Shopping'
+            confirmButtonText: 'Continue Shopping',
+            allowOutsideClick: false
         }).then(() => {
+            // Redirect to home page
             window.location.href = 'index.html';
         });
     } catch (error) {
-        console.error('Partial COD payment success error:', error);
+        console.error('Partial COD payment processing error:', error);
+        
+        // Try to save the failed payment attempt for debugging
+        try {
+            await saveOrder(orderData.orderId, {
+                items: orderData.items,
+                total: orderData.total,
+                status: 'payment_failed',
+                paymentStatus: 'failed',
+                error: error.message,
+                paymentResponse: response,
+                timestamp: new Date().toISOString()
+            }, orderData.customerDetails);
+        } catch (saveError) {
+            console.error('Failed to save failed payment attempt:', saveError);
+        }
+        
+        // Show error message to user
         Swal.fire({
-            title: 'Order Error',
-            text: 'There was an issue saving your order. Please contact support.',
+            title: 'Payment Processing Error',
+            html: `
+                <p>There was an issue processing your payment.</p>
+                <p><strong>Error:</strong> ${error.message || 'Unknown error'}</p>
+                <p>Your payment has been received but we couldn't confirm your order. Please contact support with your Order ID: <strong>${orderData.orderId}</strong></p>
+            `,
             icon: 'error',
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
+            allowOutsideClick: false
+        }).then(() => {
+            // Redirect to home page
+            window.location.href = 'index.html';
         });
     }
 }

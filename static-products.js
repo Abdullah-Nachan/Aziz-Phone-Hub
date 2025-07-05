@@ -6,7 +6,6 @@
 
 // Initialize empty products object
 if (!window.products) window.products = {
-
   "airpods01": {
     id: "airpods01",
     brand: "Apple",
@@ -123,7 +122,7 @@ if (!window.products) window.products = {
       "images/Headphone-images/Airpod max/4.webp",
       "images/Headphone-images/Airpod max/5.webp",
     ],
-    price: "₹1,999",
+    price: "₹1,799",
     description: "Over-ear headphones with high-fidelity audio, active noise cancellation, and spatial audio.",
     category: "headphones"
   },
@@ -141,7 +140,7 @@ if (!window.products) window.products = {
       "images/Headphone-images/Bose qc/6.webp",
       "images/Headphone-images/Bose qc/7.webp",
     ],
-    price: "₹1,699",
+    price: "₹1,799",
     description: "Premium noise-cancelling headphones with exceptional sound quality and comfort.",
     category: "headphones"
   },
@@ -247,7 +246,7 @@ if (!window.products) window.products = {
       "images/smartwatch-images/series 10/6.webp",
       "images/smartwatch-images/series 10/7.webp",
     ],
-    price: "₹3,999",
+    price: "₹1,799",
     description: "The latest Apple Watch with advanced health monitoring and fitness tracking features.",
     category: "smartwatches"
   },
@@ -320,7 +319,7 @@ if (!window.products) window.products = {
       "images/shoes-images/nike-zoom-vomero-triple-black/7.jpg",
       "images/shoes-images/nike-zoom-vomero-triple-black/8.jpg",
     ],
-    price: "₹1,999",
+    price: "₹2,999",
     description: "Premium running shoes with responsive cushioning and sleek all-black design.",
     category: "shoes"
   },
@@ -335,7 +334,7 @@ if (!window.products) window.products = {
       "images/shoes-images/nike-zoom-vomero-white-black/3.jpg",
       "images/shoes-images/nike-zoom-vomero-white-black/4.jpg",
     ],
-    price: "₹1,999",
+    price: "₹2,999",
     description: "Stylish running shoes with responsive cushioning in a classic white and black colorway.",
     category: "shoes"
   },
@@ -351,7 +350,7 @@ if (!window.products) window.products = {
       "images/shoes-images/puma-suede-crush/4.jpg",
       "images/shoes-images/puma-suede-crush/5.jpg",
     ],
-    price: "₹1,899",
+    price: "₹2,599",
     description: "Classic Puma suede sneakers with a platform sole and timeless black and white design.",
     category: "shoes"
   },
@@ -366,7 +365,7 @@ if (!window.products) window.products = {
       "images/shoes-images/nike-air-max90/3.jpg",
       "images/shoes-images/nike-air-max90/4.jpg",
     ],
-    price: "₹2,499",
+    price: "₹2,999",
     description: "Classic Nike Air Max 90 sneakers with comfortable cushioning and stylish design.",
     category: "shoes"
   },
@@ -462,14 +461,14 @@ if (!window.products) window.products = {
     name: "Crocs LiteRide 360",
     image: "images/crocs-literide-360.jpg",
     images: [
-      "images/crocs_literide360.jpeg",
-      "images/crocs.jpeg",
-      "images/crocs_bayband.jpeg",
-      "images/crocs_bayband_flip.jpeg",
-      "images/crocs_bayband_slide.jpeg",
-      "images/ride crocs.jpeg"
+      "images/crocs-images/literide-360/1.png",
+      "images/crocs-images/literide-360/2.png",
+      "images/crocs-images/literide-360/3.png",
+      "images/crocs-images/literide-360/4.png",
+      "images/crocs-images/literide-360/5.png",
+      "images/crocs-images/literide-360/6.png",
     ],
-    price: "₹1,299",
+    price: "₹1,899",
     description: "Comfortable and lightweight Crocs LiteRide 360 with responsive cushioning.",
     category: "crocs"
   },
@@ -478,14 +477,13 @@ if (!window.products) window.products = {
     name: "Crocs Bayaband Clog",
     image: "images/crocs-bayband.jpg",
     images: [
-      "images/crocs_bayband.jpeg",
-      "images/crocs_bayband_flip.jpeg",
-      "images/crocs_bayband_slide.jpeg",
-      "images/crocs.jpeg",
-      "images/crocs_literide360.jpeg",
-      "images/ride crocs.jpeg"
+      "images/crocs-images/bayband-clog/1.png",
+      "images/crocs-images/bayband-clog/2.png",
+      "images/crocs-images/bayband-clog/3.png",
+      "images/crocs-images/bayband-clog/4.png",
+      "images/crocs-images/bayband-clog/5.png",
     ],
-    price: "₹999",
+    price: "₹1,899",
     description: "Classic Crocs Bayaband Clog with sporty stripe and unmatched comfort.",
     category: "crocs"
   },
@@ -494,14 +492,14 @@ if (!window.products) window.products = {
     name: "Crocs Bayaband Flip",
     image: "images/crocs-bayband-flip.jpg",
     images: [
-      "images/crocs_bayband_flip.jpeg",
-      "images/crocs_bayband.jpeg",
-      "images/crocs_bayband_slide.jpeg",
-      "images/crocs.jpeg",
-      "images/crocs_literide360.jpeg",
-      "images/ride crocs.jpeg"
+      "images/crocs-images/bayaband-flip/1.png",
+      "images/crocs-images/bayaband-flip/2.png",
+      "images/crocs-images/bayaband-flip/3.png",
+      "images/crocs-images/bayaband-flip/4.png",
+      "images/crocs-images/bayaband-flip/5.png",
+      "images/crocs-images/bayaband-flip/6.png",
     ],
-    price: "₹999",
+    price: "₹1,899",
     description: "Comfortable flip-flop style Crocs with the signature Bayaband design.",
     category: "crocs"
   },
@@ -510,11 +508,13 @@ if (!window.products) window.products = {
     name: "Crocs Yukon",
     image: "images/crocs-yukon.jpg",
     images: [
-      "images/crocs_yukon.jpeg",
-      "images/crocs_echo_clog.jpeg",
-      "images/crocs_bayband.jpeg",
-      "images/crocs.jpeg",
-      "images/ride crocs.jpeg"
+      "images/crocs-images/yukon/1.png",
+      "images/crocs-images/yukon/2.png",
+      "images/crocs-images/yukon/3.png",
+      "images/crocs-images/yukon/4.png",
+      "images/crocs-images/yukon/5.png",
+      "images/crocs-images/yukon/6.png",
+      "images/crocs-images/yukon/7.png",
     ],
     price: "₹1,899",
     description: "Rugged Crocs design with leather upper for a more refined look.",
@@ -532,7 +532,7 @@ if (!window.products) window.products = {
       "images/Accessories-images/adapter/4.webp",
       "images/Accessories-images/adapter/5.webp",
     ],
-    price: "₹549",
+    price: "₹799",
     description: "Fast-charging Apple 20W USB-C power adapter for iPhone, iPad, and AirPods.",
     category: "accessories"
   },
@@ -547,7 +547,7 @@ if (!window.products) window.products = {
       "images/Accessories-images/C to C cable/3.webp",
       "images/Accessories-images/C to C cable/4.webp",
     ],
-    price: "₹999",
+    price: "₹450",
     description: "High-quality USB-C to USB-C cable for fast charging and data transfer.",
     category: "accessories"
   },
@@ -562,7 +562,7 @@ if (!window.products) window.products = {
       "images/Accessories-images/C to lightining Cable/3.webp",
       "images/Accessories-images/C to lightining Cable/4.webp",
     ],
-    price: "₹399",
+    price: "₹450",
     description: "Original Apple USB-C to Lightning cable for fast charging your iPhone or iPad.",
     category: "accessories"
   },
@@ -592,10 +592,27 @@ if (!window.products) window.products = {
       "images/Offer-images/airpods-&-magsafe/2.webp",
       "images/Offer-images/airpods-&-magsafe/3.webp",
       "images/Offer-images/airpods-&-magsafe/4.webp",
+      "images/Offer-images/airpods-&-magsafe/5.webp",
+      "images/Offer-images/airpods-&-magsafe/6.webp",
+      "images/Offer-images/airpods-&-magsafe/7.webp",
+      "images/Offer-images/airpods-&-magsafe/8.webp",
     ],
     price: "₹1,499",
-    description: "Original Apple USB-C to Lightning cable for fast charging your iPhone or iPad.",
-    category: "combo-offers"
+    description: "Unlock the ultimate convenience with our AirPods Pro 2 & MagSafe Battery Pack combo. Enjoy immersive sound quality, active noise cancellation, and seamless wireless charging wherever you go. Perfect for music lovers and those who need power on the move.",
+    category: "combo-offers",
+    detailedDescription: {
+      sections: [
+        { type: 'text', content: 'Experience the pinnacle of wireless audio technology with our AirPods Pro (2nd generation) wireless earbuds. Designed to provide an extraordinary listening experience, these earbuds offer the same features, packaging, and design as the leading brand, but at a fraction of the cost.' },
+        { type: 'image', src: 'images/Offer-images/airpods-&-magsafe/desc-1.webp' },
+        { type: 'text', content: 'Immerse yourself in exceptional sound quality and crystal-clear audio with our premium wireless earbuds. Whether you\'re a music enthusiast, podcast lover, or simply seeking an enhanced audio experience, our earbuds deliver unparalleled performance.' },
+        { type: 'image', src: 'images/Offer-images/airpods-&-magsafe/desc-2.webp' },
+        { type: 'text', content: '<b>Key Features:</b><br>1. Superior Sound Quality: Enjoy immersive sound with dynamic range and rich bass response, bringing your favorite music and media to life.<br><br> 2. Seamless Connectivity: Effortlessly connect to your device via Bluetooth, ensuring a stable and hassle-free wireless experience.<br><br>3. Sleek Design and Comfort: Designed for both style and comfort, our earbuds boast a sleek and ergonomic design that fits snugly in your ears for extended listening sessions.<br><br>4. Long Battery Life: Enjoy hours of uninterrupted listening with our long-lasting battery, ensuring you never miss a beat.' },
+        { type: 'image', src: 'images/Offer-images/airpods-&-magsafe/desc-3.webp' },
+        { type: 'text', content: 'Our wireless earbuds come in the same high-quality box and packaging as the leading brand, giving you a premium unboxing experience.<br><br>Priced at an incredible ₹1,499, our AirPods Pro (2nd generation) wireless earbuds offer unmatched value for money. Say goodbye to overpriced alternatives and experience the same technology, performance, and style without straining your budget.' },
+        { type: 'image', src: 'images/Offer-images/airpods-&-magsafe/desc-4.png' },
+        { type: 'text', content: 'Upgrade your audio game with our AirPods Pro (2nd generation) wireless earbuds and embrace the freedom of wireless sound. Order now and immerse yourself in a world of exceptional audio experiences.<br><br>Powerbank is wireless and magsafe which works well with iPhones. It charges upto 35% as it is wireless and can be used while using phone hassle free.<br><br><b>Note:</b> If it is defective on arrival you can complain on azizsphonehub@gmail.com with an unboxing video and not charging video. (Only this complaints will be taken care of)' },
+      ]
+    }
   },
   "series9-gold-with-straps": {
     id: "series9-gold-with-straps",
@@ -612,7 +629,7 @@ if (!window.products) window.products = {
       "images/Offer-images/series9-pro-gold/7.webp",
     ],
     price: "₹1,699",
-    description: "Original Apple USB-C to Lightning cable for fast charging your iPhone or iPad.",
+    description: "Elevate your style and functionality with the Apple Watch Series 9 Gold, bundled with a premium set of straps. Track your health, stay connected, and match your look for any occasion with this exclusive combo offer.",
     category: "combo-offers"
   },
   "7in1-apple-ultra-smartwatch": {
@@ -630,7 +647,7 @@ if (!window.products) window.products = {
       
     ],
     price: "₹999",
-    description: "Original Apple USB-C to Lightning cable for fast charging your iPhone or iPad.",
+    description: "Experience versatility and innovation with the Apple Ultra Smartwatch 7-in-1 combo. Includes a feature-rich smartwatch and 7 interchangeable straps for every mood and activity. The perfect bundle for fitness enthusiasts and trendsetters.",
     category: "combo-offers"
   },
 };

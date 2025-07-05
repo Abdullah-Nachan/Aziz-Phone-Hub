@@ -3,13 +3,27 @@
  * Handles payment processing for Aziz Phone Hub (Test Environment)
  */
 
-// Test Razorpay configuration
-const RAZORPAY_TEST_CONFIG = {
-    key: 'rzp_test_g1q57RmuF0n22s', // Replace with your test key
+// === Razorpay Mode and Config ===
+const RAZORPAY_MODE = 'live';
+const RAZORPAY_CONFIG = {
+    live: {
+        key: 'rzp_live_JnvUIfFvjuSFWq',
+        backendUrl: 'https://aziz-phone-hub-backend.onrender.com/verify-payment',
+    },
+    test: {
+        key: 'rzp_test_g1q57RmuF0n22s',
+        backendUrl: 'https://aziz-phone-hub-backend.onrender.com/verify-payment',
+    }
+};
+const currentConfig = RAZORPAY_CONFIG[RAZORPAY_MODE];
+
+// Razorpay configuration
+const RAZORPAY_OPTIONS = {
+    key: currentConfig.key,
     currency: 'INR',
     name: 'Aziz Phone Hub',
     description: 'Test Order Payment',
-    image: './images/AzizPhoneHub.webp', // Replace with your logo URL
+    image: './images/AzizPhoneHub.webp',
     theme: {
         color: '#3399cc'
     }
@@ -22,7 +36,6 @@ function initializeRazorpay() {
             resolve();
             return;
         }
-
         const script = document.createElement('script');
         script.src = 'https://checkout.razorpay.com/v1/checkout.js';
         script.onload = () => resolve();
@@ -31,21 +44,44 @@ function initializeRazorpay() {
     });
 }
 
-// Create Razorpay order with all payment methods
+// Create Razorpay order (get real order_id from backend)
 async function createRazorpayOrder(orderData) {
     try {
-        console.log('Creating Razorpay order:', orderData);
-        
+        // 1. Create order on backend
+        const orderRes = await fetch(currentConfig.backendUrl.replace('/verify-payment', '/create-order'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: orderData.total, currency: 'INR' })
+        });
+        const order = await orderRes.json();
+        if (!order.id) throw new Error('Failed to create order on backend');
+        // 2. Use real order_id in Razorpay options
         const options = {
-            key: RAZORPAY_TEST_CONFIG.key,
+            key: currentConfig.key,
             amount: orderData.total * 100, // Amount in paise
-            currency: RAZORPAY_TEST_CONFIG.currency,
-            name: RAZORPAY_TEST_CONFIG.name,
-            description: RAZORPAY_TEST_CONFIG.description,
-            image: RAZORPAY_TEST_CONFIG.image,
+            currency: RAZORPAY_OPTIONS.currency,
+            name: RAZORPAY_OPTIONS.name,
+            description: RAZORPAY_OPTIONS.description,
+            image: RAZORPAY_OPTIONS.image,
+            order_id: order.id, // Use real order_id from backend
             handler: function(response) {
-                console.log('Payment successful:', response);
-                handlePaymentSuccess(response, orderData);
+                // This handler will be called by Razorpay when payment is successful
+                // The actual payment verification and capture will be handled by the backend webhook
+                Swal.fire({
+                    title: 'Payment Successful! 🎉',
+                    html: `
+                        <p>Your payment has been initiated.</p>
+                        <p>Order ID: <strong>${orderData.orderId}</strong></p>
+                        <p>Payment ID: <strong>${response.razorpay_payment_id}</strong></p>
+                        <p>Amount: <strong>₹${orderData.total}</strong></p>
+                        <p>Your order will be confirmed shortly after payment is verified by the merchant.</p>
+                        <p>Thank you for shopping with Aziz Phone Hub! 🙏</p>
+                    `,
+                    icon: 'success',
+                    confirmButtonText: 'Continue Shopping'
+                }).then(() => {
+                    window.location.href = 'index.html';
+                });
             },
             prefill: {
                 name: orderData.customerDetails.firstName + ' ' + orderData.customerDetails.lastName,
@@ -56,10 +92,9 @@ async function createRazorpayOrder(orderData) {
                 address: orderData.customerDetails.address,
                 order_id: orderData.orderId
             },
-            theme: RAZORPAY_TEST_CONFIG.theme,
+            theme: RAZORPAY_OPTIONS.theme,
             modal: {
                 ondismiss: function() {
-                    console.log('Payment modal dismissed');
                     Swal.fire({
                         title: 'Payment Cancelled',
                         text: 'You cancelled the payment. You can try again.',
@@ -68,272 +103,37 @@ async function createRazorpayOrder(orderData) {
                     });
                 }
             },
-            config: {
-                display: {
-                    blocks: {
-                        card: {
-                            name: "Pay with Card",
-                            instruments: [{ method: "card" }]
-                        },
-                        netbanking: {
-                            name: "Net Banking",
-                            instruments: [{ method: "netbanking" }]
-                        },
-                        upi: {
-                            name: "UPI",
-                            instruments: [{ method: "upi" }]
-                        },
-                        wallet: {
-                            name: "Wallets",
-                            instruments: [{ method: "wallet" }]
-                        }
-                    },
-                    sequence: ["block.card", "block.netbanking", "block.upi", "block.wallet"],
-                    preferences: {
-                        show_default_blocks: false
-                    }
-                }
+            // Disable EMI and Pay Later options
+            method: {
+                netbanking: true,
+                card: true,
+                upi: true,
+                wallet: true,
+                emi: false,
+                paylater: false
             }
         };
-
-        console.log('Razorpay options:', options);
         const rzp = new Razorpay(options);
         rzp.open();
-
+        // Start polling for payment status after opening the payment window
+        pollOrderStatus(orderData.orderId);
     } catch (error) {
         console.error('Error creating Razorpay order:', error);
-        throw error;
-    }
-}
-
-// Handle successful payment
-async function handlePaymentSuccess(response, orderData) {
-    try {
-        console.log('Processing payment success:', response);
-        // Verify payment (mock verification for test)
-        const verificationResult = await verifyPayment(response, orderData);
-        if (verificationResult.success) {
-            // Prepare orderDetails and personalDetails
-            const orderDetails = {
-                items: orderData.items,
-                total: orderData.total,
-                status: 'confirmed',
-                paymentResponse: response
-            };
-            const personalDetails = orderData.customerDetails;
-            // Save the order in Firestore
-            await saveOrder(orderData.orderId, orderDetails, personalDetails);
-            // Update order status to confirmed (optional, if you want to keep status update logic)
-            await updateOrderStatus(orderData.orderId, 'confirmed', response);
-            // Send email notification to backend
-            try {
-                console.log('Sending order notification to backend...');
-                fetch('http://localhost:3000/notify-order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        order: {
-                            orderId: orderData.orderId,
-                            total: orderData.total,
-                            customer: orderData.customerDetails,
-                            items: orderData.items,
-                            paymentId: response.razorpay_payment_id
-                        }
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log('Order notification response:', data);
-                })
-                .catch(err => {
-                    console.error('Order notification fetch error:', err);
-                });
-            } catch (err) {
-                console.error('Failed to notify backend for order email:', err);
-            }
-            // Show success message (without WhatsApp)
-            Swal.fire({
-                title: 'Payment Successful! 🎉',
-                html: `
-                    <p>Your order has been confirmed!</p>
-                    <p>Order ID: <strong>${orderData.orderId}</strong></p>
-                    <p>Payment ID: <strong>${response.razorpay_payment_id}</strong></p>
-                    <p>Amount: <strong>₹${orderData.total}</strong></p>
-                    <p>You will receive an order confirmation shortly.</p>
-                    <p>Thank you for shopping with Aziz Phone Hub! 🙏</p>
-                `,
-                icon: 'success',
-                confirmButtonText: 'Continue Shopping'
-            }).then(() => {
-                window.location.href = 'index.html';
-            });
-        } else {
-            throw new Error('Payment verification failed');
-        }
-    } catch (error) {
-        console.error('Payment success handling error:', error);
         Swal.fire({
             title: 'Payment Error',
-            text: 'There was an issue processing your payment. Please contact support.',
+            text: 'Failed to create order. Please try again.',
             icon: 'error',
             confirmButtonText: 'OK'
         });
-    }
-}
-
-// Verify payment (mock verification for test)
-async function verifyPayment(response, orderData) {
-    try {
-        console.log('Verifying payment:', response);
-        
-        // Mock verification - replace with actual backend call
-        const verificationData = {
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_signature: response.razorpay_signature,
-            orderId: orderData.orderId
-        };
-
-        console.log('Payment verification data:', verificationData);
-        
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // For test, always return success
-        return { success: true };
-        
-    } catch (error) {
-        console.error('Payment verification error:', error);
-        return { success: false, error: error.message };
-    }
-}
-
-// Update order status in Firestore
-async function updateOrderStatus(orderId, status, paymentResponse) {
-    try {
-        console.log('Updating order status:', { orderId, status, paymentResponse });
-        // Use compat SDK for Firestore
-        // Update order in main orders collection
-        const orderRef = firebase.firestore().collection('orders').doc(orderId);
-        await orderRef.update({
-            status: status,
-            paymentId: paymentResponse.razorpay_payment_id,
-            paymentStatus: 'completed',
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        // Update order in user's subcollection
-        const user = firebase.auth().currentUser;
-        if (user) {
-            const userOrderRef = firebase.firestore().collection('users').doc(user.uid).collection('orders').doc(orderId);
-            await userOrderRef.update({
-                status: status,
-                paymentId: paymentResponse.razorpay_payment_id,
-                paymentStatus: 'completed',
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
-        }
-        console.log('Order status updated successfully');
-    } catch (error) {
-        console.error('Error updating order status:', error);
         throw error;
     }
-}
-
-// Send WhatsApp confirmation via API
-async function sendWhatsAppConfirmation(orderData) {
-    try {
-        console.log('Sending WhatsApp confirmation for order:', orderData.orderId);
-        
-        const phoneNumber = orderData.customerDetails.phone.replace(/\D/g, ''); // Remove non-digits
-        
-        // WhatsApp message content
-        const message = `
-🎉 *Order Confirmed!* 
-
-Dear ${orderData.customerDetails.firstName} ${orderData.customerDetails.lastName},
-
-Your order has been successfully placed!
-
-📋 *Order Details:*
-• Order ID: ${orderData.orderId}
-• Total Amount: ₹${orderData.total}
-• Payment Status: ✅ Confirmed
-
-��️ *Items Ordered:*
-${orderData.items.map(item => `• ${item.name} - ₹${item.price} x ${item.quantity}`).join('\n')}
-
-📞 *Contact Support:* +91 1234567890
-🌐 *Website:* www.azizphonehub.com
-
-Thank you for choosing Aziz Phone Hub! 🙏
-
-We'll keep you updated on your order status.
-        `;
-
-        // Method 1: WhatsApp Business API (Recommended for production)
-        try {
-            await sendWhatsAppViaAPI(phoneNumber, message);
-            console.log('WhatsApp message sent via API successfully');
-        } catch (apiError) {
-            console.warn('WhatsApp API failed, using fallback method:', apiError);
-            // Fallback: Show success message without WhatsApp
-            showWhatsAppSuccessMessage();
-        }
-        
-    } catch (error) {
-        console.error('WhatsApp message error:', error);
-        // Don't break the flow if WhatsApp fails
-    }
-}
-
-// Send WhatsApp via Business API
-async function sendWhatsAppViaAPI(phoneNumber, message) {
-    try {
-        // This would be your backend API endpoint
-        const response = await fetch('/api/send-whatsapp', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                phone: phoneNumber,
-                message: message,
-                orderId: orderData.orderId
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('WhatsApp API request failed');
-        }
-
-        const result = await response.json();
-        console.log('WhatsApp API response:', result);
-        
-        return result;
-        
-    } catch (error) {
-        console.error('WhatsApp API error:', error);
-        throw error;
-    }
-}
-
-// Fallback: Show success message about WhatsApp
-function showWhatsAppSuccessMessage() {
-    // This will be shown in the success modal
-    console.log('WhatsApp message will be sent shortly');
 }
 
 // Process checkout with Razorpay
 async function processCheckoutWithRazorpay(orderData) {
     try {
-        console.log('Starting Razorpay checkout process:', orderData);
-        
-        // Initialize Razorpay
         await initializeRazorpay();
-        
-        // Create and open Razorpay payment
         await createRazorpayOrder(orderData);
-        
     } catch (error) {
         console.error('Error processing checkout with Razorpay:', error);
         Swal.fire({
@@ -344,6 +144,11 @@ async function processCheckoutWithRazorpay(orderData) {
         });
     }
 }
+
+// Make functions and config globally available
+window.processCheckoutWithRazorpay = processCheckoutWithRazorpay;
+window.currentConfig = currentConfig;
+window.RAZORPAY_OPTIONS = RAZORPAY_OPTIONS;
 
 // Test function for development
 async function testRazorpayIntegration() {
@@ -372,7 +177,6 @@ async function testRazorpayIntegration() {
 }
 
 // Make functions globally available
-window.processCheckoutWithRazorpay = processCheckoutWithRazorpay;
 window.testRazorpayIntegration = testRazorpayIntegration;
 
 // Save order for both authenticated and guest users
@@ -399,4 +203,33 @@ async function saveOrder(orderId, orderDetails, personalDetails) {
         // Guest: Only global orders collection
         return db.collection('orders').doc(orderId).set(orderDoc, { merge: true });
     }
+}
+
+// Poll Firestore for order status after payment is initiated
+async function pollOrderStatus(orderId) {
+    const db = firebase.firestore();
+    const orderRef = db.collection('orders').doc(orderId);
+    Swal.fire({
+        title: 'Waiting for Payment Confirmation...',
+        html: '<p>Please complete your payment in your UPI app.<br>This page will update automatically once your payment is confirmed.</p>',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    const interval = setInterval(async () => {
+        const doc = await orderRef.get();
+        if (doc.exists && doc.data().paymentStatus === 'paid') {
+            clearInterval(interval);
+            Swal.fire({
+                title: 'Payment Successful!',
+                text: 'Your payment was received and your order is confirmed.',
+                icon: 'success',
+                confirmButtonText: 'Continue Shopping'
+            }).then(() => {
+                window.location.href = 'order-success.html';
+            });
+        }
+    }, 4000);
 } 

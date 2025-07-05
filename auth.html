@@ -50,72 +50,59 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <!-- Logo (center on mobile, left on desktop) -->
-            <a class="navbar-brand mx-auto mx-lg-0 order-2" href="#">
+            <a class="navbar-brand mx-auto mx-lg-0 order-2" href="index.html">
                 <div class="logo-container">
-                    <img src="./images/logo.jpg" alt="Aziz Phone Hub">
+                    <img src="./images/AzizPhoneHub.webp" alt="Aziz Phone Hub">
                 </div>
             </a>
-            <!-- Profile icon (right on mobile) -->
-            <div class="d-lg-none order-3 position-absolute end-0 top-50 translate-middle-y d-flex align-items-center" style="right: 1rem; gap: 12px;">
-                <div class="dropdown">
-                    <a href="#" class="nav-link p-0 position-relative" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Profile">
-                        <i class="fas fa-user-circle fa-lg"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>My Profile</a></li>
-                        <li><a class="dropdown-item" href="orders.html"><i class="fas fa-box me-2"></i>My Orders</a></li>
-                        <li><a class="dropdown-item" href="wishlist.html"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
-                        <li><a class="dropdown-item" href="cart.html"><i class="fas fa-shopping-cart me-2"></i>Cart</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="auth.html" id="mobileLoginSignupBtn"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
-                        <li><a class="dropdown-item text-danger" href="#" id="mobileLogoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
-                </div>
+            <!-- Mobile Icons (right on mobile) -->
+            <div class="d-lg-none order-3 position-absolute end-0 top-50 translate-middle-y d-flex" style="right: 1rem; gap: 12px;">
+                <a href="wishlist.html" class="nav-link p-0 position-relative" title="Wishlist">
+                    <i class="fas fa-heart fa-lg"></i>
+                    <span class="wishlist-count-badge" id="mobile-nav-wishlist-count">0</span>
+                </a>
+                <a href="cart.html" class="nav-link p-0 position-relative" title="Cart">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span class="cart-count-badge" id="mobile-nav-cart-count">0</span>
+                </a>
             </div>
             <!-- Navbar links and search (desktop) -->
             <div class="collapse navbar-collapse order-lg-2" id="navbarNav">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="category.html?cat=airpods">AirPods</a></li>
-                            <li><a class="dropdown-item" href="category.html?cat=smartwatches">Smart Watches</a></li>
-                            <li><a class="dropdown-item" href="category.html?cat=headphones">Headphones</a></li>
-                            <li><a class="dropdown-item" href="category.html?cat=accessories">Accessories</a></li>
-                            <li><a class="dropdown-item" href="category.html?cat=shoes">Shoes</a></li>
-                            <li><a class="dropdown-item" href="category.html?cat=crocs">Crocs</a></li>
-                            <li><a class="dropdown-item" href="category.html?cat=casualwatch">Casual Watch</a></li>
-                            <li><a class="dropdown-item" href="category.html?cat=combo-offers">Combo Offers</a></li>
-                        </ul>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shop.html">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="wishlist.html">Wishlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.html">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cart.html">Cart</a>
+                    </li>
                 </ul>
                 <!-- Desktop Search Box -->
                 <form class="d-none d-lg-flex ms-3 search-box-form" role="search">
-                    <div class="search-box w-100">
+                    <div class="search-box w-100 position-relative">
                         <input type="text" placeholder="Search products..." aria-label="Search">
                         <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
                         <div class="search-suggestions"></div>
                     </div>
                 </form>
                 <!-- Wishlist Icon (desktop) -->
-                <a href="wishlist.html" class="nav-link d-none d-lg-block ms-3 position-relative" title="Wishlist"><i class="fas fa-heart fa-lg"></i><span class="wishlist-count-badge" id="desktop-nav-wishlist-count">0</span></a>
+                <a href="wishlist.html" class="nav-link d-none d-lg-block ms-3 position-relative" title="Wishlist">
+                    <i class="fas fa-heart fa-lg"></i>
+                    <span class="wishlist-count-badge" id="desktop-nav-wishlist-count">0</span>
+                </a>
                 <!-- Cart Icon (desktop) -->
-                <a href="cart.html" class="nav-link d-none d-lg-block ms-3 position-relative" title="Cart"><i class="fas fa-shopping-cart fa-lg"></i><span class="cart-count-badge" id="desktop-nav-cart-count">0</span></a>
-                <!-- Profile Icon (desktop) -->
-                <div class="dropdown d-none d-lg-block">
-                    <a href="auth.html" class="nav-link p-0 d-flex align-items-center" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Profile"><i class="fas fa-user-circle" style="font-size: 1.5rem;"></i></a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                        <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>My Profile</a></li>
-                        <li><a class="dropdown-item" href="orders.html"><i class="fas fa-box me-2"></i>My Orders</a></li>
-                        <li><a class="dropdown-item" href="wishlist.html"><i class="fas fa-heart me-2"></i>Wishlist</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="auth.html" id="loginSignupBtn"><i class="fas fa-sign-in-alt me-2"></i>Login</a></li>
-                        <li><a class="dropdown-item text-danger" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                    </ul>
-                </div>
+                <a href="cart.html" class="nav-link d-none d-lg-block ms-3 position-relative" title="Cart">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span class="cart-count-badge" id="desktop-nav-cart-count">0</span>
+                </a>
             </div>
         </div>
     </nav>

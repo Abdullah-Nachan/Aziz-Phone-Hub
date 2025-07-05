@@ -611,3 +611,25 @@ function checkWishlistStatus() {
 document.addEventListener('DOMContentLoaded', function() {
     checkWishlistStatus();
 });
+
+// Contact Form Submission (Contact Us section)
+document.addEventListener('DOMContentLoaded', function() {
+    // Find the contact form in the Contact Us section
+    const contactSection = document.querySelector('.contact-section');
+    if (contactSection) {
+        const contactForm = contactSection.querySelector('form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Service Unavailable',
+                    text: 'Sorry, this service is currently unavailable. Please contact us via WhatsApp at +91 7498543260 or email us at azizsphonehub@gmail.com.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#2563eb'
+                });
+                contactForm.reset();
+            });
+        }
+    }
+});

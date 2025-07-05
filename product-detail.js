@@ -8,22 +8,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
     
-    // if (productId) {
-    //     // Load product details
-    //     loadProductDetails(productId);
-    // } else {
-    //     // Show product not found message
-    //     showProductNotFound();
-    // }
+    if (productId) {
+        // Load product details
+        loadProductDetails(productId);
+    } else {
+        // Show product not found message
+        showProductNotFound();
+    }
     
-    // // Initialize quantity controls
-    // initQuantityControls();
+    // Initialize quantity controls
+    initQuantityControls();
     
-    // // Initialize image gallery
-    // initImageGallery();
+    // Initialize image gallery
+    initImageGallery();
     
-    // // Render Order Timeline Section
-    // renderOrderTimeline();
+    // Render Order Timeline Section
+    renderOrderTimeline();
 
     // Cloudinary config
     const CLOUDINARY_CLOUD_NAME = 'dkcibdwm8'; // Your Cloudinary cloud name
@@ -104,9 +104,8 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 await firebase.firestore()
                     .collection('reviews')
-                    .doc(productId)
-                    .collection('reviews')
                     .add({
+                        productId: productId,
                         firstName: userFirstName,
                         lastName: userLastName,
                         rating: rating,
@@ -280,6 +279,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderReviewsWithMediaGallery(allReviews, reviewsList, mediaGallery) {
         // 1. Media Gallery: show all unique images from all reviews with images
         if (mediaGallery) {
+            // Ensure the gallery is a clean grid, not a swiper or scroll
+            mediaGallery.className = 'review-media-gallery';
             mediaGallery.innerHTML = '';
             const uniqueImages = new Set();
             allReviews.forEach(r => {
@@ -290,55 +291,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             const uniqueImagesArr = Array.from(uniqueImages);
-            // Show up to 7 images, then a 'View All' box
+            // 2 rows, 4 columns (8 total), last cell is show more if needed
             const maxGalleryImages = 7;
-            uniqueImagesArr.slice(0, maxGalleryImages).forEach(url => {
+            let imagesToShow = uniqueImagesArr.slice(0, maxGalleryImages);
+            imagesToShow.forEach((url, idx) => {
                 const img = document.createElement('img');
                 img.src = url;
                 img.alt = 'Review Image';
                 img.className = 'review-media-thumb';
                 img.style.cursor = 'pointer';
-                img.style.borderRadius = '12px';
-                img.style.objectFit = 'cover';
                 img.onclick = function() {
-                    showAllImagesModal([url]); // Show only this image in modal
+                    showAllImagesModal([url]);
                 };
                 mediaGallery.appendChild(img);
             });
             if (uniqueImagesArr.length > maxGalleryImages) {
-                // Add a 'Show More' box
-                const viewAllBox = document.createElement('div');
-                viewAllBox.className = 'review-media-thumb review-media-viewall';
-                viewAllBox.style.display = 'inline-flex';
-                viewAllBox.style.alignItems = 'center';
-                viewAllBox.style.justifyContent = 'center';
-                viewAllBox.style.flexDirection = 'column';
-                viewAllBox.style.background = '#fff';
-                viewAllBox.style.fontWeight = 'bold';
-                viewAllBox.style.fontSize = '1.1rem';
-                viewAllBox.style.cursor = 'pointer';
-                viewAllBox.style.width = '64px';
-                viewAllBox.style.height = '64px';
-                viewAllBox.style.borderRadius = '12px';
-                viewAllBox.style.border = '1px solid #e0e0e0';
-                viewAllBox.style.textAlign = 'center';
-                viewAllBox.style.lineHeight = '1.1';
-                const showSpan = document.createElement('span');
-                showSpan.textContent = 'Show';
-                showSpan.style.display = 'block';
-                showSpan.style.fontSize = '0.85rem';
-                showSpan.style.lineHeight = '1.1';
-                const moreSpan = document.createElement('span');
-                moreSpan.textContent = 'More';
-                moreSpan.style.display = 'block';
-                moreSpan.style.fontSize = '0.85rem';
-                moreSpan.style.lineHeight = '1.1';
-                viewAllBox.appendChild(showSpan);
-                viewAllBox.appendChild(moreSpan);
-                viewAllBox.onclick = function() {
+                const showMoreBox = document.createElement('div');
+                showMoreBox.className = 'review-media-showmore';
+                showMoreBox.textContent = `+${uniqueImagesArr.length - maxGalleryImages + 1} more`;
+                showMoreBox.onclick = function() {
                     showAllImagesModal(uniqueImagesArr);
                 };
-                mediaGallery.appendChild(viewAllBox);
+                mediaGallery.appendChild(showMoreBox);
             }
         }
         // 2. Reviews: media reviews first, then text-only
@@ -651,14 +625,6 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.head.appendChild(style);
 
-    if (productId) {
-        // Load product details
-        loadProductDetails(productId);
-    } else {
-        // Show product not found message
-        showProductNotFound();
-    }
-    
     // Initialize quantity controls
     initQuantityControls();
     
@@ -676,8 +642,108 @@ function loadProductDetails(productId) {
     if (product) {
         displayProductDetails(product);
         populateSimilarProducts(product.category, product.id);
+        
+        // Add specific event listeners for product page buttons
+        setupProductPageEventListeners(product);
     } else {
         showProductNotFound();
+    }
+}
+
+// Setup specific event listeners for product page
+function setupProductPageEventListeners(product) {
+    console.log('Setting up product page event listeners for product:', product.id);
+
+    const addToCartBtn = document.getElementById('add-to-cart-bottom');
+    const buyNowBtn = document.getElementById('buy-now-bottom');
+
+    if (addToCartBtn) {
+        // Remove any existing listeners
+        const newAddToCartBtn = addToCartBtn.cloneNode(true);
+        addToCartBtn.parentNode.replaceChild(newAddToCartBtn, addToCartBtn);
+
+        // Add new listener
+        newAddToCartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Always get productId from button attribute
+            const btnProductId = this.getAttribute('data-product-id');
+            let prod = window.products && window.products[btnProductId];
+            if (!prod) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Product details not found. Please refresh the page.',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            // For guests
+            const productData = {
+                id: prod.id,
+                name: prod.name,
+                price: parseFloat(String(prod.price).replace(/[^0-9.]/g, '')),
+                image: prod.image,
+                quantity: 1
+            };
+
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const existingItem = cart.find(item => item.id === prod.id);
+            if (existingItem) {
+                existingItem.quantity = (existingItem.quantity || 1) + 1;
+            } else {
+                cart.push(productData);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            Swal.fire({
+                title: 'Added to Cart!',
+                text: `${prod.name} has been added to your cart.`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        });
+    }
+
+    if (buyNowBtn) {
+        // Remove any existing listeners
+        const newBuyNowBtn = buyNowBtn.cloneNode(true);
+        buyNowBtn.parentNode.replaceChild(newBuyNowBtn, buyNowBtn);
+
+        // Add new listener
+        newBuyNowBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Always get productId from button attribute
+            const btnProductId = this.getAttribute('data-product-id');
+            let prod = window.products && window.products[btnProductId];
+            if (!prod) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Product details not found. Please refresh the page.',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            // For guests
+            const productData = {
+                id: prod.id,
+                name: prod.name,
+                price: parseFloat(String(prod.price).replace(/[^0-9.]/g, '')),
+                image: prod.image,
+                quantity: 1
+            };
+
+            // Clear cart and add only this product
+            localStorage.setItem('cart', JSON.stringify([productData]));
+
+            // Redirect to checkout
+            window.location.href = 'checkout.html?buyNow=true';
+        });
     }
 }
 
@@ -701,6 +767,46 @@ function displayProductDetails(product) {
         // Format the number with Indian locale and add a single Rupee symbol
         const formattedPrice = `₹${priceNum.toLocaleString('en-IN')}`;
         priceElement.textContent = formattedPrice;
+    }
+    
+    // Set product ID on buttons for event handlers
+    const addToCartBtn = document.getElementById('add-to-cart-bottom');
+    const buyNowBtn = document.getElementById('buy-now-bottom');
+    
+    if (addToCartBtn) {
+        addToCartBtn.setAttribute('data-product-id', product.id);
+        addToCartBtn.setAttribute('data-id', product.id);
+        addToCartBtn.setAttribute('data-name', product.name);
+        addToCartBtn.setAttribute('data-image', product.image);
+        addToCartBtn.setAttribute('data-price', product.price);
+        console.log('Add to Cart button configured with product ID:', product.id);
+    }
+    if (buyNowBtn) {
+        buyNowBtn.setAttribute('data-product-id', product.id);
+        buyNowBtn.setAttribute('data-id', product.id);
+        buyNowBtn.setAttribute('data-name', product.name);
+        buyNowBtn.setAttribute('data-image', product.image);
+        buyNowBtn.setAttribute('data-price', product.price);
+        console.log('Buy Now button configured with product ID:', product.id);
+    }
+    
+    // Render detailed description section if present
+    const detailedSection = document.getElementById('detailed-description-section');
+    if (detailedSection) {
+        if (product.detailedDescription && Array.isArray(product.detailedDescription.sections)) {
+            let html = '<div class="detailed-description-card">';
+            product.detailedDescription.sections.forEach(section => {
+                if (section.type === 'text') {
+                    html += `<div class="detailed-description-block detailed-description-text">${section.content}</div>`;
+                } else if (section.type === 'image') {
+                    html += `<div class="detailed-description-block detailed-description-image"><img src="${section.src}" alt="Product feature image" class="detailed-description-img"></div>`;
+                }
+            });
+            html += '</div>';
+            detailedSection.innerHTML = html;
+        } else {
+            detailedSection.innerHTML = '';
+        }
     }
 }
 

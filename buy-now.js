@@ -13,41 +13,10 @@ function buyNow(productId) {
     
     console.log('Buy Now clicked for product:', productId);
     
-    // Get product details from the page or fetch from Firestore
-    let product;
+    // Get product details from static-products.js
+    let product = window.products && window.products[productId];
     
-    // Try to find product in current page products
-    if (typeof allCategoryProducts !== 'undefined') {
-        product = allCategoryProducts.find(p => p.id === productId);
-    }
-    
-    // If product not found on page, fetch from Firestore
-    if (!product && window.db) {
-        // Show loading toast
-        showToast('Preparing checkout...', 'info');
-        
-        // Get product from Firestore
-        window.db.collection('products').doc(productId).get()
-            .then(doc => {
-                if (doc.exists) {
-                    const productData = doc.data();
-                    proceedToCheckout({
-                        id: doc.id,
-                        name: productData.name,
-                        price: productData.price,
-                        image: productData.image,
-                        quantity: 1
-                    });
-                } else {
-                    console.error('Product not found in Firestore');
-                    showToast('Error: Product not found', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error getting product:', error);
-                showToast('Error preparing checkout', 'error');
-            });
-    } else if (product) {
+    if (product) {
         // Proceed to checkout with the product
         proceedToCheckout({
             id: product.id,
@@ -57,7 +26,7 @@ function buyNow(productId) {
             quantity: 1
         });
     } else {
-        console.error('Product not found and Firestore not available');
+        console.error('Product not found in static-products.js');
         showToast('Error: Product not found', 'error');
     }
     

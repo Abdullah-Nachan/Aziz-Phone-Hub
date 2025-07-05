@@ -150,7 +150,7 @@
                     </div>
                     <div class="d-flex gap-3 mt-4">
                         <button class="btn btn-primary btn-lg flex-grow-1 add-to-cart add-to-cart-btn" id="add-to-cart-bottom" data-product-id="">Add to Cart</button>
-                        <button class="btn btn-outline-primary btn-lg flex-grow-1 w-100" id="buy-now-bottom">Buy Now</button>
+                        <button class="btn btn-outline-primary btn-lg flex-grow-1 w-100 buy-now" id="buy-now-bottom" data-product-id="">Buy Now</button>
                     </div>
                 </div>
             </div>
@@ -349,6 +349,9 @@
             </div>
         </div>
     </section>
+    <!-- Detailed Description Section (Dynamic, now below reviews) -->
+    <div id="detailed-description-section"></div>
+    <div id="order-timeline-section" class="my-4"></div>
 
     <!-- Fixed Bottom Navigation Footer -->
     <footer class="fixed-bottom-footer d-lg-none">
@@ -442,12 +445,14 @@
     <script src="product-detail.js"></script>
     <script src="buy-now.js"></script>
     <script src="search.js"></script>
-    <script src="firestore-wishlist.js"></script>
+    <!-- <script src="firestore-wishlist.js"></script> -->
     <script src="js/cart-handler.js"></script>
     <script src="firestore-cart.js"></script>
     <!-- <script src="cart-wishlist-auth.js"></script> -->
     <script src="guest-cart-wishlist.js"></script>
     <!-- Font Awesome JS for icons -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="product-detail.js"></script>
+
 </body>
 </html>

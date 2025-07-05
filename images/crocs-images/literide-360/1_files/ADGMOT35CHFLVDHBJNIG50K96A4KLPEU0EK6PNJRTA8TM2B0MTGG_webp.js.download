@@ -1,1 +1,0 @@
-var webp_configuration = {"campaigns":null,"pageUrls":[]};

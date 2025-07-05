@@ -220,10 +220,10 @@ function initializeHeroSwiper() {
     }
     const heroSwiper = new Swiper('.heroSwiper', {
         loop: true,
-        autoplay: {
-            delay: 5000, // Auto cycle every 5 seconds
-            disableOnInteraction: false,
-        },
+        // autoplay: {
+        //     delay: 5000, // Auto cycle every 5 seconds
+        //     disableOnInteraction: false,
+        // },
         pagination: {
             el: '.swiper-pagination',
             clickable: true,

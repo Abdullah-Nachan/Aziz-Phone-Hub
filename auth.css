@@ -16,7 +16,7 @@ body {
 
 /* Navbar Styles */
 .navbar {
-    background-color: var(--white) !important;
+    background-color: #626262 !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     padding: 0.5rem 0;
 }
@@ -44,7 +44,7 @@ body {
 }
 
 .nav-link {
-    color: var(--dark-color) !important;
+    color: black !important;
     font-weight: 500;
     padding: 0.5rem 1rem !important;
     transition: color 0.3s ease;
@@ -52,82 +52,6 @@ body {
 
 .nav-link:hover {
     color: var(--primary-color) !important;
-}
-
-.navbar-nav .nav-link.active {
-    color: var(--primary-color) !important;
-    font-weight: 600;
-}
-
-/* Search Box */
-.search-box {
-    position: relative;
-    max-width: 300px;
-}
-
-.search-box input {
-    width: 100%;
-    padding: 8px 40px 8px 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.search-btn {
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: #666;
-    cursor: pointer;
-    padding: 5px 10px;
-}
-
-/* Badges */
-.wishlist-count-badge,
-.cart-count-badge {
-    position: absolute;
-    top: 5px;
-    right: 0;
-    font-size: 0.65rem;
-    min-width: 18px;
-    height: 18px;
-    line-height: 18px;
-    text-align: center;
-    border-radius: 9px;
-    background-color: var(--primary-color);
-    color: white;
-    font-weight: bold;
-}
-
-/* Navigation Icons Container */
-.navbar .navbar-nav {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-/* Individual Nav Icons */
-.navbar .nav-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    position: relative;
-}
-
-/* Cart and Wishlist Icons */
-.navbar .nav-link[href*="cart"],
-.navbar .nav-link[href*="wishlist"] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    position: relative;
 }
 
 /* Navbar mobile layout */
@@ -406,3 +330,4 @@ body {
         padding: 0 20px;
     }
 }
+
