@@ -2363,19 +2363,39 @@ h2.section-title.text-center.mb-4:after {
 }
 
 @media (max-width: 991.98px) {
-  .fixed-filter-sort-footer {
+  .fixed-filter-sort-footer,
+  .filter-sort-footer {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 72px; /* Increased from 56px for more space above footer */
+    bottom: 60px; /* Height of .fixed-bottom-footer */
     width: 100vw;
     z-index: 1060;
     border-radius: 0;
-    margin: 0;
+    margin: 0 !important;
+    padding: 0 !important;
     box-shadow: 0 -2px 8px rgba(0,0,0,0.07);
   }
   .fixed-bottom-footer {
-    z-index: 1050;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    z-index: 1100;
+  }
+}
+@media (min-width: 992px) {
+  .filter-sort-footer,
+  .fixed-filter-sort-footer {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1101 !important;
+    width: 100vw;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+    background: #fff;
   }
 }
 
@@ -2571,4 +2591,47 @@ h2.section-title.text-center.mb-4:after {
 }
 .product-info-accordion .accordion-body {
     background: transparent;
+}
+
+/* Remove gap between filter/sort footer and fixed bottom nav on mobile */
+.filter-sort-footer,
+.fixed-filter-sort-footer {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    border-bottom: none !important;
+}
+.filter-sort-footer, .fixed-filter-sort-footer {
+    background: var(--background-color) !important;
+    box-shadow: none !important;
+}
+.filter-sort-footer button, .fixed-filter-sort-footer button {
+    color: #000 !important;
+    border-color: #000 !important;
+}
+.filter-sort-footer button i, .fixed-filter-sort-footer button i {
+    color: #000 !important;
+}
+
+body, .container, .main-content, .category-products, .products-section {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Ensure fixed bottom nav is always on top */
+.fixed-bottom-footer {
+    z-index: 1100 !important;
+}
+
+/* On mobile, make sure filter-sort-footer is just above the fixed-bottom-footer */
+@media (max-width: 767px) {
+    .filter-sort-footer,
+    .fixed-filter-sort-footer {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+        border-bottom: none !important;
+    }
+    .footer, .main-footer {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
 }

@@ -568,23 +568,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Submit logic
         modal.querySelector('#submit-rate-btn').onclick = async function() {
           if (!selected) return;
-          const user = firebase.auth().currentUser;
-          let firstName = '', lastName = '';
-          if (user && user.displayName) {
-            const parts = user.displayName.split(' ');
-            firstName = parts[0] || '';
-            lastName = parts.slice(1).join(' ') || '';
-          }
           try {
             await firebase.firestore()
               .collection('reviews')
-              .doc(productId)
-              .collection('ratings')
+              .doc('ratings')
+              .collection('rating')
               .add({
-                firstName,
-                lastName,
-                rating: selected,
-                createdAt: new Date()
+                productId: productId,
+                rating: selected
               });
             modal.querySelector('div').innerHTML = '<div class="py-4"><i class="fas fa-check-circle text-success fa-2x mb-2"></i><h5>Thank you for rating!</h5></div>';
             setTimeout(() => { if (modal) modal.remove(); }, 1200);
@@ -679,6 +670,32 @@ function setupProductPageEventListeners(product) {
                 return;
             }
 
+            // If user is authenticated, use Firestore
+            if (firebase.auth().currentUser) {
+                if (typeof window.addToCartFirestore === 'function') {
+                    window.addToCartFirestore(prod, 1).then(() => {
+                        // After Firestore update, reload cart and update badge
+                        if (typeof loadCartItems === 'function') {
+                            loadCartItems(); // This will update badge via firestore-cart.js
+                        }
+                        Swal.fire({
+                            title: 'Added to Cart!',
+                            text: `${prod.name} has been added to your cart.`,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Cart function not available. Please try again.',
+                        icon: 'error'
+                    });
+                }
+                return;
+            }
+
             // For guests
             const productData = {
                 id: prod.id,
@@ -726,6 +743,25 @@ function setupProductPageEventListeners(product) {
                     text: 'Product details not found. Please refresh the page.',
                     icon: 'error'
                 });
+                return;
+            }
+
+            // If user is authenticated, use Firestore
+            if (firebase.auth().currentUser) {
+                if (typeof window.addToCartFirestore === 'function') {
+                    window.addToCartFirestore(prod, 1).then(() => {
+                        if (typeof loadCartItems === 'function') {
+                            loadCartItems();
+                        }
+                        window.location.href = 'checkout.html?buyNow=true';
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Cart function not available. Please try again.',
+                        icon: 'error'
+                    });
+                }
                 return;
             }
 

@@ -384,4 +384,95 @@ window.migrateReviews = async function({log, updateProgress, setStatus}) {
   }
   setStatus('All reviews migrated!');
   log('All reviews migrated for all products!', 'success');
-}; 
+};
+
+window.migrateRatings = async function({log, updateProgress, setStatus}) {
+  const comboProductId = 'airpods-pro2-magsafe';
+  let totalToAdd = 0;
+  const ratingsPerProduct = [];
+  for (const product of products) {
+    let count;
+    if (product.id === comboProductId) {
+      count = randomInt(1000, 1500);
+    } else {
+      count = randomInt(100, 150);
+    }
+    ratingsPerProduct.push(count);
+    totalToAdd += count;
+  }
+  let added = 0;
+  for (let p = 0; p < products.length; p++) {
+    const product = products[p];
+    const ratingCount = ratingsPerProduct[p];
+    log(`Generating ${ratingCount} ratings for ${product.name}...`, 'info');
+    setStatus(`Migrating ratings for ${product.name}...`);
+    for (let i = 0; i < ratingCount; i++) {
+      const rating = randomInt(1, 5);
+      await firebase.firestore()
+        .collection('reviews')
+        .doc('ratings')
+        .collection('rating')
+        .add({
+          productId: product.id,
+          rating: rating
+        });
+      added++;
+      if (added % 50 === 0 || added === totalToAdd) {
+        updateProgress(added, totalToAdd);
+      }
+    }
+    log(`Added ${ratingCount} ratings for ${product.name}`, 'success');
+  }
+  setStatus('All ratings migrated!');
+  log('All ratings migrated for all products!', 'success');
+};
+
+// Wire up the migrate ratings button
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', function() {
+    const startRatingBtn = document.getElementById('startRatingMigration');
+    if (startRatingBtn) {
+      startRatingBtn.addEventListener('click', async function() {
+        startRatingBtn.disabled = true;
+        const progressBar = document.getElementById('progress-bar');
+        const progressStatus = document.getElementById('progress-status');
+        const logEntries = document.getElementById('log-entries');
+        progressBar.style.width = '0%';
+        progressStatus.textContent = 'Generating ratings...';
+        logEntries.innerHTML = '';
+        try {
+          await window.migrateRatings({
+            log: (msg, type) => {
+              const entry = document.createElement('div');
+              entry.className = `log-entry log-${type || 'info'}`;
+              entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+              logEntries.appendChild(entry);
+              logEntries.scrollTop = logEntries.scrollHeight;
+            },
+            updateProgress: (count, total) => {
+              const percentage = Math.round((count / total) * 100);
+              progressBar.style.width = `${percentage}%`;
+              progressBar.setAttribute('aria-valuenow', percentage);
+              document.getElementById('progress-text').textContent = `${count} of ${total} ratings migrated (${percentage}%)`;
+            },
+            setStatus: (msg) => progressStatus.textContent = msg,
+          });
+          progressStatus.textContent = 'Ratings migration completed!';
+          Swal.fire('Migration Completed', 'All ratings have been migrated.', 'success');
+        } catch (error) {
+          const log = (msg, type) => {
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type || 'error'}`;
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logEntries.appendChild(entry);
+            logEntries.scrollTop = logEntries.scrollHeight;
+          };
+          log(error.message, 'error');
+          progressStatus.textContent = 'Ratings migration failed!';
+          Swal.fire('Migration Failed', error.message, 'error');
+        }
+        startRatingBtn.disabled = false;
+      });
+    }
+  });
+} 

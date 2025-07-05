@@ -522,33 +522,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 }); 
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Swiper debug
-    console.log("Swiper check");
-
-    if (window.Swiper && document.querySelector('.mainSwiper') && document.querySelector('.thumbSwiper')) {
-        console.log('Initializing Swiper on product page...');
-        var thumbSwiper = new Swiper('.thumbSwiper', {
-            spaceBetween: 10,
-            slidesPerView: 3,
-            freeMode: true,
-            watchSlidesProgress: true,
-        });
-        var mainSwiper = new Swiper('.mainSwiper', {
-            spaceBetween: 10,
-            navigation: {
-                nextEl: '.mainSwiper .swiper-button-next',
-                prevEl: '.mainSwiper .swiper-button-prev',
-            },
-            thumbs: {
-                swiper: thumbSwiper,
-            },
-        });
-    } else {
-        console.log('Swiper or required elements not found!');
-    }
-});
-
 // Function to toggle wishlist
 function toggleWishlist(button, productId) {
     const isLiked = button.classList.contains('active');

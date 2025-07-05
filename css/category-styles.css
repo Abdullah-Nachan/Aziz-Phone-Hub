@@ -231,3 +231,11 @@
         grid-template-columns: repeat(1, 1fr);
     }
 }
+
+@media (max-width: 991.98px) {
+  .category-products,
+  .products-grid {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}

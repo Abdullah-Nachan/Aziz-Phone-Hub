@@ -44,6 +44,12 @@ document.addEventListener('DOMContentLoaded', function() {
             renderGuestCart(cart);
         }
     }
+
+    // --- Update badges for guests on page load ---
+    if (typeof firebase !== 'undefined' && firebase.auth && !firebase.auth().currentUser) {
+        updateGuestCartBadge();
+        updateGuestWishlistBadge();
+    }
 });
 
 // Helper to get product data for cart
@@ -134,13 +140,41 @@ function addToLocalStorage(key, product) {
             product.quantity = 1;
             items.push(product);
         }
+        localStorage.setItem(key, JSON.stringify(items));
+        updateGuestCartBadge();
     } else if (key === 'wishlist') {
         // Only store {id, productId}
         if (!items.some(item => item.id === product.id)) {
             items.push({ id: product.id, productId: product.id });
         }
+        localStorage.setItem(key, JSON.stringify(items));
+        updateGuestWishlistBadge();
     }
-    localStorage.setItem(key, JSON.stringify(items));
+}
+
+// --- Update cart badge for guests ---
+function updateGuestCartBadge() {
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    let count = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+    const cartBadges = document.querySelectorAll('.cart-count-badge, #mobile-nav-cart-count');
+    cartBadges.forEach(badge => {
+        badge.textContent = count > 0 ? count : '';
+        badge.style.display = count > 0 ? 'flex' : 'none';
+    });
+}
+
+// --- Update wishlist badge for guests ---
+function updateGuestWishlistBadge() {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    let count = wishlist.length;
+    const desktopBadge = document.getElementById('desktop-nav-wishlist-count');
+    const mobileBadge = document.getElementById('mobile-nav-wishlist-count');
+    const footerBadge = document.getElementById('mobile-wishlist-count');
+    const mobileFooterBadge = document.getElementById('mobile-footer-wishlist-count');
+    if (desktopBadge) desktopBadge.textContent = count;
+    if (mobileBadge) mobileBadge.textContent = count;
+    if (footerBadge) footerBadge.textContent = count;
+    if (mobileFooterBadge) mobileFooterBadge.textContent = count;
 }
 
 // Migration logic: On login, move guest cart/wishlist to Firebase
