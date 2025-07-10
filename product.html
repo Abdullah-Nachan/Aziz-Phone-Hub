@@ -8,8 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <!-- Lightbox CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+    <!-- GLightbox CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/product-detail.css">
@@ -19,6 +19,23 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- Static Products JS -->
     <script src="static-products.js"></script>
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '7337117516371815');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=7337117516371815&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
 </head>
 <body>
     <!-- Navigation -->
@@ -152,6 +169,83 @@
                         <button class="btn btn-primary btn-lg flex-grow-1 add-to-cart add-to-cart-btn" id="add-to-cart-bottom" data-product-id="">Add to Cart</button>
                         <button class="btn btn-outline-primary btn-lg flex-grow-1 w-100 buy-now" id="buy-now-bottom" data-product-id="">Buy Now</button>
                     </div>
+                    <!-- Feature Info Row -->
+                    <div class="row justify-content-center align-items-center my-4" id="feature-info-row" style="background:#fff6f3; border-radius:16px; padding:18px 0;">
+                        <div class="col-4 d-flex flex-column align-items-center text-center">
+                            <div class="feature-icon" id="feature-delivery" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border:2px solid #ffb6a6;border-radius:50%;margin-bottom:6px;cursor:pointer;">
+                                <i class="fas fa-truck" style="color:#222;font-size:1.5rem;"></i>
+                            </div>
+                            <div style="font-size:1rem;font-weight:500;">Free Delivery</div>
+                        </div>
+                        <div class="col-4 d-flex flex-column align-items-center text-center">
+                            <div class="feature-icon" id="feature-return" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border:2px solid #ffb6a6;border-radius:50%;margin-bottom:6px;cursor:pointer;">
+                                <i class="fas fa-undo-alt" style="color:#222;font-size:1.5rem;"></i>
+                            </div>
+                            <div style="font-size:1rem;font-weight:500;">1 day Returnable</div>
+                        </div>
+                        <div class="col-4 d-flex flex-column align-items-center text-center">
+                            <div class="feature-icon" id="feature-warranty" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border:2px solid #ffb6a6;border-radius:50%;margin-bottom:6px;cursor:pointer;">
+                                <i class="fas fa-shield-alt" style="color:#222;font-size:1.5rem;"></i>
+                            </div>
+                            <div style="font-size:1rem;font-weight:500;">6 Month Warranty</div>
+                        </div>
+                    </div>
+                    <div id="feature-info-bar" style="display:none;width:100%;background:#fff;border:1px solid #ffb6a6;border-radius:8px;padding:14px 18px;margin-top:-10px;margin-bottom:18px;font-size:1rem;box-shadow:0 2px 8px #0001;text-align:left;"></div>
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+    const infoBar = document.getElementById('feature-info-bar');
+    const messages = {
+        delivery: 'Your order will be delivered within 3-5 days.',
+        return: `<b>Return Instructions:</b><br>
+            - Product unboxing video must be <b>full and complete</b>, without any cuts or editing.<br>
+            - Bill,box and product must remain intact and undamaged.<br>
+            - Product should not have any physical damage.<br>
+            <span style='color:#ff5e3a;'>Return will only be accepted if all these conditions are met.</span>` ,
+        warranty: `<b>Warranty Coverage:</b><br>
+            - Warranty does not cover any physical damage.<br>
+            - Warranty is only valid if the product stops working due to manufacturing defects.<br>
+            - For warranty claims, <b>full product unboxing video</b> is required, without cuts, along with the bill and box.<br>
+            <span style='color:#ff5e3a;'>Warranty is only valid for manufacturing defects.</span>`
+    };
+    let current = '';
+    document.getElementById('feature-delivery').addEventListener('click', function() {
+        if (current === 'delivery') {
+            infoBar.style.display = 'none';
+            current = '';
+        } else {
+            infoBar.innerHTML = messages.delivery;
+            infoBar.style.display = 'block';
+            current = 'delivery';
+        }
+    });
+    document.getElementById('feature-return').addEventListener('click', function() {
+        if (current === 'return') {
+            infoBar.style.display = 'none';
+            current = '';
+        } else {
+            infoBar.innerHTML = messages.return;
+            infoBar.style.display = 'block';
+            current = 'return';
+        }
+    });
+    document.getElementById('feature-warranty').addEventListener('click', function() {
+        if (current === 'warranty') {
+            infoBar.style.display = 'none';
+            current = '';
+        } else {
+            infoBar.innerHTML = messages.warranty;
+            infoBar.style.display = 'block';
+            current = 'warranty';
+        }
+    });
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.feature-icon')) {
+            infoBar.style.display = 'none';
+            current = '';
+        }
+    });
+});
+</script>
                 </div>
             </div>
 
@@ -315,35 +409,38 @@
 
                     <!-- Write a Review Section -->
                     <div class="write-review-section mt-4">
-                        <h3 class="mb-3">Write a Review</h3>
-                        <form id="write-review-form">
-                            <div class="row mb-3">
-                                <div class="col-md-6 mb-2 mb-md-0">
-                                    <label for="reviewer-firstname" class="form-label">First Name</label>
-                                    <input type="text" class="form-control" id="reviewer-firstname" placeholder="Enter your first name">
+                        <button id="show-review-form-btn" class="btn btn-primary mb-3">Write a Review</button>
+                        <div id="write-review-form-container" style="display:none;">
+                            <h3 class="mb-3">Write a Review</h3>
+                            <form id="write-review-form">
+                                <div class="row mb-3">
+                                    <div class="col-md-6 mb-2 mb-md-0">
+                                        <label for="reviewer-firstname" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="reviewer-firstname" placeholder="Enter your first name">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="reviewer-lastname" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="reviewer-lastname" placeholder="Enter your last name">
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="reviewer-lastname" class="form-label">Last Name</label>
-                                    <input type="text" class="form-control" id="reviewer-lastname" placeholder="Enter your last name">
+                                <div class="mb-3">
+                                    <label class="form-label">Rating</label>
+                                    <select class="form-select" id="review-rating" required>
+                                        <option value="">Select rating</option>
+                                        <option value="5">★★★★★ (5)</option>
+                                        <option value="4">★★★★☆ (4)</option>
+                                        <option value="3">★★★☆☆ (3)</option>
+                                        <option value="2">★★☆☆☆ (2)</option>
+                                        <option value="1">★☆☆☆☆ (1)</option>
+                                    </select>
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Rating</label>
-                                <select class="form-select" id="review-rating" required>
-                                    <option value="">Select rating</option>
-                                    <option value="5">★★★★★ (5)</option>
-                                    <option value="4">★★★★☆ (4)</option>
-                                    <option value="3">★★★☆☆ (3)</option>
-                                    <option value="2">★★☆☆☆ (2)</option>
-                                    <option value="1">★☆☆☆☆ (1)</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="review-text" class="form-label">Your Review</label>
-                                <textarea class="form-control" id="review-text" rows="3" required placeholder="Share your experience..."></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit Review</button>
-                        </form>
+                                <div class="mb-3">
+                                    <label for="review-text" class="form-label">Your Review</label>
+                                    <textarea class="form-control" id="review-text" rows="3" required placeholder="Share your experience..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -418,14 +515,19 @@
                 <div class="col-md-4">
                     <h3>Contact Us</h3>
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-phone"></i> +91 1234567890</li>
-                        <li><i class="fas fa-envelope"></i> info@azizphonehub.com</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Your Address Here</li>
+                        <li><i class="fas fa-phone"></i> +91 7498543260</li>
+                        <li><i class="fas fa-envelope"></i> azizsphonehub@gmail.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Shop no 738 Maryam Apartment Near Bus Stop, Borivali Padgha, 421101</li>
                     </ul>
                 </div>
             </div>
         </div>
     </footer>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/917498543260" class="whatsapp-float" target="_blank" rel="noopener" title="Chat on WhatsApp">
+      <i class="fab fa-whatsapp"></i>
+    </a>
 
     <!-- Firebase SDKs (MUST be before any script that uses firebase) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -433,14 +535,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
 
+    <!-- SweetAlert2 JS (MUST be before scripts that use Swal) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+
     <!-- Core Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
-    
-    <!-- Application Scripts -->
-     <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
     <script src="product-script.js"></script>
     <script src="product-detail.js"></script>
     <script src="buy-now.js"></script>
@@ -453,6 +554,57 @@
     <!-- Font Awesome JS for icons -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
     <script src="product-detail.js"></script>
-
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (window.glightboxInstance) {
+          window.glightboxInstance.destroy();
+        }
+        window.glightboxInstance = GLightbox({
+          selector: '.glightbox-product',
+          touchNavigation: true,
+          loop: true
+        });
+      });
+    </script>
+    <script>
+window.addEventListener('DOMContentLoaded', function() {
+    function hideAllDropdowns() {
+        document.querySelectorAll('.feature-dropdown-message').forEach(el => el.style.display = 'none');
+    }
+    document.getElementById('feature-delivery').addEventListener('click', function() {
+        const dropdown = document.getElementById('dropdown-delivery');
+        if (dropdown.style.display === 'none') {
+            hideAllDropdowns();
+            dropdown.style.display = 'block';
+        } else {
+            dropdown.style.display = 'none';
+        }
+    });
+    document.getElementById('feature-return').addEventListener('click', function() {
+        const dropdown = document.getElementById('dropdown-return');
+        if (dropdown.style.display === 'none') {
+            hideAllDropdowns();
+            dropdown.style.display = 'block';
+        } else {
+            dropdown.style.display = 'none';
+        }
+    });
+    document.getElementById('feature-warranty').addEventListener('click', function() {
+        const dropdown = document.getElementById('dropdown-warranty');
+        if (dropdown.style.display === 'none') {
+            hideAllDropdowns();
+            dropdown.style.display = 'block';
+        } else {
+            dropdown.style.display = 'none';
+        }
+    });
+    // Optional: Hide dropdowns if clicked outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.feature-icon')) {
+            hideAllDropdowns();
+        }
+    });
+});
+</script>
 </body>
 </html>

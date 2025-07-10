@@ -314,6 +314,29 @@
     padding: 0 !important;
 }
 
+/* Consistent style for images and videos in main gallery */
+.mainSwiper .swiper-slide img,
+.mainSwiper .swiper-slide video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  border-radius: 20px !important;
+  background: #fff !important;
+}
+.mainSwiper .swiper-slide {
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.gallery-main-image,
+.mainSwiper {
+  height: 320px !important;
+  min-height: 220px !important;
+  max-height: 400px !important;
+}
+
 /* --- DETAILED DESCRIPTION SECTION --- */
 .detailed-description-card {
     width: 70vw;
@@ -422,6 +445,11 @@
         max-width: 100vw;
     }
 }
+@media (max-width: 767.98px) {
+  .detailed-description-card {
+    width: 93vw;
+  }
+}
 
 /* --- Review Media Gallery Thumb Styles (force from product-detail.css) --- */
 .review-media-gallery {
@@ -499,5 +527,10 @@
     .mainSwiper {
         height: 400px !important;
     }
+}
+
+/* Make video non-interactive so anchor gets the tap/click */
+.mainSwiper .swiper-slide a.glightbox-product > video {
+  pointer-events: none !important;
 }
 

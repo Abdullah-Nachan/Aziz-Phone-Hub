@@ -99,20 +99,38 @@ function updateCheckoutSummary(items) {
     totalElement.textContent = `₹${subtotal.toFixed(2)}`;
 }
 
+// --- PHONE VERIFICATION LOGIC COMMENTED OUT ---
+// In setupProceedButton, skip phone verification and proceed as before
 function setupProceedButton(items) {
     const proceedBtn = document.getElementById('proceed-to-payment-btn');
     if (proceedBtn) {
         proceedBtn.onclick = function() {
             if (!validateCheckoutForm()) {
-                alert('Please fill all required fields.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Form Incomplete',
+                    text: 'Please fill all required fields before proceeding.'
+                });
                 return;
             }
-            // Hide the entire contact info card, show payment section, update steps
+            // Get phone number from form
+            const phoneNumber = document.getElementById('phone').value.trim();
+            // Validate phone number format
+            if (!isValidPhone(phoneNumber)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Phone Number',
+                    text: 'Please enter a valid 10-digit phone number.'
+                });
+                return;
+            }
+            // --- SKIP PHONE VERIFICATION ---
+            // Directly show payment section or proceed as before
+            // If you want to show payment section:
             document.getElementById('contact-info-card').style.display = 'none';
             document.getElementById('payment-section').style.display = 'block';
             updateCheckoutStepsForPayment();
-            // Setup payment method selection
-            setupPaymentMethodSelection(items);
+            setupPaymentMethodSelection(cartData.items);
         };
     }
 }
@@ -137,12 +155,15 @@ function setupPaymentMethodSelection(items) {
             if (radio.value === 'online') {
                 availableMethods.style.display = 'block';
                 if (codInfo) codInfo.style.display = 'none';
+                confirmBtn.textContent = 'Pay Now';
             } else if (radio.value === 'cod') {
                 if (availableMethods) availableMethods.style.display = 'none';
                 if (codInfo) codInfo.style.display = 'block';
+                confirmBtn.textContent = 'Place Order';
             } else {
                 if (availableMethods) availableMethods.style.display = 'none';
                 if (codInfo) codInfo.style.display = 'none';
+                confirmBtn.textContent = 'Pay Now';
             }
         };
     });
@@ -154,18 +175,35 @@ function setupPaymentMethodSelection(items) {
         }
         if (selectedMethod.value === 'cod') {
             Swal.fire({
-                title: 'Partial Cash on Delivery',
-                html: `<p>To confirm your order, you need to pay <b>₹100</b> in advance.<br>This will be deducted from your total. The remaining amount will be paid on delivery.<br><br>For more information, contact <a href=\"tel:917219345601\">917219345601</a>.</p>`,
-                icon: 'info',
+                title: 'Cash on Delivery',
+                html: `<p>You have selected <b>Cash on Delivery</b>.<br>Are you sure you want to place this order?</p>`,
+                icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Confirm & Pay ₹100',
+                confirmButtonText: 'Yes, Place Order',
                 cancelButtonText: 'Cancel',
                 allowOutsideClick: false
             }).then((result) => {
                 if (result.isConfirmed) {
-                    processPartialCOD(items);
+                    // Place COD order and save to Firestore as usual
+                    processCODOrder(items);
                 }
             });
+        /*
+        // --- PARTIAL COD LOGIC (TEMPORARILY DISABLED) ---
+        Swal.fire({
+            title: 'Partial Cash on Delivery',
+            html: `<p>To confirm your order, you need to pay <b>₹100</b> in advance.<br>This will be deducted from your total. The remaining amount will be paid on delivery.<br><br>For more information, contact <a href=\"tel:917219345601\">917219345601</a>.</p>`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Confirm & Pay ₹100',
+            cancelButtonText: 'Cancel',
+            allowOutsideClick: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                processPartialCOD(items);
+            }
+        });
+        */
         } else if (selectedMethod.value === 'online') {
             processCheckout(items);
         }
@@ -190,7 +228,7 @@ function ensureCODInfoSection() {
                 ✅ The remaining amount can be paid in cash at the time of delivery.<br>
                 🧾 This small step helps us serve genuine buyers faster and reduces losses due to fake orders.<br>
                 📹 For full explanation, please watch the video below 👇<br>
-                ❓Have any questions? Feel free to contact us at 📞 +91 7219345601
+                ❓Have any questions? Feel free to contact us at 📞 +91 7498543260
             </div>
             <div class="text-center mb-3">
                 <!-- Placeholder video, replace src with your link -->
@@ -205,6 +243,8 @@ function ensureCODInfoSection() {
 }
 document.addEventListener('DOMContentLoaded', ensureCODInfoSection);
 
+// --- COMMENTED OUT: PARTIAL COD LOGIC ---
+/*
 // Partial COD logic
 async function processPartialCOD(items) {
     try {
@@ -416,6 +456,69 @@ async function handlePartialCODPaymentSuccess(response, orderData) {
         });
     }
 }
+*/
+
+// New function for full COD order placement
+async function processCODOrder(items) {
+    try {
+        // Collect form data
+        const personalDetails = {
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            address: document.getElementById('address').value,
+            address2: document.getElementById('address2').value,
+            country: document.getElementById('country').value,
+            state: document.getElementById('state').value,
+            zip: document.getElementById('zip').value
+        };
+        const orderTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const orderData = {
+            orderId: generateOrderId(),
+            total: orderTotal,
+            customerDetails: personalDetails,
+            items: items,
+            paymentType: 'cod',
+            status: 'confirmed',
+            paymentMethod: 'COD',
+            paymentStatus: 'pending',
+            createdAt: new Date().toISOString()
+        };
+        // Save the order in Firestore
+        await saveOrder(orderData.orderId, orderData, personalDetails);
+        // Clear the cart after successful order
+        if (typeof clearCart === 'function') {
+            await clearCart();
+        }
+        // Show success message
+        Swal.fire({
+            title: 'Order Confirmed! 🎉',
+            html: `
+                <div style="text-align: left;">
+                    <p>Your order has been placed with Cash on Delivery!</p>
+                    <p><strong>Order ID:</strong> ${orderData.orderId}</p>
+                    <p><strong>Amount to Pay on Delivery:</strong> ₹${orderTotal}</p>
+                    <p>You will receive an order confirmation shortly.</p>
+                    <p>Thank you for shopping with Aziz Phone Hub! 🙏</p>
+                </div>
+            `,
+            icon: 'success',
+            confirmButtonText: 'Continue Shopping',
+            allowOutsideClick: false
+        }).then(() => {
+            window.location.href = 'index.html';
+        });
+    } catch (error) {
+        console.error('COD order error:', error);
+        Swal.fire({
+            title: 'Order Error',
+            text: 'There was an issue placing your order. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+}
 
 // Setup checkout event listeners
 function setupCheckoutEventListeners() {
@@ -525,7 +628,7 @@ async function processCheckout(items) {
         zip: document.getElementById('zip').value
     };
 
-    // Prepare order data for Razorpay
+    // Prepare order data for Razorpay (no phone verification fields)
     const orderData = {
         orderId: generateOrderId(),
         total: items.reduce((sum, item) => sum + (item.price * item.quantity), 0),

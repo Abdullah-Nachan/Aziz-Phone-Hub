@@ -21,7 +21,12 @@ if (!window.products) window.products = {
       "images/airpods-images/airpods_gen4/7.webp"
     ],
     price: "₹1,799",
-    description: "The latest AirPods with Active Noise Cancellation for immersive sound experience.",
+    highlights: [
+      "Active Noise Cancellation for immersive listening",
+      "Up to 24 hours of battery with charging case",
+      "Quick pairing with Apple devices"
+    ],
+    description: "AirPods Gen 4 (ANC) deliver a premium wireless audio experience with advanced noise cancellation and seamless integration with Apple devices. Enjoy crystal-clear calls, all-day comfort, and effortless connectivity wherever you go.",
     category: "airpods"
   },
   "airpods-pro-2": {
@@ -39,7 +44,12 @@ if (!window.products) window.products = {
       "images/airpods-images/aripods_pro2/7.webp"
     ],
     price: "₹999",
-    description: "Premium wireless earbuds with active noise cancellation and transparency mode.",
+    highlights: [
+      "Adaptive Transparency mode",
+      "Personalized spatial audio",
+      "Sweat and water resistant (IPX4)"
+    ],
+    description: "The AirPods Pro 2 are engineered for those who demand the best in sound and comfort. With adaptive transparency, personalized spatial audio, and a secure fit, these earbuds are perfect for music, calls, and workouts.",
     category: "airpods"
   },
   "airpods-pro-2-display": {
@@ -56,7 +66,12 @@ if (!window.products) window.products = {
       "images/airpods-images/airpods_display/7.webp"
     ],
     price: "₹1,499",
-    description: "AirPods Pro 2 with LED display on the charging case to show battery status and notifications.",
+    highlights: [
+      "LED display on charging case for battery status",
+      "Advanced noise cancellation",
+      "Ergonomic, lightweight design"
+    ],
+    description: "Stay updated at a glance with the LED display charging case. AirPods Pro 2 with Display offer powerful noise cancellation and a comfortable fit, making them ideal for travel, work, and everyday use.",
     category: "airpods"
   },
   "airpods-3": {
@@ -73,7 +88,12 @@ if (!window.products) window.products = {
       "images/airpods-images/airpods_3buds/7.webp"
     ],
     price: "₹949",
-    description: "Third-generation AirPods with spatial audio and adaptive EQ for an immersive listening experience.",
+    highlights: [
+      "Spatial audio with dynamic head tracking",
+      "Force sensor controls",
+      "Up to 6 hours of listening time"
+    ],
+    description: "AirPods 3rd Generation bring a new dimension to wireless listening with spatial audio and intuitive controls. Their ergonomic design and long battery life make them a great choice for music lovers on the move.",
     category: "airpods"
   },
   "airpods-2": {
@@ -89,7 +109,12 @@ if (!window.products) window.products = {
       "images/airpods-images/airpods_2buds/6.webp"
     ],
     price: "₹949",
-    description: "Second-generation AirPods with H1 chip for faster wireless connection and 'Hey Siri' support.",
+    highlights: [
+      "H1 chip for faster wireless connection",
+      "Voice-activated “Hey Siri”",
+      "Effortless device switching"
+    ],
+    description: "Enjoy the simplicity of wireless audio with AirPods 2nd Generation. Featuring the H1 chip and hands-free Siri, these earbuds offer reliable performance and easy switching between your Apple devices.",
     category: "airpods"
   },
   "galaxy-buds-2-pro": {
@@ -107,7 +132,12 @@ if (!window.products) window.products = {
       "images/airpods-images/galaxy_buds2_pro/7.webp"
     ],
     price: "₹999",
-    description: "Samsung's premium wireless earbuds with intelligent ANC and high-quality sound.",
+    highlights: [
+      "Intelligent Active Noise Cancellation",
+      "Hi-Fi 24-bit audio support",
+      "Comfortable, secure fit for all-day wear"
+    ],
+    description: "Samsung Galaxy Buds 2 Pro deliver high-fidelity sound and intelligent noise cancellation in a compact, comfortable design. Enjoy crystal-clear calls and music, whether at home or on the go.",
     category: "airpods"
   },
   "airpods-max": {
@@ -120,10 +150,15 @@ if (!window.products) window.products = {
       "images/Headphone-images/Airpod max/2.webp",
       "images/Headphone-images/Airpod max/3.webp",
       "images/Headphone-images/Airpod max/4.webp",
-      "images/Headphone-images/Airpod max/5.webp",
+      "images/Headphone-images/Airpod max/5.webp"
     ],
     price: "₹1,799",
-    description: "Over-ear headphones with high-fidelity audio, active noise cancellation, and spatial audio.",
+    highlights: [
+      "High-fidelity audio with custom drivers",
+      "Active Noise Cancellation and Transparency mode",
+      "Memory foam ear cushions for comfort"
+    ],
+    description: "AirPods Max combine premium materials with advanced audio technology for an unmatched listening experience. Enjoy immersive sound, powerful noise cancellation, and luxurious comfort.",
     category: "headphones"
   },
   "bose-qc-ultra": {
@@ -530,10 +565,15 @@ if (!window.products) window.products = {
       "images/Accessories-images/adapter/2.webp",
       "images/Accessories-images/adapter/3.webp",
       "images/Accessories-images/adapter/4.webp",
-      "images/Accessories-images/adapter/5.webp",
+      "images/Accessories-images/adapter/5.webp"
     ],
     price: "₹799",
-    description: "Fast-charging Apple 20W USB-C power adapter for iPhone, iPad, and AirPods.",
+    highlights: [
+      "Fast charging for iPhone, iPad, and AirPods",
+      "Compact and travel-friendly",
+      "Universal USB-C compatibility"
+    ],
+    description: "Charge your devices quickly and efficiently with the Apple 20W USB-C Power Adapter. Its compact size and universal compatibility make it ideal for home, office, or travel.",
     category: "accessories"
   },
   "type-c-cable": {
@@ -545,10 +585,15 @@ if (!window.products) window.products = {
       "images/Accessories-images/C to C cable/1.webp",
       "images/Accessories-images/C to C cable/2.webp",
       "images/Accessories-images/C to C cable/3.webp",
-      "images/Accessories-images/C to C cable/4.webp",
+      "images/Accessories-images/C to C cable/4.webp"
     ],
     price: "₹450",
-    description: "High-quality USB-C to USB-C cable for fast charging and data transfer.",
+    highlights: [
+      "Supports fast charging and data transfer",
+      "Durable and tangle-free design",
+      "Compatible with USB-C devices"
+    ],
+    description: "The Apple Type C to C Cable ensures fast charging and reliable data transfer for all your USB-C devices. Built to last, it's perfect for everyday use.",
     category: "accessories"
   },
   "type-c-lightning-cable": {
@@ -560,10 +605,15 @@ if (!window.products) window.products = {
       "images/Accessories-images/C to lightining Cable/1.webp",
       "images/Accessories-images/C to lightining Cable/2.webp",
       "images/Accessories-images/C to lightining Cable/3.webp",
-      "images/Accessories-images/C to lightining Cable/4.webp",
+      "images/Accessories-images/C to lightining Cable/4.webp"
     ],
     price: "₹450",
-    description: "Original Apple USB-C to Lightning cable for fast charging your iPhone or iPad.",
+    highlights: [
+      "Fast charging for iPhone and iPad",
+      "MFi certified for safety",
+      "Durable and flexible"
+    ],
+    description: "Charge and sync your Apple devices with the Type C to Lightning Cable. Enjoy fast, safe charging and reliable performance every time.",
     category: "accessories"
   },
   "magsafe": {
@@ -576,10 +626,15 @@ if (!window.products) window.products = {
       "images/Accessories-images/Magsafe/2.webp",
       "images/Accessories-images/Magsafe/3.webp",
       "images/Accessories-images/Magsafe/4.webp",
-      "images/Accessories-images/Magsafe/5.webp",
+      "images/Accessories-images/Magsafe/5.webp"
     ],
-    price: "₹799",
-    description: "MagSafe Battery Pack for iPhone with 5000mAh capacity for on-the-go charging.",
+    price: "₹999",
+    highlights: [
+      "5000mAh capacity for extended use",
+      "MagSafe wireless charging compatibility",
+      "Compact and portable design"
+    ],
+    description: "The Apple MagSafe Battery Pack offers convenient wireless charging for your iPhone. Its compact design and reliable power make it the perfect companion for travel and daily use.",
     category: "accessories"
   },
   "airpods-pro2-magsafe": {
@@ -589,16 +644,22 @@ if (!window.products) window.products = {
     image: "images/airpods+magsafe.jpg",
     images: [
       "images/Offer-images/airpods-&-magsafe/1.webp",
+      "video/6.mp4",
       "images/Offer-images/airpods-&-magsafe/2.webp",
       "images/Offer-images/airpods-&-magsafe/3.webp",
       "images/Offer-images/airpods-&-magsafe/4.webp",
       "images/Offer-images/airpods-&-magsafe/5.webp",
       "images/Offer-images/airpods-&-magsafe/6.webp",
       "images/Offer-images/airpods-&-magsafe/7.webp",
-      "images/Offer-images/airpods-&-magsafe/8.webp",
+      "images/Offer-images/airpods-&-magsafe/8.webp"
     ],
     price: "₹1,499",
-    description: "Unlock the ultimate convenience with our AirPods Pro 2 & MagSafe Battery Pack combo. Enjoy immersive sound quality, active noise cancellation, and seamless wireless charging wherever you go. Perfect for music lovers and those who need power on the move.",
+    highlights: [
+      "Includes AirPods Pro 2 and MagSafe Battery Pack",
+      "Seamless wireless charging on the go",
+      "Perfect for travel and busy lifestyles"
+    ],
+    description: "This combo brings together the immersive sound of AirPods Pro 2 and the convenience of MagSafe wireless charging. Stay powered and entertained wherever you are, with a bundle designed for ultimate mobility.",
     category: "combo-offers",
     detailedDescription: {
       sections: [

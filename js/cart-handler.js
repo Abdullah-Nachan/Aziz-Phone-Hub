@@ -152,3 +152,38 @@ window.addEventListener('cartUpdated', function(e) {
         updateCartCountBadge(e.detail.count);
     }
 });
+
+// Error handling functions
+function showError(title, message) {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    } else {
+        alert(`${title}: ${message}`);
+    }
+}
+
+function showLoginPrompt() {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Login Required',
+            text: 'Please log in to add items to your cart.',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Login',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = 'auth.html';
+            }
+        });
+    } else {
+        if (confirm('Please log in to add items to your cart. Would you like to go to the login page?')) {
+            window.location.href = 'auth.html';
+        }
+    }
+}

@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="review-date text-muted">${timeAgo(getReviewDate(review))}</div>
             </div>
             <div class="review-content">
-                <p>${review.text || ''}</p>
+                <p>${review.reviewText || review.text || review.comment || ''}</p>
             </div>
         `;
         // Media
@@ -202,71 +202,79 @@ document.addEventListener('DOMContentLoaded', function() {
             reviewsLoadedCount = 0;
             showAllReviews = false; // Reset on initial load
         }
-        let query = firebase.firestore()
-            .collection('reviews')
-            .where('productId', '==', productId)
-            .orderBy(reviewsQueryOrderField, 'desc')
-            .limit(100); // Fetch enough reviews for 'View All'
-        if (lastVisibleReview) {
-            query = query.startAfter(lastVisibleReview);
-        }
-        console.log('Querying reviews for productId:', productId);
+
+        // Fetch from both collections
+        let allReviews = [];
         try {
-            const reviewsSnap = await query.get();
-            console.log('Reviews loaded:', reviewsSnap.size);
-            if (reviewsSnap.empty) {
-                // Fallback: fetch all reviews and filter by productId in JS
-                console.warn('No reviews found with query. Trying fallback fetch-all.');
-                const allReviewsSnap = await firebase.firestore().collection('reviews').get();
-                const filteredReviews = [];
-                allReviewsSnap.forEach(doc => {
-                    const review = doc.data();
-                    if (review.productId === productId) {
-                        filteredReviews.push({ ...review, _docId: doc.id });
-                    }
-                });
-                if (filteredReviews.length === 0) {
-                    reviewsExhausted = true;
-                    removeSeeMoreButton();
-                    if (initial) {
-                        reviewsList.innerHTML = '<div class="text-center">No reviews yet.</div>';
-                        if (mediaGallery) mediaGallery.innerHTML = '';
-                        updateReviewSummary([]);
-                    }
-                    isLoadingReviews = false;
-                    return;
-                }
-                // Sort and render fallback reviews
-                filteredReviews.sort((a, b) => getReviewDate(b) - getReviewDate(a));
-                renderReviewsWithMediaGallery(filteredReviews, reviewsList, mediaGallery);
-                isLoadingReviews = false;
-                return;
-            }
-            let allReviews = [];
-            let mediaReviews = [];
-            let textReviews = [];
-            let mediaItems = [];
+            // Fetch from 'reviews' (order by timestamp)
+            const reviewsSnap = await firebase.firestore()
+                .collection('reviews')
+                .where('productId', '==', productId)
+                .orderBy('timestamp', 'desc')
+                .get();
             reviewsSnap.forEach(doc => {
                 const review = doc.data();
-                review.firstName = review.firstName || (review.name ? review.name.split(' ')[0] : '');
-                review.lastName = review.lastName || (review.name ? review.name.split(' ').slice(1).join(' ') : '');
-                review.text = review.text || review.comment || '';
                 review._docId = doc.id;
                 allReviews.push(review);
-                if (review.mediaUrls && review.mediaUrls.length > 0) {
-                    mediaReviews.push({ ...review, _docId: doc.id });
-                    review.mediaUrls.forEach(url => mediaItems.push({ url, reviewId: doc.id }));
-                } else {
-                    textReviews.push({ ...review, _docId: doc.id });
-                }
             });
-            // Sort reviews by date
-            allReviews.sort((a, b) => getReviewDate(b) - getReviewDate(a));
-            mediaReviews.sort((a, b) => getReviewDate(b) - getReviewDate(a));
-            textReviews.sort((a, b) => getReviewDate(b) - getReviewDate(a));
+
+            // Fetch from 'cust_reviews' (order by createdAt)
+            const custReviewsSnap = await firebase.firestore()
+                .collection('cust_reviews')
+                .where('productId', '==', productId)
+                .orderBy('createdAt', 'desc')
+                .get();
+            custReviewsSnap.forEach(doc => {
+                const review = doc.data();
+                review._docId = doc.id;
+                allReviews.push(review);
+            });
+
+            // Sort, normalize, and deduplicate as before
+            allReviews.sort((a, b) => new Date(b.createdAt || b.timestamp) - new Date(a.createdAt || a.timestamp));
+
+            const uniqueReviews = [];
+            const seen = new Set();
+            for (const review of allReviews) {
+                // Normalize fields for compatibility
+                let firstName = review.firstName;
+                let lastName = review.lastName;
+                if (!firstName && review.name) {
+                    const parts = review.name.split(' ');
+                    firstName = parts[0];
+                    lastName = parts.slice(1).join(' ');
+                }
+                const reviewText = review.reviewText || review.text || review.comment || '';
+                const createdAt = review.createdAt || review.timestamp || '';
+                const key = [
+                    firstName,
+                    lastName,
+                    reviewText,
+                    review.rating,
+                    review.productId
+                ].join('|');
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    uniqueReviews.push({
+                        ...review,
+                        firstName,
+                        lastName,
+                        reviewText,
+                        createdAt
+                    });
+                }
+            }
+            // Prioritize reviews with images (mediaUrls)
+            const reviewsWithImages = uniqueReviews.filter(r => Array.isArray(r.mediaUrls) && r.mediaUrls.length > 0);
+            const reviewsWithoutImages = uniqueReviews.filter(r => !Array.isArray(r.mediaUrls) || r.mediaUrls.length === 0);
+            reviewsWithImages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            reviewsWithoutImages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const prioritizedReviews = [...reviewsWithImages, ...reviewsWithoutImages];
+
             // Render reviews and media gallery
-            renderReviewsWithMediaGallery([...mediaReviews, ...textReviews], reviewsList, mediaGallery);
-            if (initial) updateReviewSummary(allReviews);
+            renderReviewsWithMediaGallery(prioritizedReviews, reviewsList, mediaGallery);
+            if (initial) updateReviewSummary(prioritizedReviews);
+
         } catch (err) {
             reviewsList.innerHTML = '<div class="text-center text-danger">Error loading reviews.</div>';
             updateReviewSummary([]);
@@ -339,13 +347,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 showAllReviews = true;
                 renderReviewsWithMediaGallery(allReviews, reviewsList, mediaGallery);
             };
-            // Insert after reviewsList, before write-review-form
-            const writeReviewForm = document.getElementById('write-review-form');
-            if (writeReviewForm && writeReviewForm.parentNode) {
-                writeReviewForm.parentNode.insertBefore(viewAllBtn, writeReviewForm);
-            } else if (reviewsList && reviewsList.parentNode) {
-                reviewsList.parentNode.appendChild(viewAllBtn);
-            }
+        }
+        // Always insert after reviewsList, outside the write-review form
+        if (reviewsList && reviewsList.parentNode) {
+            reviewsList.parentNode.insertBefore(viewAllBtn, reviewsList.nextSibling);
         }
         if (!showAllReviews && allReviews.length > REVIEWS_INITIAL_DISPLAY) {
             viewAllBtn.style.display = '';

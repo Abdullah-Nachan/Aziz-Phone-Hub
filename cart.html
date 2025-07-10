@@ -12,6 +12,28 @@
     <link rel="stylesheet" href="styles.css">
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '7337117516371815');
+    fbq('track', 'PageView');
+    // Fire InitiateCheckout event when cart page loads
+    fbq('track', 'InitiateCheckout', {
+        content_type: 'product',
+        currency: 'INR'
+    });
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=7337117516371815&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
 </head>
 <body>
     <!-- Navigation -->
@@ -206,6 +228,11 @@
     <script src="search.js"></script>
     <script src="cart-wishlist-auth.js"></script>
     <script src="guest-cart-wishlist.js"></script>
+    
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/917498543260" class="whatsapp-float" target="_blank" rel="noopener" title="Chat on WhatsApp">
+      <i class="fab fa-whatsapp"></i>
+    </a>
     
 </body>
 </html>

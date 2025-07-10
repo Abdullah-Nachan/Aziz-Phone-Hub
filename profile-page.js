@@ -215,6 +215,20 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     document.getElementById('add-address-btn').onclick = showAddAddressInlineForm;
     document.getElementById('add-address-empty-btn').onclick = showAddAddressInlineForm;
+
+    // Show section from URL if specified
+    const params = new URLSearchParams(window.location.search);
+    const section = params.get('section');
+    if (section) {
+        // Remove active class from all menu items and sections
+        document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+        // Add active to the correct menu and section
+        const menu = document.querySelector(`.menu-item[data-section='${section}']`);
+        const sec = document.getElementById(section);
+        if (menu) menu.classList.add('active');
+        if (sec) sec.classList.add('active');
+    }
 });
 
 // --- PROFILE ---

@@ -27,3 +27,77 @@ document.addEventListener('click', async function(e) {
         }
     }
 }); 
+
+// Add to cart function with Meta Pixel tracking
+function addToCart(product) {
+    // Existing cart logic
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    // Check if product already exists in cart
+    const existingProductIndex = cart.findIndex(item => item.id === product.id);
+    
+    if (existingProductIndex !== -1) {
+        // Product already exists, increase quantity
+        cart[existingProductIndex].quantity += 1;
+    } else {
+        // Add new product to cart
+        cart.push({
+            ...product,
+            quantity: 1
+        });
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Update cart count display
+    updateCartCount();
+    
+    // Meta Pixel AddToCart Event
+    if (typeof fbq !== 'undefined') {
+        fbq('track', 'AddToCart', {
+            content_ids: [product.id],
+            content_type: 'product',
+            content_name: product.name,
+            value: parseFloat(product.price.replace(/[^\d.]/g, '')),
+            currency: 'INR',
+            content_category: product.category || 'electronics'
+        });
+        console.log('Meta Pixel AddToCart event fired for:', product.name);
+    }
+    
+    // Show success message
+    Swal.fire({
+        icon: 'success',
+        title: 'Added to Cart!',
+        text: `${product.name} has been added to your cart.`,
+        showConfirmButton: false,
+        timer: 1500
+    });
+}
+
+// Purchase completion function with Meta Pixel tracking
+function completePurchase(orderData) {
+    // Meta Pixel Purchase Event
+    if (typeof fbq !== 'undefined') {
+        const totalValue = orderData.items.reduce((total, item) => {
+            return total + (parseFloat(item.price.replace(/[^\d.]/g, '')) * item.quantity);
+        }, 0);
+        
+        const contentIds = orderData.items.map(item => item.id);
+        
+        fbq('track', 'Purchase', {
+            content_ids: contentIds,
+            content_type: 'product',
+            value: totalValue,
+            currency: 'INR',
+            num_items: orderData.items.length,
+            content_category: 'electronics'
+        });
+        console.log('Meta Pixel Purchase event fired for order:', orderData);
+    }
+    
+    // Clear cart after successful purchase
+    localStorage.removeItem('cart');
+    updateCartCount();
+} 

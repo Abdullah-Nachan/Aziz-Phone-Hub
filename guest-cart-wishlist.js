@@ -106,6 +106,20 @@ document.addEventListener('click', function(e) {
         if (!window.firebase || !firebase.auth().currentUser) {
             const product = getProductDataFromButton(btn);
             addToLocalStorage('cart', product);
+            
+            // Fire Meta Pixel AddToCart event for guests
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'AddToCart', {
+                    content_ids: [product.id],
+                    content_type: 'product',
+                    content_name: product.name,
+                    value: parseFloat(product.price.replace(/[^\d.]/g, '')),
+                    currency: 'INR',
+                    content_category: product.category || 'electronics'
+                });
+                console.log('Meta Pixel AddToCart event fired for guest user:', product.name);
+            }
+            
             Swal.fire({ title: 'Added to Cart!', text: `${product.name} has been added to your cart.`, icon: 'success', timer: 1500, showConfirmButton: false });
             e.preventDefault();
         }

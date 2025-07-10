@@ -420,6 +420,20 @@ window.addToCartFirestore = async function(product, quantity = 1) {
 
         await userRef.update({ cart: cartItems });
         updateCartCountBadge(cartItems);
+        
+        // Fire Meta Pixel AddToCart event
+        if (typeof fbq !== 'undefined') {
+            fbq('track', 'AddToCart', {
+                content_ids: [product.id],
+                content_type: 'product',
+                content_name: product.name,
+                value: parseFloat(product.price.replace(/[^\d.]/g, '')),
+                currency: 'INR',
+                content_category: product.category || 'electronics'
+            });
+            console.log('Meta Pixel AddToCart event fired for:', product.name);
+        }
+        
         Swal.fire({ title: 'Added to Cart!', text: `${product.name} has been added to your cart.`, icon: 'success', timer: 2000, showConfirmButton: false });
     } catch (error) {
         console.error('Error adding to cart:', error);

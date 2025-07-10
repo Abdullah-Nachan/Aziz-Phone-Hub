@@ -222,13 +222,32 @@ async function pollOrderStatus(orderId) {
         const doc = await orderRef.get();
         if (doc.exists && doc.data().paymentStatus === 'paid') {
             clearInterval(interval);
+            
+            // Fire Meta Pixel Purchase event
+            if (typeof fbq !== 'undefined') {
+                const orderData = doc.data();
+                const totalAmount = orderData.totalAmount || 0;
+                const currency = 'INR';
+                
+                fbq('track', 'Purchase', {
+                    value: totalAmount,
+                    currency: currency,
+                    content_type: 'product',
+                    content_ids: orderData.items ? orderData.items.map(item => item.id) : [],
+                    num_items: orderData.items ? orderData.items.length : 0,
+                    order_id: orderId
+                });
+                console.log('Meta Pixel Purchase event fired for order:', orderId);
+            }
+            
             Swal.fire({
                 title: 'Payment Successful!',
                 text: 'Your payment was received and your order is confirmed.',
                 icon: 'success',
                 confirmButtonText: 'Continue Shopping'
             }).then(() => {
-                window.location.href = 'order-success.html';
+                // Redirect to home page (existing flow)
+                window.location.href = 'index.html';
             });
         }
     }, 4000);

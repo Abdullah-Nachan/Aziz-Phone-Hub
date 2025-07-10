@@ -362,11 +362,11 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('../images/logo.jpg');
+    background-image: url('./images/logo.jpg');
     background-size: 180px;
     background-repeat: repeat;
     background-position: center;
-    opacity: 0.15;
+    opacity: 0.25;
     z-index: 0;
 }
 
@@ -376,7 +376,7 @@
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     position: relative;
     z-index: 1;
@@ -2634,4 +2634,36 @@ body, .container, .main-content, .category-products, .products-section {
         margin-bottom: 0 !important;
         padding-bottom: 0 !important;
     }
+}
+
+/* WhatsApp Floating Button - Desktop: bottom-right, Mobile: above fixed footer */
+.whatsapp-float {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 12000;
+  background: #25d366;
+  color: #fff;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  font-size: 2.2rem;
+  transition: background 0.2s, transform 0.2s;
+  cursor: pointer;
+}
+.whatsapp-float:hover {
+  background: #1ebe57;
+  transform: scale(1.08);
+}
+@media (max-width: 991.98px) {
+  .whatsapp-float {
+    right: 18px;
+    bottom: 70px; /* Place above fixed bottom footer (footer is 60px high + margin) */
+    left: auto;
+    z-index: 12001;
+  }
 }

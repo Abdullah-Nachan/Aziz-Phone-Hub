@@ -64,6 +64,23 @@ function showProductNotFound() {
 function populateProductDetails(product) {
     document.getElementById('product-not-found').classList.add('d-none');
     document.getElementById('product-details').classList.remove('d-none');
+    
+    // Always define descriptionPoints at the top
+    const descriptionPoints = product.description ? product.description.split('. ') : [];
+    
+    // Meta Pixel ViewContent Event
+    if (typeof fbq !== 'undefined') {
+        fbq('track', 'ViewContent', {
+            content_ids: [product.id],
+            content_type: 'product',
+            content_name: product.name,
+            value: parseFloat(product.price.replace(/[^\d.]/g, '')),
+            currency: 'INR',
+            content_category: product.category || 'electronics'
+        });
+        console.log('Meta Pixel ViewContent event fired for:', product.name);
+    }
+    
     // Set page title
     document.title = `${product.name} - Aziz Phone Hub`;
     document.getElementById('product-title').textContent = `${product.name} - Aziz Phone Hub`;
@@ -97,19 +114,27 @@ function populateProductDetails(product) {
     populateRatingStars('overall-rating-stars', defaultRating);
     document.getElementById('overall-rating-count').textContent = `Based on ${defaultRatingCount} reviews`;
     
-    // Set product highlights from description
+    // Set product highlights from highlights array if available, else fallback to description
     const highlightsList = document.getElementById('product-highlights');
     highlightsList.innerHTML = '';
-    
-    // Create highlights from description
-    const descriptionPoints = product.description.split('. ');
-    descriptionPoints.forEach(point => {
-        if (point.trim()) {
-            const li = document.createElement('li');
-            li.textContent = point.trim() + (point.endsWith('.') ? '' : '.');
-            highlightsList.appendChild(li);
-        }
-    });
+    if (Array.isArray(product.highlights) && product.highlights.length > 0) {
+        product.highlights.forEach(point => {
+            if (point && point.trim()) {
+                const li = document.createElement('li');
+                li.textContent = point.trim();
+                highlightsList.appendChild(li);
+            }
+        });
+    } else {
+        // Fallback: Create highlights from description
+        descriptionPoints.forEach(point => {
+            if (point.trim()) {
+                const li = document.createElement('li');
+                li.textContent = point.trim() + (point.endsWith('.') ? '' : '.');
+                highlightsList.appendChild(li);
+            }
+        });
+    }
     
     // Set product description
     document.getElementById('product-description').textContent = product.description;
@@ -182,50 +207,87 @@ function populateProductDetails(product) {
         productImages = ['https://placehold.co/600x400?text=No+Image+Available'];
     }
     
-    // Create slides for each image
+    // Create slides for each image or video
     productImages.forEach((imageUrl, index) => {
         // Ensure the image URL is properly formatted
         let processedUrl = imageUrl;
         if (processedUrl && !processedUrl.startsWith('http') && !processedUrl.startsWith('/') && !processedUrl.startsWith('data:')) {
-            // If it's a relative path, make sure it starts with a slash
             processedUrl = processedUrl.startsWith('./') ? processedUrl.substring(1) : 
                          processedUrl.startsWith('images/') ? '/' + processedUrl : 
+                         processedUrl.startsWith('video/') ? '/' + processedUrl : 
                          `/images/${processedUrl}`;
         }
-        
-        // Create main image slide
+
+        // Create main slide
         const mainDiv = document.createElement('div');
         mainDiv.className = 'swiper-slide';
-        
-        const mainImg = document.createElement('img');
-        mainImg.src = processedUrl;
-        mainImg.alt = `${product.name} - Image ${index + 1}`;
-        mainImg.loading = 'lazy';
-        mainImg.style.width = '100%';
-        mainImg.style.height = 'auto';
-        mainImg.style.objectFit = 'cover';
-        mainImg.onerror = function() {
-            console.error(`Failed to load image: ${processedUrl}`);
-            this.src = 'https://placehold.co/600x400?text=Image+Not+Available';
-            this.onerror = null; // Prevent infinite loop if placeholder also fails
-        };
-        
-        mainDiv.appendChild(mainImg);
+
+        if (processedUrl.match(/\.mp4$/i)) {
+            // Video slide with GLightbox support
+            const mainLink = document.createElement('a');
+            mainLink.href = processedUrl;
+            mainLink.className = 'glightbox-product';
+            mainLink.setAttribute('data-type', 'video');
+            mainLink.title = `${product.name} - Video ${index + 1}`;
+
+            const video = document.createElement('video');
+            video.src = processedUrl;
+            video.controls = true;
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'cover';
+            video.style.borderRadius = '20px';
+            video.poster = 'https://placehold.co/600x400?text=Loading+Video';
+            video.onerror = function() {
+                this.poster = 'https://placehold.co/600x400?text=Video+Not+Available';
+                this.src = '';
+            };
+            mainLink.appendChild(video);
+            mainDiv.appendChild(mainLink);
+        } else {
+            // Image slide (with GLightbox)
+            const mainLink = document.createElement('a');
+            mainLink.href = processedUrl;
+            mainLink.className = 'glightbox-product';
+            mainLink.title = `${product.name} - Image ${index + 1}`;
+
+            const mainImg = document.createElement('img');
+            mainImg.src = processedUrl;
+            mainImg.alt = `${product.name} - Image ${index + 1}`;
+            mainImg.loading = 'lazy';
+            mainImg.style.width = '100%';
+            mainImg.style.height = 'auto';
+            mainImg.style.objectFit = 'cover';
+            mainImg.onerror = function() {
+                this.src = 'https://placehold.co/600x400?text=Image+Not+Available';
+                this.onerror = null;
+            };
+            mainLink.appendChild(mainImg);
+            mainDiv.appendChild(mainLink);
+        }
         mainImageSwiper.appendChild(mainDiv);
-        
+
         // Create thumbnail slide
         const thumbDiv = document.createElement('div');
         thumbDiv.className = 'swiper-slide';
-        
-        const thumbImg = document.createElement('img');
-        thumbImg.src = imageUrl;
-        thumbImg.alt = `Thumbnail ${index + 1}`;
-        thumbImg.onerror = function() {
-            this.src = 'images/placeholder.svg';
-            console.log(`Failed to load thumbnail: ${imageUrl}. Using placeholder.`);
-        };
-        
-        thumbDiv.appendChild(thumbImg);
+
+        if (imageUrl.match(/\.mp4$/i)) {
+            // Video thumbnail with play icon
+            thumbDiv.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#eee;border-radius:10px;position:relative;">
+                <i class='fas fa-play-circle fa-2x' style='color:#2563eb;'></i>
+            </div>`;
+        } else {
+            const thumbImg = document.createElement('img');
+            thumbImg.src = imageUrl;
+            thumbImg.alt = `Thumbnail ${index + 1}`;
+            thumbImg.onerror = function() {
+                this.src = 'images/placeholder.svg';
+            };
+            thumbDiv.appendChild(thumbImg);
+        }
         thumbnailSwiper.appendChild(thumbDiv);
     });
     
@@ -606,3 +668,72 @@ window.addToCartFirestore = async function(product, quantity) {
 window.showError = function(title, message) {
     alert(title + ': ' + message);
 };
+
+// Show write-review form on button click
+window.addEventListener('DOMContentLoaded', function() {
+    var showBtn = document.getElementById('show-review-form-btn');
+    var formContainer = document.getElementById('write-review-form-container');
+    if (showBtn && formContainer) {
+        showBtn.addEventListener('click', function() {
+            showBtn.style.display = 'none';
+            formContainer.style.display = 'block';
+        });
+    }
+});
+
+// Firestore review submit handler
+window.addEventListener('DOMContentLoaded', function() {
+    const reviewForm = document.getElementById('write-review-form');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Get form values
+            const firstName = document.getElementById('reviewer-firstname').value.trim();
+            const lastName = document.getElementById('reviewer-lastname').value.trim();
+            const rating = document.getElementById('review-rating').value;
+            const reviewText = document.getElementById('review-text').value.trim();
+
+            // Get productId from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            // Prepare review object
+            const reviewData = {
+                firstName,
+                lastName,
+                rating: Number(rating),
+                reviewText,
+                productId,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                // Firestore: add to cust_reviews collection
+                await firebase.firestore().collection('cust_reviews').add(reviewData);
+
+                // Optionally: Show success message and reset form
+                Swal.fire('Thank you!', 'Your review has been submitted.', 'success');
+                reviewForm.reset();
+                // Add new review to the top of the reviews list in the UI
+                const reviewsList = document.getElementById('reviewsList');
+                if (reviewsList) {
+                    const reviewDiv = document.createElement('div');
+                    reviewDiv.className = 'review-item bg-light p-3 mb-3 rounded shadow-sm';
+                    reviewDiv.innerHTML = `
+                        <div class="d-flex align-items-center mb-2">
+                            <strong>${firstName} ${lastName}</strong>
+                            <span class="ms-2 badge bg-primary">${'★'.repeat(Number(rating))}</span>
+                        </div>
+                        <div class="mb-1">${reviewText}</div>
+                        <small class="text-muted">${new Date().toLocaleString()}</small>
+                    `;
+                    reviewsList.prepend(reviewDiv);
+                }
+            } catch (error) {
+                Swal.fire('Error', 'Failed to submit review. Please try again.', 'error');
+                console.error('Error saving review:', error);
+            }
+        });
+    }
+});
