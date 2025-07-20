@@ -42,11 +42,17 @@ try {
         .then(() => {
             console.log('Auth persistence set to LOCAL');
             
-            // Sign in anonymously to ensure we can access public data
-            // Skip anonymous auth on auth page to prevent redirect issues
+            // Only sign in anonymously if user is not already signed in and not on auth page
+            // This reduces unnecessary reads
             if (!auth.currentUser && !window.location.pathname.includes('auth.html')) {
-                // First attempt at anonymous auth
-                signInAnonymouslyWithRetry(3);
+                // Check if we really need anonymous auth (only for cart/wishlist operations)
+                const needsAnonymousAuth = window.location.pathname.includes('cart.html') || 
+                                         window.location.pathname.includes('wishlist.html') ||
+                                         window.location.pathname.includes('checkout.html');
+                
+                if (needsAnonymousAuth) {
+                    signInAnonymouslyWithRetry(3);
+                }
             }
         })
         .catch(error => {

@@ -2667,3 +2667,46 @@ body, .container, .main-content, .category-products, .products-section {
     z-index: 12001;
   }
 }
+
+/* Offer Box Global Style */
+.offer-box {
+  background: #e3f4fd;
+  color: #186a8d;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px 0 rgba(33, 147, 176, 0.10), 0 1.5px 6px 0 rgba(0,0,0,0.06);
+  padding: 18px 28px;
+  font-size: 1.18rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  border: 1.5px solid #b2eaff;
+  gap: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.offer-box .offer-icon {
+  font-size: 2rem;
+  margin-right: 10px;
+  filter: drop-shadow(0 2px 6px #fff5);
+  flex-shrink: 0;
+}
+.offer-box .offer-text {
+  font-size: 1.13rem;
+  font-weight: 500;
+  text-shadow: 0 1px 4px #fff2;
+}
+@media (max-width: 767px) {
+  .offer-box {
+    font-size: 1rem;
+    padding: 12px 8px;
+    border-radius: 10px;
+    gap: 8px;
+  }
+  .offer-box .offer-icon {
+    font-size: 1.3rem;
+    margin-right: 5px;
+  }
+  .offer-box .offer-text {
+    font-size: 0.98rem;
+  }
+}

@@ -52,6 +52,22 @@ document.addEventListener('DOMContentLoaded', function() {
         reviewForm.insertBefore(reviewMediaInput, submitBtn);
     }
 
+    // Lazy load reviews when reviews section becomes visible
+    const reviewsSection = document.querySelector('.reviews-section');
+    if (reviewsSection) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    console.log('Reviews section visible, loading reviews...');
+                    loadReviews();
+                    observer.unobserve(entry.target); // Only load once
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        observer.observe(reviewsSection);
+    }
+
     // Handle review form submit
     if (reviewForm) {
         reviewForm.addEventListener('submit', async function (e) {
@@ -115,6 +131,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 alert('Review submitted!');
                 reviewForm.reset();
+                // Clear cache and reload reviews
+                clearReviewsCache(productId);
                 loadReviews();
             } catch (err) {
                 alert('Error submitting review. Please try again.');
@@ -186,7 +204,42 @@ document.addEventListener('DOMContentLoaded', function() {
     let reviewsLoadedCount = 0;
     let showAllReviews = false; // Track whether to show all reviews
     const REVIEWS_INITIAL_DISPLAY = 4; // Number of reviews to show initially
-    let reviewsQueryOrderField = 'timestamp'; // Change to 'createdAt' if needed
+    let reviewsQueryOrderField = 'timestamp';
+    
+    // Cache for reviews
+    const REVIEWS_CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+    let reviewsCache = {};
+
+    // Function to clear reviews cache
+    function clearReviewsCache(productId = null) {
+        if (productId) {
+            localStorage.removeItem(`reviews_${productId}`);
+        } else {
+            // Clear all review caches
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('reviews_')) {
+                    localStorage.removeItem(key);
+                }
+            });
+        }
+    }
+
+    // Function to get cached reviews
+    function getCachedReviews(productId) {
+        const cacheKey = `reviews_${productId}`;
+        const cachedData = localStorage.getItem(cacheKey);
+        if (cachedData) {
+            try {
+                const parsed = JSON.parse(cachedData);
+                if (Date.now() - parsed.timestamp < REVIEWS_CACHE_DURATION) {
+                    return parsed.reviews;
+                }
+            } catch (e) {
+                console.warn('Failed to parse cached reviews:', e);
+            }
+        }
+        return null;
+    }
 
     async function loadReviews(initial = true) {
         if (!productId) return;
@@ -194,6 +247,18 @@ document.addEventListener('DOMContentLoaded', function() {
         isLoadingReviews = true;
         const reviewsList = document.getElementById('reviewsList');
         const mediaGallery = document.getElementById('review-media-gallery');
+        const cacheKey = `reviews_${productId}`;
+        
+        // Check cache first
+        const cachedReviews = getCachedReviews(productId);
+        if (cachedReviews) {
+            console.log('Loading reviews from cache for product:', productId);
+            renderReviewsWithMediaGallery(cachedReviews, reviewsList, mediaGallery);
+            if (initial) updateReviewSummary(cachedReviews);
+            isLoadingReviews = false;
+            return;
+        }
+        
         if (initial) {
             reviewsList.innerHTML = '';
             if (mediaGallery) mediaGallery.innerHTML = '';
@@ -206,11 +271,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Fetch from both collections
         let allReviews = [];
         try {
-            // Fetch from 'reviews' (order by timestamp)
+            // Only fetch from 'reviews' collection to reduce reads
+            // 'cust_reviews' can be migrated to 'reviews' later
             const reviewsSnap = await firebase.firestore()
                 .collection('reviews')
                 .where('productId', '==', productId)
                 .orderBy('timestamp', 'desc')
+                .limit(50) // Limit to reduce reads
                 .get();
             reviewsSnap.forEach(doc => {
                 const review = doc.data();
@@ -218,17 +285,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 allReviews.push(review);
             });
 
-            // Fetch from 'cust_reviews' (order by createdAt)
-            const custReviewsSnap = await firebase.firestore()
-                .collection('cust_reviews')
-                .where('productId', '==', productId)
-                .orderBy('createdAt', 'desc')
-                .get();
-            custReviewsSnap.forEach(doc => {
-                const review = doc.data();
-                review._docId = doc.id;
-                allReviews.push(review);
-            });
+            // Only fetch from 'cust_reviews' if no reviews found in main collection
+            if (allReviews.length === 0) {
+                const custReviewsSnap = await firebase.firestore()
+                    .collection('cust_reviews')
+                    .where('productId', '==', productId)
+                    .orderBy('createdAt', 'desc')
+                    .limit(50) // Limit to reduce reads
+                    .get();
+                custReviewsSnap.forEach(doc => {
+                    const review = doc.data();
+                    review._docId = doc.id;
+                    allReviews.push(review);
+                });
+            }
 
             // Sort, normalize, and deduplicate as before
             allReviews.sort((a, b) => new Date(b.createdAt || b.timestamp) - new Date(a.createdAt || a.timestamp));
@@ -271,14 +341,34 @@ document.addEventListener('DOMContentLoaded', function() {
             reviewsWithoutImages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             const prioritizedReviews = [...reviewsWithImages, ...reviewsWithoutImages];
 
+            // Cache the results
+            localStorage.setItem(cacheKey, JSON.stringify({
+                reviews: prioritizedReviews,
+                timestamp: Date.now()
+            }));
+
             // Render reviews and media gallery
             renderReviewsWithMediaGallery(prioritizedReviews, reviewsList, mediaGallery);
             if (initial) updateReviewSummary(prioritizedReviews);
 
         } catch (err) {
-            reviewsList.innerHTML = '<div class="text-center text-danger">Error loading reviews.</div>';
-            updateReviewSummary([]);
             console.error('Error loading reviews:', err);
+            // Try to load from cache even if fresh fetch failed
+            const cachedData = localStorage.getItem(cacheKey);
+            if (cachedData) {
+                try {
+                    const parsed = JSON.parse(cachedData);
+                    console.log('Loading reviews from cache due to fetch error');
+                    renderReviewsWithMediaGallery(parsed.reviews, reviewsList, mediaGallery);
+                    if (initial) updateReviewSummary(parsed.reviews);
+                } catch (e) {
+                    reviewsList.innerHTML = '<div class="text-center text-danger">Error loading reviews.</div>';
+                    updateReviewSummary([]);
+                }
+            } else {
+                reviewsList.innerHTML = '<div class="text-center text-danger">Error loading reviews.</div>';
+                updateReviewSummary([]);
+            }
         }
         isLoadingReviews = false;
     }
@@ -510,7 +600,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Initial load reviews at the very top
-    loadReviews(true);
+    // loadReviews(true); // Removed automatic load on DOMContentLoaded
 
     // --- Rate Product Modal Logic ---
     function createRateProductModal() {

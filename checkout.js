@@ -88,15 +88,34 @@ function renderCheckoutItems(items) {
     checkoutItemsContainer.innerHTML = itemsHTML;
 }
 
+// Discount for prepaid
+const PREPAID_DISCOUNT = 100;
+let isPrepaidSelected = false;
+
 function updateCheckoutSummary(items) {
     const subtotalElement = document.getElementById('summary-subtotal');
     const shippingElement = document.getElementById('summary-shipping');
     const totalElement = document.getElementById('summary-total');
+    let discountRow = document.getElementById('summary-discount');
     if (!subtotalElement || !shippingElement || !totalElement) return;
     const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
     shippingElement.textContent = 'Free';
-    totalElement.textContent = `₹${subtotal.toFixed(2)}`;
+    // Discount logic
+    if (isPrepaidSelected) {
+        if (!discountRow) {
+            discountRow = document.createElement('div');
+            discountRow.className = 'd-flex justify-content-between mb-2';
+            discountRow.id = 'summary-discount';
+            // Insert after shipping row
+            shippingElement.parentNode.parentNode.insertBefore(discountRow, shippingElement.parentNode.nextSibling);
+        }
+        discountRow.innerHTML = `<span class='text-success'>Prepaid Discount</span><span class='text-success'>-₹${PREPAID_DISCOUNT.toFixed(2)}</span>`;
+        totalElement.textContent = `₹${(subtotal - PREPAID_DISCOUNT).toFixed(2)}`;
+    } else {
+        if (discountRow) discountRow.remove();
+        totalElement.textContent = `₹${subtotal.toFixed(2)}`;
+    }
 }
 
 // --- PHONE VERIFICATION LOGIC COMMENTED OUT ---
@@ -153,18 +172,22 @@ function setupPaymentMethodSelection(items) {
             const radio = this.querySelector('input[type="radio"]');
             radio.checked = true;
             if (radio.value === 'online') {
+                isPrepaidSelected = true;
                 availableMethods.style.display = 'block';
                 if (codInfo) codInfo.style.display = 'none';
                 confirmBtn.textContent = 'Pay Now';
             } else if (radio.value === 'cod') {
+                isPrepaidSelected = false;
                 if (availableMethods) availableMethods.style.display = 'none';
                 if (codInfo) codInfo.style.display = 'block';
                 confirmBtn.textContent = 'Place Order';
             } else {
+                isPrepaidSelected = false;
                 if (availableMethods) availableMethods.style.display = 'none';
                 if (codInfo) codInfo.style.display = 'none';
                 confirmBtn.textContent = 'Pay Now';
             }
+            updateCheckoutSummary(items);
         };
     });
     confirmBtn.onclick = function() {
@@ -174,40 +197,13 @@ function setupPaymentMethodSelection(items) {
             return;
         }
         if (selectedMethod.value === 'cod') {
-            Swal.fire({
-                title: 'Cash on Delivery',
-                html: `<p>You have selected <b>Cash on Delivery</b>.<br>Are you sure you want to place this order?</p>`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, Place Order',
-                cancelButtonText: 'Cancel',
-                allowOutsideClick: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Place COD order and save to Firestore as usual
-                    processCODOrder(items);
-                }
-            });
-        /*
-        // --- PARTIAL COD LOGIC (TEMPORARILY DISABLED) ---
-        Swal.fire({
-            title: 'Partial Cash on Delivery',
-            html: `<p>To confirm your order, you need to pay <b>₹100</b> in advance.<br>This will be deducted from your total. The remaining amount will be paid on delivery.<br><br>For more information, contact <a href=\"tel:917219345601\">917219345601</a>.</p>`,
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonText: 'Confirm & Pay ₹100',
-            cancelButtonText: 'Cancel',
-            allowOutsideClick: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                processPartialCOD(items);
-            }
-        });
-        */
+            processCODOrder(items);
         } else if (selectedMethod.value === 'online') {
             processCheckout(items);
         }
     };
+    // Set initial state
+    updateCheckoutSummary(items);
 }
 
 // Add the COD info message and video to the payment section if not already present
@@ -615,7 +611,6 @@ function validateCheckoutForm() {
 
 // Process checkout - Updated for Razorpay integration with new database structure
 async function processCheckout(items) {
-    // Collect form data
     const personalDetails = {
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
@@ -627,16 +622,15 @@ async function processCheckout(items) {
         state: document.getElementById('state').value,
         zip: document.getElementById('zip').value
     };
-
-    // Prepare order data for Razorpay (no phone verification fields)
+    const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const total = subtotal - PREPAID_DISCOUNT;
     const orderData = {
         orderId: generateOrderId(),
-        total: items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+        total: total,
         customerDetails: personalDetails,
-        items: items
+        items: items,
+        discount: PREPAID_DISCOUNT
     };
-
-    // Show loading (optional)
     Swal.fire({
         title: 'Processing...',
         text: 'Please wait while we prepare your payment.',
@@ -646,9 +640,7 @@ async function processCheckout(items) {
             Swal.showLoading();
         }
     });
-
     try {
-        // Call your Razorpay integration (make sure processCheckoutWithRazorpay is loaded globally)
         await processCheckoutWithRazorpay(orderData);
         Swal.close();
     } catch (error) {

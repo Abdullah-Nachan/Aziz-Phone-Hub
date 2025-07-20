@@ -619,7 +619,7 @@ if (!window.products) window.products = {
   "magsafe": {
     id: "magsafe",
     brand: "Apple",
-    name: "Apple MagSafe Battery Pack 5000 Mah",
+    name: "Apple MagSafe Battery Pack 10000 Mah",
     image: "images/apple-magsafe.jpg",
     images: [
       "images/Accessories-images/Magsafe/1.webp",
@@ -628,9 +628,9 @@ if (!window.products) window.products = {
       "images/Accessories-images/Magsafe/4.webp",
       "images/Accessories-images/Magsafe/5.webp"
     ],
-    price: "₹999",
+    price: "₹1199",
     highlights: [
-      "5000mAh capacity for extended use",
+      "10000mAh capacity for extended use",
       "MagSafe wireless charging compatibility",
       "Compact and portable design"
     ],
@@ -640,7 +640,7 @@ if (!window.products) window.products = {
   "airpods-pro2-magsafe": {
     id: "airpods-pro2-magsafe",
     brand: "Apple",
-    name: "Airpods Pro 2 & MagSafe Battery Pack",
+    name: "Airpods Pro 2 & MagSafe Battery Pack 5000mah",
     image: "images/airpods+magsafe.jpg",
     images: [
       "images/Offer-images/airpods-&-magsafe/1.webp",
@@ -689,7 +689,7 @@ if (!window.products) window.products = {
       "images/Offer-images/series9-pro-gold/6.webp",
       "images/Offer-images/series9-pro-gold/7.webp",
     ],
-    price: "₹1,699",
+    price: "₹1,499",
     description: "Elevate your style and functionality with the Apple Watch Series 9 Gold, bundled with a premium set of straps. Track your health, stay connected, and match your look for any occasion with this exclusive combo offer.",
     category: "combo-offers"
   },
