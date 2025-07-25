@@ -25,15 +25,14 @@ document.addEventListener('DOMContentLoaded', function() {
  * Check if user is authenticated
  */
 function checkAuth() {
-    auth.onAuthStateChanged(user => {
+    window.auth.onAuthStateChanged(user => {
         if (!user) {
             // Redirect to login page if not authenticated
             window.location.href = 'index.html';
         } else {
-            // Check if user is admin
-            user.getIdTokenResult().then(idTokenResult => {
-                if (!idTokenResult.claims.admin) {
-                    // Redirect to login page if not admin
+            // Check if user is admin by email
+            window.db.collection('admins').doc(user.email).get().then(docSnap => {
+                if (!docSnap.exists) {
                     window.location.href = 'index.html';
                 }
             });
@@ -71,7 +70,7 @@ function loadOrders() {
     
     try {
         // Get orders from Firestore
-        ordersCollection.orderBy('createdAt', 'desc').get()
+        ordersCollection.get()
             .then(snapshot => {
                 console.log(`Found ${snapshot.size} orders`);
                 
@@ -91,15 +90,47 @@ function loadOrders() {
                 // Add each order to the array
                 snapshot.forEach(doc => {
                     const orderData = doc.data();
+                    let customer, items, total, status, createdAt, shippingAddress, paymentMethod, subtotal, shipping, tax;
+
+                    if (orderData['order-details']) {
+                        // New structure: fields are nested under 'order-details'
+                        const od = orderData['order-details'];
+                        customer = od.customerDetails || { name: 'Unknown Customer' };
+                        items = od.items || [];
+                        total = od.total || 0;
+                        status = od.status || 'pending';
+                        createdAt = od.createdAt ? new Date(od.createdAt) : new Date();
+                        shippingAddress = od.shippingAddress || {};
+                        paymentMethod = od.paymentMethod || 'Unknown';
+                        subtotal = od.subtotal || od.total || 0;
+                        shipping = od.shipping || 0;
+                        tax = od.tax || 0;
+                    } else {
+                        // Old structure: fields at root
+                        customer = orderData.customer || { name: 'Unknown Customer' };
+                        items = orderData.items || [];
+                        total = orderData.total || 0;
+                        status = orderData.status || 'pending';
+                        createdAt = orderData.createdAt ? orderData.createdAt.toDate() : new Date();
+                        shippingAddress = orderData.shippingAddress || {};
+                        paymentMethod = orderData.paymentMethod || 'Unknown';
+                        subtotal = orderData.subtotal || orderData.total || 0;
+                        shipping = orderData.shipping || 0;
+                        tax = orderData.tax || 0;
+                    }
+
                     allOrders.push({
                         id: doc.id,
-                        customer: orderData.customer || { name: 'Unknown Customer' },
-                        items: orderData.items || [],
-                        total: orderData.total || 0,
-                        status: orderData.status || 'pending',
-                        createdAt: orderData.createdAt ? orderData.createdAt.toDate() : new Date(),
-                        shippingAddress: orderData.shippingAddress || {},
-                        paymentMethod: orderData.paymentMethod || 'Unknown',
+                        customer,
+                        items,
+                        total,
+                        status,
+                        createdAt,
+                        shippingAddress,
+                        paymentMethod,
+                        subtotal,
+                        shipping,
+                        tax,
                         ...orderData
                     });
                 });
@@ -156,34 +187,33 @@ function showFirebaseError(container, message) {
  */
 function displayOrders() {
     const ordersTableBody = document.getElementById('ordersTableBody');
-    
     if (!ordersTableBody) return;
-    
-    // Clear orders table
     ordersTableBody.innerHTML = '';
-    
-    // Calculate pagination
     const startIndex = (currentPage - 1) * ordersPerPage;
     const endIndex = Math.min(startIndex + ordersPerPage, filteredOrders.length);
     const currentOrders = filteredOrders.slice(startIndex, endIndex);
-    
-    // Add each order to the table
     currentOrders.forEach(order => {
-        const row = document.createElement('tr');
-        
-        // Format date
-        const date = new Date(order.createdAt);
+        // Get customer name
+        let customerName = 'Unknown Customer';
+        if (order.customer) {
+            if (order.customer.firstName) {
+                customerName = `${order.customer.firstName} ${order.customer.lastName || ''}`.trim();
+            } else if (order.customer.name) {
+                customerName = order.customer.name;
+            }
+        }
+        // Get date
+        const date = order.createdAt ? new Date(order.createdAt) : new Date();
         const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        
-        // Format total
-        const formattedTotal = '₹' + order.total.toLocaleString('en-IN');
-        
+        // Get total
+        const formattedTotal = '₹' + (order.total ? order.total.toLocaleString('en-IN') : '0');
         // Create status badge
         const statusBadge = getStatusBadge(order.status);
-        
+        const isVerified = order.status && order.status.toLowerCase() === 'verified';
+        const row = document.createElement('tr');
         row.innerHTML = `
             <td>${order.id.substring(0, 8)}...</td>
-            <td>${order.customer.name}</td>
+            <td>${customerName}</td>
             <td>${formattedDate}</td>
             <td>${formattedTotal}</td>
             <td>${statusBadge}</td>
@@ -191,17 +221,17 @@ function displayOrders() {
                 <button class="btn btn-sm btn-primary view-order" data-id="${order.id}" data-bs-toggle="modal" data-bs-target="#orderDetailsModal">
                     <i class="fas fa-eye"></i> View
                 </button>
+                ${isVerified
+                    ? `<button class="btn btn-sm btn-warning unverify-order ms-2" data-id="${order.id}"><i class="fas fa-undo"></i> Unverify</button>`
+                    : `<button class="btn btn-sm btn-success verify-order ms-2" data-id="${order.id}"><i class="fas fa-check-circle"></i> Verify</button>`}
             </td>
         `;
-        
         ordersTableBody.appendChild(row);
     });
-    
-    // Update pagination
     updatePagination();
-    
-    // Add event listeners to view buttons
     addViewButtonListeners();
+    addVerifyButtonListeners();
+    addUnverifyButtonListeners();
 }
 
 /**
@@ -233,6 +263,10 @@ function getStatusBadge(status) {
         case 'cancelled':
             badgeClass = 'bg-danger';
             icon = 'fa-times-circle';
+            break;
+        case 'verified':
+            badgeClass = 'bg-success';
+            icon = 'fa-check-circle';
             break;
         default:
             badgeClass = 'bg-secondary';
@@ -353,16 +387,71 @@ function addViewButtonListeners() {
 }
 
 /**
+ * Add event listeners to verify buttons
+ */
+function addVerifyButtonListeners() {
+    document.querySelectorAll('.verify-order').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const orderId = this.getAttribute('data-id');
+            if (!orderId) return;
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+            try {
+                await window.db.collection('orders').doc(orderId).update({ status: 'verified' });
+                Swal.fire({
+                    title: 'Order Verified',
+                    text: 'The order has been marked as verified.',
+                    icon: 'success',
+                    timer: 1200,
+                    showConfirmButton: false
+                });
+                loadOrders();
+            } catch (err) {
+                Swal.fire('Error', 'Failed to verify order. Please try again.', 'error');
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-check-circle"></i> Verify';
+            }
+        });
+    });
+}
+
+/**
+ * Add event listeners to unverify buttons
+ */
+function addUnverifyButtonListeners() {
+    document.querySelectorAll('.unverify-order').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const orderId = this.getAttribute('data-id');
+            if (!orderId) return;
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Unverifying...';
+            try {
+                await window.db.collection('orders').doc(orderId).update({ status: 'confirmed' });
+                Swal.fire({
+                    title: 'Order Unverified',
+                    text: 'The order has been marked as unverified (confirmed).',
+                    icon: 'success',
+                    timer: 1200,
+                    showConfirmButton: false
+                });
+                loadOrders();
+            } catch (err) {
+                Swal.fire('Error', 'Failed to unverify order. Please try again.', 'error');
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-undo"></i> Unverify';
+            }
+        });
+    });
+}
+
+/**
  * View order details
  * @param {string} orderId - The ID of the order to view
  */
 function viewOrderDetails(orderId) {
     const orderDetailsContent = document.getElementById('orderDetailsContent');
     const updateStatusBtn = document.getElementById('updateStatusBtn');
-    
     if (!orderDetailsContent || !updateStatusBtn) return;
-    
-    // Show loading
     orderDetailsContent.innerHTML = `
         <div class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
@@ -371,9 +460,7 @@ function viewOrderDetails(orderId) {
             <p class="mt-2">Loading order details...</p>
         </div>
     `;
-    
-    // Get order from Firestore
-    db.collection('orders').doc(orderId).get()
+    window.db.collection('orders').doc(orderId).get()
         .then(doc => {
             if (!doc.exists) {
                 orderDetailsContent.innerHTML = `
@@ -384,130 +471,146 @@ function viewOrderDetails(orderId) {
                 updateStatusBtn.style.display = 'none';
                 return;
             }
-            
-            const order = {
-                id: doc.id,
-                ...doc.data()
-            };
-            
+            let order = { id: doc.id, ...doc.data() };
+            let od = order['order-details'] || {};
+            // Prefer nested structure if available
+            const customer = od.customerDetails || order.customer || { name: 'Unknown Customer' };
+            const items = od.items || order.items || [];
+            const total = od.total || order.total || 0;
+            const status = od.status || order.status || 'pending';
+            const createdAt = od.createdAt ? new Date(od.createdAt) : (order.createdAt ? order.createdAt.toDate() : new Date());
+            const shippingAddress = od.shippingAddress || order.shippingAddress || {};
+            const paymentMethod = od.paymentMethod || order.paymentMethod || 'Unknown';
+            const subtotal = od.subtotal || od.total || order.subtotal || order.total || 0;
+            const shipping = od.shipping || order.shipping || 0;
+            const tax = od.tax || order.tax || 0;
             // Format date
-            const date = order.createdAt ? order.createdAt.toDate() : new Date();
-            const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
+            const formattedDate = createdAt.toLocaleDateString() + ' ' + createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             // Format total
-            const formattedTotal = '₹' + order.total.toLocaleString('en-IN');
-            
+            const formattedTotal = '₹' + (total ? total.toLocaleString('en-IN') : '0');
             // Create status badge
-            const statusBadge = getStatusBadge(order.status);
-            
+            const statusBadge = getStatusBadge(status);
             // Create order items container for horizontal display
             const orderItemsContainer = document.createElement('div');
             orderItemsContainer.id = 'orderItemsContainer';
             orderItemsContainer.className = 'row g-3 mb-4';
-            
-            // Add each item to the container
-            order.items.forEach(item => {
-                // Format price and calculate total
+            // Create shipping address HTML (show all fields except phone)
+            const addressLines = [
+                shippingAddress.name || customer.name || customer.firstName || '',
+                shippingAddress.address || '',
+                shippingAddress.address2 || '',
+                [shippingAddress.city, shippingAddress.state, shippingAddress.zip].filter(Boolean).join(', '),
+                shippingAddress.country || ''
+            ].filter(line => line && line.trim() !== '');
+            const addressHtml = addressLines.map(line => `<p class="mb-1">${line}</p>`).join('');
+
+            // Improved order item card formatting
+            orderItemsContainer.innerHTML = '';
+            items.forEach(item => {
                 const itemPrice = parseFloat(item.price) || 0;
                 const itemQuantity = parseInt(item.quantity) || 1;
                 const totalPrice = (itemPrice * itemQuantity).toFixed(2);
-                
-                // Create a column for each item
                 const colDiv = document.createElement('div');
                 colDiv.className = 'col-md-6 col-lg-4';
-                
-                // Create the item card
                 colDiv.innerHTML = `
-                    <div class="card h-100">
-                        <div class="row g-0">
-                            <div class="col-4">
-                                <img src="${item.image || '../images/placeholder.svg'}" 
-                                     alt="${item.name}" 
-                                     onerror="this.src='../images/placeholder.svg'" 
-                                     class="img-fluid rounded-start h-100 w-100 object-fit-cover">
-                            </div>
-                            <div class="col-8">
-                                <div class="card-body p-3">
-                                    <h6 class="card-title">${item.name}</h6>
-                                    <p class="card-text mb-1 small">Price: ₹${itemPrice.toFixed(2)}</p>
-                                    <p class="card-text mb-1 small">Quantity: ${itemQuantity}</p>
-                                    <p class="card-text fw-bold">Total: ₹${totalPrice}</p>
-                                </div>
-                            </div>
+                    <div class="card h-100 shadow-sm">
+                        <img src="${item.image || '../images/placeholder.svg'}"
+                             alt="${item.name}"
+                             onerror="this.src='../images/placeholder.svg'"
+                             class="img-fluid rounded-top"
+                             style="height:120px;object-fit:contain;background:#f8f9fa;">
+                        <div class="card-body p-2">
+                            <h6 class="card-title mb-1" style="font-size:1rem;white-space:normal;word-break:break-word;">${item.name}</h6>
+                            <p class="card-text mb-1 small">Price: ₹${itemPrice.toFixed(2)}</p>
+                            <p class="card-text mb-1 small">Quantity: ${itemQuantity}</p>
+                            <p class="card-text fw-bold mb-0">Total: ₹${totalPrice}</p>
                         </div>
                     </div>
                 `;
-                
                 orderItemsContainer.appendChild(colDiv);
             });
-            
-            // Convert to HTML string
             const itemsHtml = orderItemsContainer.outerHTML;
-            
-            // Create shipping address HTML
-            const shippingAddress = order.shippingAddress || {};
-            const addressHtml = `
-                <p class="mb-1">${shippingAddress.name || order.customer.name}</p>
-                <p class="mb-1">${shippingAddress.street || ''}</p>
-                <p class="mb-1">${shippingAddress.city || ''}, ${shippingAddress.state || ''} ${shippingAddress.zip || ''}</p>
-                <p class="mb-1">${shippingAddress.country || ''}</p>
-                <p class="mb-0">${shippingAddress.phone || order.customer.phone || ''}</p>
-            `;
-            
-            // Set order details HTML
+            // Get customer details from nested structure
+            const customerDetails = od.customerDetails || order.customerDetails || {};
+            const customerName = [customerDetails.firstName, customerDetails.lastName].filter(Boolean).join(' ') || customerDetails.name || 'N/A';
+            // Create shipping address HTML from customerDetails (address, address2, and pincode)
+            const customerAddressLines = [
+                customerDetails.address || '',
+                customerDetails.address2 || '',
+                customerDetails.zip ? `Pincode: ${customerDetails.zip}` : ''
+            ].filter(line => line && line.trim() !== '');
+            const customerAddressHtml = customerAddressLines.map(line => `<p class="mb-1">${line}</p>`).join('');
+
+            // Helper to generate copy icon HTML
+            function copyIconHtml(value, label) {
+                return `<i class='fas fa-copy ms-2 copy-icon' title='Copy ${label}' style='cursor:pointer;font-size:1rem;color:#0d6efd;' data-copy-value="${value.replace(/"/g, '&quot;')}"></i>`;
+            }
+
             orderDetailsContent.innerHTML = `
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <h5>Order Information</h5>
-                        <p class="mb-1"><strong>Order ID:</strong> ${order.id}</p>
-                        <p class="mb-1"><strong>Date:</strong> ${formattedDate}</p>
-                        <p class="mb-1"><strong>Status:</strong> ${statusBadge}</p>
-                        <p class="mb-0"><strong>Payment Method:</strong> ${order.paymentMethod || 'Unknown'}</p>
+                        <p class="mb-1"><strong>Order ID:</strong> <span>${order.id}</span>${copyIconHtml(order.id, 'Order ID')}</p>
+                        <p class="mb-1"><strong>Date:</strong> <span>${formattedDate}</span>${copyIconHtml(formattedDate, 'Date')}</p>
+                        <p class="mb-1"><strong>Status:</strong> <span>${statusBadge}</span></p>
+                        <p class="mb-0"><strong>Payment Method:</strong> <span>${paymentMethod}</span>${copyIconHtml(paymentMethod, 'Payment Method')}</p>
                     </div>
                     <div class="col-md-6">
                         <h5>Customer Information</h5>
-                        <p class="mb-1"><strong>Name:</strong> ${order.customer.name}</p>
-                        <p class="mb-1"><strong>Email:</strong> ${order.customer.email || 'N/A'}</p>
-                        <p class="mb-0"><strong>Phone:</strong> ${order.customer.phone || 'N/A'}</p>
+                        <p class="mb-1"><strong>Name:</strong> <span>${customerName}</span>${copyIconHtml(customerName, 'Name')}</p>
+                        <p class="mb-1"><strong>Email:</strong> <span>${customerDetails.email || 'N/A'}</span>${copyIconHtml(customerDetails.email || '', 'Email')}</p>
+                        <p class="mb-0"><strong>Phone:</strong> <span>${customerDetails.phone || 'N/A'}</span>${copyIconHtml(customerDetails.phone || '', 'Phone')}</p>
                     </div>
                 </div>
-                
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <h5>Shipping Address</h5>
-                        ${addressHtml}
+                        ${customerAddressLines.map(line => `<span>${line}${copyIconHtml(line, 'Address')}</span>`).join('<br>')}
                     </div>
                     <div class="col-md-6">
                         <h5>Order Summary</h5>
-                        <p class="mb-1"><strong>Subtotal:</strong> ₹${(order.subtotal || order.total).toLocaleString('en-IN')}</p>
-                        <p class="mb-1"><strong>Shipping:</strong> ₹${(order.shipping || 0).toLocaleString('en-IN')}</p>
-                        <p class="mb-1"><strong>Tax:</strong> ₹${(order.tax || 0).toLocaleString('en-IN')}</p>
-                        <p class="mb-0"><strong>Total:</strong> ${formattedTotal}</p>
+                        <p class="mb-1"><strong>Subtotal:</strong> <span>₹${(subtotal).toLocaleString('en-IN')}</span>${copyIconHtml(subtotal.toLocaleString('en-IN'), 'Subtotal')}</p>
+                        <p class="mb-1"><strong>Shipping:</strong> <span>₹${(shipping).toLocaleString('en-IN')}</span>${copyIconHtml(shipping.toLocaleString('en-IN'), 'Shipping')}</p>
+                        <p class="mb-1"><strong>Tax:</strong> <span>₹${(tax).toLocaleString('en-IN')}</span>${copyIconHtml(tax.toLocaleString('en-IN'), 'Tax')}</p>
+                        <p class="mb-0"><strong>Total:</strong> <span>${formattedTotal}</span>${copyIconHtml(formattedTotal, 'Total')}</p>
                     </div>
                 </div>
-                
                 <h5>Order Items</h5>
                 ${itemsHtml}
-                
                 <div class="mt-4">
                     <h5>Update Status</h5>
                     <select id="orderStatus" class="form-select">
-                        <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                        <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
-                        <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
-                        <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
-                        <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                        <option value="pending" ${status === 'pending' ? 'selected' : ''}>Pending</option>
+                        <option value="processing" ${status === 'processing' ? 'selected' : ''}>Processing</option>
+                        <option value="shipped" ${status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                        <option value="delivered" ${status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                        <option value="cancelled" ${status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                        <option value="confirmed" ${status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                        <option value="verified" ${status === 'verified' ? 'selected' : ''}>Verified</option>
                     </select>
                 </div>
             `;
-            
-            // Show update status button
             updateStatusBtn.style.display = 'block';
-            
-            // Add event listener to update status button
             updateStatusBtn.onclick = function() {
                 updateOrderStatus(orderId);
             };
+
+            // Add event listeners for copy icons
+            document.querySelectorAll('.copy-icon').forEach(icon => {
+                icon.addEventListener('click', function(e) {
+                    const value = this.getAttribute('data-copy-value');
+                    if (value) {
+                        navigator.clipboard.writeText(value);
+                        this.title = 'Copied!';
+                        this.style.color = '#198754';
+                        setTimeout(() => {
+                            this.title = 'Copy';
+                            this.style.color = '#0d6efd';
+                        }, 1200);
+                    }
+                    e.stopPropagation();
+                });
+            });
         })
         .catch(error => {
             console.error('Error getting order details:', error);
@@ -532,7 +635,7 @@ function updateOrderStatus(orderId) {
     const status = orderStatus.value;
     
     // Update order status in Firestore
-    db.collection('orders').doc(orderId).update({
+    window.db.collection('orders').doc(orderId).update({
         status: status,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     })
@@ -605,27 +708,32 @@ function filterOrders() {
     const searchInput = document.getElementById('searchInput');
     const statusFilter = document.getElementById('statusFilter');
     const sortBy = document.getElementById('sortBy');
-    
     if (!searchInput || !statusFilter || !sortBy) return;
-    
     const searchTerm = searchInput.value.toLowerCase();
     const status = statusFilter.value;
     const sort = sortBy.value;
-    
     // Filter orders
     filteredOrders = allOrders.filter(order => {
-        // Filter by search term
-        const matchesSearch = !searchTerm || 
+        // Get customer info (support nested and flat)
+        let customer = order.customer || {};
+        let name = '';
+        let phone = '';
+        if (customer.firstName) {
+            name = `${customer.firstName} ${customer.lastName || ''}`.trim();
+        } else if (customer.name) {
+            name = customer.name;
+        }
+        phone = customer.phone || '';
+        // Filter by search term (order id, name, email, phone)
+        const matchesSearch = !searchTerm ||
             order.id.toLowerCase().includes(searchTerm) ||
-            order.customer.name.toLowerCase().includes(searchTerm) ||
-            (order.customer.email && order.customer.email.toLowerCase().includes(searchTerm));
-        
+            name.toLowerCase().includes(searchTerm) ||
+            (customer.email && customer.email.toLowerCase().includes(searchTerm)) ||
+            phone.includes(searchTerm);
         // Filter by status
-        const matchesStatus = !status || order.status === status;
-        
+        const matchesStatus = !status || (order.status && order.status === status);
         return matchesSearch && matchesStatus;
     });
-    
     // Sort orders
     filteredOrders.sort((a, b) => {
         switch (sort) {
@@ -641,11 +749,7 @@ function filterOrders() {
                 return new Date(b.createdAt) - new Date(a.createdAt);
         }
     });
-    
-    // Reset to first page
     currentPage = 1;
-    
-    // Display filtered orders
     displayOrders();
 }
 
@@ -686,7 +790,7 @@ function exportOrders() {
  * Logout function
  */
 function logout() {
-    auth.signOut()
+    window.auth.signOut()
         .then(() => {
             window.location.href = 'index.html';
         })
@@ -694,3 +798,14 @@ function logout() {
             console.error('Error signing out:', error);
         });
 }
+
+// Add 'Verified' to status filter dropdown (ensure it appears in All Statuses)
+(function addVerifiedToStatusFilter() {
+    const statusFilter = document.getElementById('statusFilter');
+    if (statusFilter && !Array.from(statusFilter.options).some(opt => opt.value === 'verified')) {
+        const opt = document.createElement('option');
+        opt.value = 'verified';
+        opt.textContent = 'Verified';
+        statusFilter.appendChild(opt);
+    }
+})();

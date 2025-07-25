@@ -55,6 +55,8 @@ async function createRazorpayOrder(orderData) {
         });
         const order = await orderRes.json();
         if (!order.id) throw new Error('Failed to create order on backend');
+        // 1.5. Save order to Firestore before payment
+        await saveOrder(orderData.orderId, orderData, orderData.customerDetails);
         // 2. Use real order_id in Razorpay options
         const options = {
             key: currentConfig.key,
@@ -222,24 +224,18 @@ async function pollOrderStatus(orderId) {
         const doc = await orderRef.get();
         if (doc.exists && doc.data().paymentStatus === 'paid') {
             clearInterval(interval);
-            
-            // Fire Meta Pixel Purchase event
+            // Fire Meta Pixel Purchase event with correct structure
             if (typeof fbq !== 'undefined') {
                 const orderData = doc.data();
-                const totalAmount = orderData.totalAmount || 0;
-                const currency = 'INR';
-                
+                const od = orderData['order-details'] || {};
                 fbq('track', 'Purchase', {
-                    value: totalAmount,
-                    currency: currency,
-                    content_type: 'product',
-                    content_ids: orderData.items ? orderData.items.map(item => item.id) : [],
-                    num_items: orderData.items ? orderData.items.length : 0,
-                    order_id: orderId
+                    value: od.total || 0,
+                    currency: 'INR',
+                    contents: od.items ? od.items.map(item => ({id: item.id, quantity: item.quantity})) : [],
+                    content_type: 'product'
                 });
                 console.log('Meta Pixel Purchase event fired for order:', orderId);
             }
-            
             Swal.fire({
                 title: 'Payment Successful!',
                 text: 'Your payment was received and your order is confirmed.',

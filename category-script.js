@@ -12,6 +12,24 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('No category specified');
         return;
     }
+
+    // Inject combo offer banner if category is combo-offers
+    if (category === 'combo-offers') {
+        const banner = document.createElement('div');
+        banner.style = `background: #e6ffed; color: #218838; border: 2px solid #b7eb8f; padding: 1.2rem 1rem; border-radius: 12px; margin: 1.5rem auto 1.5rem auto; font-size: 1.15rem; font-weight: 600; text-align: center; max-width: 700px; box-shadow: 0 2px 8px rgba(34,139,34,0.07);`;
+        banner.innerHTML = `
+            <div style="font-size:1.2rem; font-weight:700; margin-bottom:0.5rem;">Now you can select any two products of your choice from our website and get up to ₹1000 off!</div>
+            <div style="font-size:1.05rem; font-weight:500;">
+                <span>Select any two products and tell us on </span>
+                <a href="https://wa.me/917498543260?text=I%20want%20to%20avail%20the%20Combo%20Offer%20with%20these%20products:" target="_blank" style="color:#25D366; text-decoration:underline; font-weight:600;">
+                    <i class="fab fa-whatsapp" style="font-size:1.3em; vertical-align:middle;"></i> WhatsApp
+                </a>
+                <span> to get up to ₹1000 off.</span>
+            </div>
+        `;
+        const placeholder = document.getElementById('combo-offer-banner-placeholder');
+        if (placeholder) placeholder.appendChild(banner);
+    }
     
         // Update page title and header
         const categoryTitle = document.getElementById('category-title');

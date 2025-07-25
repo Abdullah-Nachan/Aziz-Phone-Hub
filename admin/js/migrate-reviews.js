@@ -300,90 +300,68 @@ const allProductUniqueComments = [
 ];
 
 window.migrateReviews = async function({log, updateProgress, setStatus}) {
-  const comboProductId = 'airpods-pro2-magsafe';
-  const comboProductName = 'Airpods Pro 2 & MagSafe Battery Pack';
-  const reviewCount = 60;
-  log(`Generating ${reviewCount} reviews for ${comboProductName}...`, 'info');
+  // --- NEW LOGIC FOR AIRPODS PRO 2 & AIRPODS MAX COMBO ---
+  const comboProductId = 'airpods-pro2-airpodsmax-combo';
+  const comboProductName = 'AirPods Pro 2 & AirPods Max Premium Combo';
+
+  const reviewsToAdd = [
+    { firstName: "Rohan", lastName: "Mehta", rating: 5, comment: "The sound quality on both the Pro 2 and Max is just mind-blowing. I use the Pro 2 for the gym and the Max for movies at home. Best combo for music lovers!" },
+    { firstName: "Aarav", lastName: "Sharma", rating: 5, comment: "Switching between the AirPods Pro 2 and Max is seamless. Both are super comfortable and the noise cancellation is next level. Highly recommended!" },
+    { firstName: "Simran", lastName: "Kaur", rating: 5, comment: "I love the versatility of this combo. The Pro 2 are perfect for calls and the Max are a treat for long flights. Both look and feel premium." },
+    { firstName: "Vikas", lastName: "Patel", rating: 5, comment: "The Max headphones are so comfortable for long listening sessions. The Pro 2 are my go-to for workouts. Both connect instantly to my iPhone." },
+    { firstName: "Priya", lastName: "Deshmukh", rating: 5, comment: "I was blown away by the battery life on both. The Max are perfect for home and the Pro 2 are always in my bag. Worth every rupee!" },
+    { firstName: "Kabir", lastName: "Jain", rating: 5, comment: "The combo is a dream for audiophiles. The Max deliver deep bass and the Pro 2 are so light you forget you’re wearing them. Super happy with this purchase." },
+    { firstName: "Meera", lastName: "Nair", rating: 5, comment: "I use the Pro 2 for my morning runs and the Max for relaxing at home. Both have amazing sound and block out all noise. Delivery was quick too!" },
+    { firstName: "Siddharth", lastName: "Gupta", rating: 5, comment: "The Pro 2 are perfect for calls and the Max are unbeatable for music. Both charge fast and last long. Great value combo!" },
+    { firstName: "Aisha", lastName: "Khan", rating: 5, comment: "I gifted this combo to my brother and he’s obsessed! The Max are super comfy and the Pro 2 are perfect for travel. Both look stunning." },
+    { firstName: "Yash", lastName: "Joshi", rating: 5, comment: "The best part is the seamless switching between devices. The Max are my favorite for gaming and the Pro 2 for podcasts. Both are top notch." },
+    { firstName: "Tanvi", lastName: "Singh", rating: 5, comment: "I use the Max for movies and the Pro 2 for Zoom calls. Both have crystal clear sound and the noise cancellation is amazing. Love this combo!" },
+    { firstName: "Dev", lastName: "Reddy", rating: 5, comment: "The Max headphones are a luxury experience. The Pro 2 are so handy for daily commutes. Both are easy to pair and use. Would buy again!" },
+    { firstName: "Sneha", lastName: "Kapoor", rating: 5, comment: "I was looking for a premium audio combo and this is it. The Max are perfect for home and the Pro 2 for the office. Both exceeded my expectations." },
+    { firstName: "Arjun", lastName: "Bose", rating: 5, comment: "The Pro 2 fit perfectly and the Max are super soft on the ears. Both have great battery life and sound quality. Fast shipping too!" },
+    { firstName: "Riya", lastName: "Chopra", rating: 5, comment: "I use the Max for music production and the Pro 2 for calls. Both are reliable and the build quality is excellent. Highly recommend this combo!" },
+    { firstName: "Kunal", lastName: "Saxena", rating: 5, comment: "The Max headphones are a game changer for movies. The Pro 2 are my daily drivers for calls and music. Both are super easy to use." },
+    { firstName: "Maya", lastName: "Iyer", rating: 5, comment: "I love how both devices sync with my Apple Watch and iPhone. The Max are perfect for home and the Pro 2 for the gym. Great combo deal!" },
+    { firstName: "Rahul", lastName: "Pandey", rating: 5, comment: "The Pro 2 are so light and the Max are so immersive. Both have amazing sound and the noise cancellation is the best I’ve tried." },
+    { firstName: "Ananya", lastName: "Menon", rating: 5, comment: "I use the Max for audiobooks and the Pro 2 for music. Both are super comfortable and the battery lasts all day. Very happy with this purchase." },
+    { firstName: "Gaurav", lastName: "Tripathi", rating: 5, comment: "The Max are perfect for home office and the Pro 2 for travel. Both connect instantly and the sound is fantastic. Would recommend to everyone!" },
+    { firstName: "Ishaan", lastName: "Bhatt", rating: 5, comment: "The Pro 2 are my favorite for workouts and the Max for movies. Both are easy to use and the sound is crystal clear. Great combo!" },
+    { firstName: "Pooja", lastName: "Kulkarni", rating: 5, comment: "I was impressed by the packaging and fast delivery. The Max are super comfy and the Pro 2 are perfect for calls. Both are worth the price." },
+    { firstName: "Saurabh", lastName: "Patil", rating: 5, comment: "The Max headphones are a treat for music lovers. The Pro 2 are so convenient for daily use. Both have excellent battery life." },
+    { firstName: "Neha", lastName: "Ghosh", rating: 5, comment: "I use the Max for editing videos and the Pro 2 for meetings. Both are reliable and the sound is top quality. Highly recommend!" },
+    { firstName: "Manav", lastName: "Desai", rating: 5, comment: "The Max are perfect for home and the Pro 2 for travel. Both are easy to pair and the sound is amazing. Great combo for Apple fans!" }
+  ];
+
+  log(`Starting to add ${reviewsToAdd.length} reviews for: ${comboProductName}`, 'info');
   setStatus(`Migrating reviews for ${comboProductName}...`);
-  let total = 0;
-  // Assign images to reviews
-  const imageAssignments = assignComboImagesToReviews(reviewCount, comboImages.slice());
-  // Pick 2 random indices for negative reviews
-  const negativeIdx1 = Math.floor(Math.random() * 20); // in first 20
-  let negativeIdx2 = 20 + Math.floor(Math.random() * 40); // in rest
-  if (negativeIdx2 === negativeIdx1) negativeIdx2 = (negativeIdx2 + 1) % reviewCount;
-  const usedCommentsSet = new Set();
-  for (let i = 0; i < reviewCount; i++) {
-    const firstName = indianFirstNames[i];
-    const lastName = indianLastNames[i];
-    const name = `${firstName} ${lastName}`;
-    let rating = randomInt(4, 5);
-    let comment = getReviewComment(i, usedCommentsSet);
-    // Insert negative reviews
-    if (i === negativeIdx1) {
-      rating = randomInt(1, 2);
-      comment = negativeComments[0];
-    } else if (i === negativeIdx2) {
-      rating = randomInt(1, 2);
-      comment = negativeComments[1];
-    }
+
+  let totalAdded = 0;
+  const totalToMigrate = reviewsToAdd.length;
+  updateProgress(0, totalToMigrate);
+
+  for (const reviewData of reviewsToAdd) {
     const review = {
       productId: comboProductId,
       productName: comboProductName,
-      name,
-      email: randomEmail(name),
-      rating,
-      comment,
+      name: `${reviewData.firstName} ${reviewData.lastName}`,
+      rating: reviewData.rating,
+      comment: reviewData.comment,
       timestamp: randomPastDate().toISOString(),
-      mediaUrls: imageAssignments[i]
+      mediaUrls: []
     };
-    await firebase.firestore().collection('reviews').add(review);
-    total++;
-    if (total % 10 === 0 || total === reviewCount) {
-      log(`Added ${total} reviews for ${comboProductName}`, 'success');
-      updateProgress(total, reviewCount);
-    }
-  }
-  setStatus('All reviews migrated!');
-  log(`All reviews migrated! Total: ${total}`, 'success');
 
-  // --- All other products ---
-  for (const product of products) {
-    if (product.id === comboProductId) continue;
-    const reviewCount = randomInt(20, 30);
-    log(`Generating ${reviewCount} reviews for ${product.name}...`, 'info');
-    setStatus(`Migrating reviews for ${product.name}...`);
-    let total = 0;
-    // Shuffle names for uniqueness per product
-    const shuffledFirstNames = indianFirstNames.slice().sort(() => 0.5 - Math.random());
-    const shuffledLastNames = indianLastNames.slice().sort(() => 0.5 - Math.random());
-    // Shuffle comments for uniqueness per product
-    const shuffledComments = allProductUniqueComments.slice().sort(() => 0.5 - Math.random());
-    for (let i = 0; i < reviewCount; i++) {
-      const firstName = shuffledFirstNames[i % shuffledFirstNames.length];
-      const lastName = shuffledLastNames[i % shuffledLastNames.length];
-      const name = `${firstName} ${lastName}`;
-      const comment = shuffledComments[i % shuffledComments.length];
-      const review = {
-        productId: product.id,
-        productName: product.name,
-        name,
-        email: randomEmail(name),
-        rating: randomInt(4, 5),
-        comment,
-        timestamp: randomPastDate().toISOString(),
-        mediaUrls: []
-      };
+    try {
       await firebase.firestore().collection('reviews').add(review);
-      total++;
-      if (total % 10 === 0 || total === reviewCount) {
-        log(`Added ${total} reviews for ${product.name}`, 'success');
-        updateProgress(total, reviewCount);
-      }
+      totalAdded++;
+      log(`Added review #${totalAdded}: ${review.name} - "${review.comment.substring(0, 30)}..."`, 'success');
+      updateProgress(totalAdded, totalToMigrate);
+    } catch (error) {
+      log(`Failed to add review for ${review.name}: ${error.message}`, 'error');
     }
   }
-  setStatus('All reviews migrated!');
-  log('All reviews migrated for all products!', 'success');
+
+  setStatus('Migration completed!');
+  log(`Successfully added ${totalAdded} reviews for ${comboProductName}.`, 'success');
 };
 
 window.migrateRatings = async function({log, updateProgress, setStatus}) {

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aziz Phone Hub - Premium Electronics & Fashion</title>
     <meta name="description" content="Aziz Phone Hub is your one-stop destination for premium offers, airpods, smartwatches,trendy Footwears, and accessories in India. Discover the latest gadgets, unbeatable deals, and top-quality products from trusted brands. Enjoy fast shipping, secure payments, and exceptional customer support. Shop with confidence and upgrade your lifestyle with Aziz Phone Hub today!">
-    <link rel="icon" type="image/jpeg" href="images/AzizPhoneHub.webp">
+    <link rel="icon" type="image/jpeg" href="images/favicon.png">
     
     <!-- Meta Pixel Code -->
     <script>
@@ -56,6 +56,81 @@
             background: #000;
             object-fit: cover;
         }
+        /* --- Offer Marquee Modern Moving Tag --- */
+.offer-marquee {
+  width: 100vw;
+  overflow: hidden;
+  background: #eae4dc;
+  color: #222;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  border-top: 2px solid #e0d7c6;
+  border-bottom: 2px solid #e0d7c6;
+  position: relative;
+  z-index: 20;
+  padding: 0.3rem 0;
+  font-family: 'Roboto', Arial, sans-serif;
+  box-shadow: 0 2px 8px #0001;
+  height: 48px;
+  display: flex;
+  align-items: center;
+}
+.offer-marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: offer-marquee-scroll 28s linear infinite;
+  white-space: nowrap;
+  will-change: transform;
+}
+.offer-marquee span {
+  display: inline-block;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #222;
+  font-style: italic;
+  margin-right: 3rem;
+  letter-spacing: 1.2px;
+  text-shadow: 0 1px 4px #fff8, 0 0.5px 0 #e0d7c6;
+}
+@keyframes offer-marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.offer-marquee-top {
+  border-bottom: 2px solid #e0d7c6;
+  border-top: none;
+  margin-bottom: 0;
+}
+.offer-marquee-bottom {
+  border-top: 2px solid #e0d7c6;
+  border-bottom: none;
+  margin-top: 0;
+}
+.offer-marquee::-webkit-scrollbar, .offer-marquee-track::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 767px) {
+  .offer-marquee, .offer-marquee span {
+    font-size: 1.05rem;
+    height: 36px;
+  }
+  .offer-marquee span {
+    margin-right: 1.2rem;
+    font-weight: 900;
+  }
+  .offer-marquee-track {
+    animation-duration: 28s;
+  }
+  .offer-marquee-top {
+    margin-bottom: 0;
+  }
+  .hero-section {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
     </style>
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
@@ -240,25 +315,26 @@
         </form>
     </div>
 
+    <!-- Moving Offer Line Above Hero Section -->
+    <a href="category.html?cat=combo-offers" class="offer-marquee offer-marquee-top" style="text-decoration:none; color:inherit; cursor:pointer;">
+      <div class="offer-marquee-track">
+        <span>SALE: Create your own Combo and get up to 1000/- discount &nbsp; • &nbsp;</span>
+        <span>SALE: Create your own Combo and get up to 1000/- discount &nbsp; • &nbsp;</span>
+        <span>SALE: Create your own Combo and get up to 1000/- discount &nbsp; • &nbsp;</span>
+        <span>SALE: Create your own Combo and get up to 1000/- discount &nbsp; • &nbsp;</span>
+        <span>SALE: Create your own Combo and get up to 1000/- discount &nbsp; • &nbsp;</span>
+      </div>
+    </a>
+
     <!-- Hero Section with Swiper Slider -->
     <section class="hero-section">
         <div class="hero-card">
             <div class="swiper heroSwiper">
                 <div class="swiper-wrapper">
-                    <!-- Slide 1: Replace image with video -->
+                    <!-- Slide 1: Replace video with image -->
                     <div class="swiper-slide">
                         <a href="product.html?id=airpods-pro2-magsafe" class="hero-slide-link">
-                            <video
-                                src="video/airpods-&-magsafe.mp4"
-                                class="hero-slide-image"
-                                autoplay
-                                loop
-                                muted
-                                playsinline
-                                style="width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 16px;"
-                                poster="./images/airpods-pro2-&-magsafe.png"
-                                tabindex="-1"
-                            ></video>
+                            <img src="images/airpods+magsafe.webp" alt="AirPods Pro 2 & MagSafe Combo" class="hero-slide-image" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 16px;">
                             <div class="container">
                                 <div class="row justify-content-center align-items-center h-100">
                                     <div class="col-md-8 text-center text-white">
@@ -270,8 +346,8 @@
                     </div>
                     <!-- Slide 2 -->
                     <div class="swiper-slide">
-                        <a href="product.html?id=7in1-apple-ultra-smartwatch" class="hero-slide-link">
-                            <img src="./images/7in1-watch-ultra.png" alt="Hero Slide 2 Image" class="hero-slide-image">
+                        <a href="product.html?id=airpods-pro2-watch-s10" class="hero-slide-link">
+                            <img src="./images/airpods+watch-hero.webp" alt="Hero Slide 2 Image" class="hero-slide-image" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 16px;">
                             <div class="container">
                                 <div class="row justify-content-center align-items-center h-100">
                                     <div class="col-md-8 text-center text-white">
@@ -283,8 +359,8 @@
                     </div>
                     <!-- Slide 3 -->
                     <div class="swiper-slide">
-                        <a href="product.html?id=series9-gold-with-straps" class="hero-slide-link">
-                            <img src="./images/series9-pro-gold.png" alt="Hero Slide 3 Image" class="hero-slide-image">
+                        <a href="product.html?id=airpods-pro2-airpodsmax-combo" class="hero-slide-link">
+                            <img src="./images/airpods+airpods-max.webp" alt="Hero Slide 3 Image" class="hero-slide-image" style="width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 16px;">
                             <div class="container">
                                 <div class="row justify-content-center align-items-center h-100">
                                     <div class="col-md-8 text-center text-white">
@@ -304,6 +380,17 @@
         </div>
     </section>
 
+    <!-- Moving Offer Line Below Hero Section -->
+    <a href="category.html?cat=combo-offers" class="offer-marquee offer-marquee-bottom" style="text-decoration:none; color:inherit; cursor:pointer;">
+      <div class="offer-marquee-track">
+        <span>SALE: Get upto 1000/- discount on your own Custom Combo &nbsp; • &nbsp;</span>
+        <span>SALE: Get upto 1000/- discount on your own Custom Combo &nbsp; • &nbsp;</span>
+        <span>SALE: Get upto 1000/- discount on your own Custom Combo &nbsp; • &nbsp;</span>
+        <span>SALE: Get upto 1000/- discount on your own Custom Combo &nbsp; • &nbsp;</span>
+        <span>SALE: Get upto 1000/- discount on your own Custom Combo &nbsp; • &nbsp;</span>
+      </div>
+    </a>
+
     <!-- Categories Section -->
     <section class="categories-section py-5">
         <div class="container">
@@ -311,7 +398,7 @@
             <!-- Row 1 -->
             <div class="category-row horizontal-scroll mb-3">
                 <a href="category.html?cat=combo-offers" class="category-card" data-aos="fade-up" data-aos-delay="700">
-                    <img src="./images/combo-offers.jpg" alt="Combo Offers" class="img-fluid">
+                    <img src="./images/combo-offers.png" alt="Combo Offers" class="img-fluid">
                     <h3>Combo Offers</h3>
                 </a>
                 <a href="category.html?cat=airpods" class="category-card" data-aos="fade-up">
@@ -878,6 +965,18 @@
     <a href="https://wa.me/917498543260" class="whatsapp-float" target="_blank" rel="noopener" title="Chat on WhatsApp">
     <i class="fab fa-whatsapp"></i>
     </a>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.Swiper) {
+    new Swiper('.heroSwiper', {
+      loop: true,
+      pagination: { el: '.swiper-pagination', clickable: true },
+      autoplay: { delay: 3000, disableOnInteraction: false },
+    });
+  }
+});
+</script>
 
 </body>
 </html>

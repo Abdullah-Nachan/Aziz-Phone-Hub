@@ -51,7 +51,7 @@ try {
                                          window.location.pathname.includes('checkout.html');
                 
                 if (needsAnonymousAuth) {
-                    signInAnonymouslyWithRetry(3);
+                signInAnonymouslyWithRetry(3);
                 }
             }
         })

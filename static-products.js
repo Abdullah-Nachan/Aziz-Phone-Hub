@@ -675,6 +675,33 @@ if (!window.products) window.products = {
       ]
     }
   },
+  "airpods-pro2-watch-s10": {
+    id: "airpods-pro2-watch-s10",
+    brand: "Apple",
+    name: "AirPods Pro 2 & Apple Watch Series 10 Combo",
+    image: "images/airpods+watch.jpg",
+    images: [
+      "images/Offer-images/airpods+watch/1.png",
+      "images/Offer-images/airpods+watch/2.png",
+      "images/Offer-images/airpods+watch/3.png",
+      "images/Offer-images/airpods+watch/4.jpg",
+      "images/Offer-images/airpods+watch/5.jpg",
+      "images/Offer-images/airpods+watch/6.jpg",
+      "images/Offer-images/airpods+watch/7.jpg",
+      "images/Offer-images/airpods+watch/8.jpg",
+      "images/Offer-images/airpods+watch/9.jpg",
+      "images/Offer-images/airpods+watch/11.jpg",
+    ],
+    price: "₹1,999",
+    highlights: [
+      "Ultimate tech bundle: AirPods Pro 2 and Apple Watch Series 10.",
+      "Immersive audio with next-gen Active Noise Cancellation.",
+      "Advanced health tracking and always-on display on your wrist.",
+      "Seamless connectivity for a premium ecosystem experience."
+    ],
+    description: "Upgrade your tech game with the ultimate Apple ecosystem bundle. This combo includes the top-of-the-line AirPods Pro 2 for unparalleled sound quality and the new Apple Watch Series 10 to keep you connected and on top of your health goals. Perfect for professionals, fitness enthusiasts, and anyone who demands the best in performance and style.",
+    category: "combo-offers"
+  },
   "series9-gold-with-straps": {
     id: "series9-gold-with-straps",
     brand: "Apple",
@@ -691,7 +718,7 @@ if (!window.products) window.products = {
     ],
     price: "₹1,499",
     description: "Elevate your style and functionality with the Apple Watch Series 9 Gold, bundled with a premium set of straps. Track your health, stay connected, and match your look for any occasion with this exclusive combo offer.",
-    category: "combo-offers"
+    category: "smartwatches"
   },
   "7in1-apple-ultra-smartwatch": {
     id: "7in1-apple-ultra-smartwatch",
@@ -709,6 +736,33 @@ if (!window.products) window.products = {
     ],
     price: "₹999",
     description: "Experience versatility and innovation with the Apple Ultra Smartwatch 7-in-1 combo. Includes a feature-rich smartwatch and 7 interchangeable straps for every mood and activity. The perfect bundle for fitness enthusiasts and trendsetters.",
+    category: "smartwatches"
+  },
+  "airpods-pro2-airpodsmax-combo": {
+    id: "airpods-pro2-airpodsmax-combo",
+    brand: "Apple",
+    name: "AirPods Pro 2 & AirPods Max Premium Combo",
+    image: "images/airpods-max+airpods.png",
+    images: [
+      "images/Offer-images/airpods-max+airpods/1.png",
+      "images/Offer-images/airpods-max+airpods/2.png",
+      "images/Offer-images/airpods-max+airpods/3.png",
+      "images/Offer-images/airpods-max+airpods/4.jpg",
+      "images/Offer-images/airpods-max+airpods/5.png",
+      "images/Offer-images/airpods-max+airpods/6.jpg",
+      "images/Offer-images/airpods-max+airpods/7.png",
+      "images/Offer-images/airpods-max+airpods/8.jpg",
+      "images/Offer-images/airpods-max+airpods/9.jpg",
+      "images/Offer-images/airpods-max+airpods/10.jpg",
+    ],
+    price: "₹1,999",
+    highlights: [
+      "Experience the best of both worlds: in-ear and over-ear premium sound.",
+      "AirPods Pro 2 for active noise cancellation and all-day comfort.",
+      "AirPods Max for immersive, high-fidelity audio at home or on the go.",
+      "Seamless Apple ecosystem integration for effortless switching."
+    ],
+    description: "Unlock the ultimate audio experience with this exclusive Apple combo. Enjoy the portability and advanced features of AirPods Pro 2, paired with the luxurious sound and comfort of AirPods Max. Whether you’re working out, traveling, or relaxing at home, this bundle delivers unmatched versatility and performance for true music lovers.",
     category: "combo-offers"
   },
 };

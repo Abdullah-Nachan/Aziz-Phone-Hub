@@ -303,6 +303,69 @@ window.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
 
+            <!-- Add video placeholder below feature row -->
+            <div class="container my-4 product-feature-video-container position-relative">
+              <div class="row justify-content-center">
+                <div class="col-12">
+                  <div class="ratio ratio-16x9 position-relative">
+                    <video id="product-feature-video" controls autoplay muted poster="images/video-placeholder.jpg" style="width:100%;height:100%;object-fit:contain;background:#f8f9fa;">
+                      <source src="video/Packing video .mp4" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Professional packaging message below video -->
+            <div class="container mb-4">
+              <div class="alert alert-info shadow-sm text-center" style="font-size:1.08rem; max-width:700px; margin:0 auto;">
+                <i class="fas fa-info-circle me-2"></i>
+                For complete transparency and peace of mind, we pack all parcels in clear, see-through bags—so you can easily verify the product inside before opening.
+              </div>
+            </div>
+            <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const video = document.getElementById('product-feature-video');
+  const muteBtn = document.getElementById('video-mute-btn');
+  const muteIcon = document.getElementById('mute-icon');
+  const playPauseBtn = document.getElementById('video-playpause-btn');
+  const playPauseIcon = document.getElementById('playpause-icon');
+
+  // Mute/unmute logic
+  muteBtn.addEventListener('click', function() {
+    video.muted = !video.muted;
+    muteIcon.className = video.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+  });
+
+  // Play/pause logic
+  playPauseBtn.addEventListener('click', function() {
+    if (video.paused) {
+      video.play();
+      playPauseIcon.className = 'fas fa-pause';
+    } else {
+      video.pause();
+      playPauseIcon.className = 'fas fa-play';
+    }
+  });
+
+  // Update play/pause icon on video events
+  video.addEventListener('play', function() {
+    playPauseIcon.className = 'fas fa-pause';
+  });
+  video.addEventListener('pause', function() {
+    playPauseIcon.className = 'fas fa-play';
+  });
+});
+</script>
+<style>
+#video-mute-btn:hover, #video-playpause-btn:hover {
+  background: #e3f4fd !important;
+}
+#video-mute-btn:active, #video-playpause-btn:active {
+  background: #b2eaff !important;
+}
+</style>
+
             <!-- Product Description -->
             <div class="row mt-5">
                 <div class="col-12">
@@ -465,35 +528,35 @@ window.addEventListener('DOMContentLoaded', function() {
                     <div class="write-review-section mt-4">
                         <button id="show-review-form-btn" class="btn btn-primary mb-3">Write a Review</button>
                         <div id="write-review-form-container" style="display:none;">
-                            <h3 class="mb-3">Write a Review</h3>
-                            <form id="write-review-form">
-                                <div class="row mb-3">
-                                    <div class="col-md-6 mb-2 mb-md-0">
-                                        <label for="reviewer-firstname" class="form-label">First Name</label>
-                                        <input type="text" class="form-control" id="reviewer-firstname" placeholder="Enter your first name">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="reviewer-lastname" class="form-label">Last Name</label>
-                                        <input type="text" class="form-control" id="reviewer-lastname" placeholder="Enter your last name">
-                                    </div>
+                        <h3 class="mb-3">Write a Review</h3>
+                        <form id="write-review-form">
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-2 mb-md-0">
+                                    <label for="reviewer-firstname" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="reviewer-firstname" placeholder="Enter your first name">
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Rating</label>
-                                    <select class="form-select" id="review-rating" required>
-                                        <option value="">Select rating</option>
-                                        <option value="5">★★★★★ (5)</option>
-                                        <option value="4">★★★★☆ (4)</option>
-                                        <option value="3">★★★☆☆ (3)</option>
-                                        <option value="2">★★☆☆☆ (2)</option>
-                                        <option value="1">★☆☆☆☆ (1)</option>
-                                    </select>
+                                <div class="col-md-6">
+                                    <label for="reviewer-lastname" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="reviewer-lastname" placeholder="Enter your last name">
                                 </div>
-                                <div class="mb-3">
-                                    <label for="review-text" class="form-label">Your Review</label>
-                                    <textarea class="form-control" id="review-text" rows="3" required placeholder="Share your experience..."></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Submit Review</button>
-                            </form>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Rating</label>
+                                <select class="form-select" id="review-rating" required>
+                                    <option value="">Select rating</option>
+                                    <option value="5">★★★★★ (5)</option>
+                                    <option value="4">★★★★☆ (4)</option>
+                                    <option value="3">★★★☆☆ (3)</option>
+                                    <option value="2">★★☆☆☆ (2)</option>
+                                    <option value="1">★☆☆☆☆ (1)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="review-text" class="form-label">Your Review</label>
+                                <textarea class="form-control" id="review-text" rows="3" required placeholder="Share your experience..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
                         </div>
                     </div>
                 </div>

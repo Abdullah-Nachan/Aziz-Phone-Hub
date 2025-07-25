@@ -207,6 +207,7 @@ function setupPaymentMethodSelection(items) {
 }
 
 // Add the COD info message and video to the payment section if not already present
+/*
 function ensureCODInfoSection() {
     let codInfo = document.getElementById('cod-info');
     if (!codInfo) {
@@ -238,6 +239,7 @@ function ensureCODInfoSection() {
     }
 }
 document.addEventListener('DOMContentLoaded', ensureCODInfoSection);
+*/
 
 // --- COMMENTED OUT: PARTIAL COD LOGIC ---
 /*
@@ -505,6 +507,15 @@ async function processCODOrder(items) {
         }).then(() => {
             window.location.href = 'index.html';
         });
+        // Fire Facebook Pixel Purchase event
+        if (typeof fbq === 'function') {
+            fbq('track', 'Purchase', {
+                value: orderTotal,
+                currency: 'INR',
+                contents: items.map(item => ({ id: item.id, quantity: item.quantity })),
+                content_type: 'product'
+            });
+        }
     } catch (error) {
         console.error('COD order error:', error);
         Swal.fire({

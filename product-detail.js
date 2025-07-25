@@ -248,17 +248,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const reviewsList = document.getElementById('reviewsList');
         const mediaGallery = document.getElementById('review-media-gallery');
         const cacheKey = `reviews_${productId}`;
-        
-        // Check cache first
+        // Try cache first
         const cachedReviews = getCachedReviews(productId);
-        if (cachedReviews) {
+        if (cachedReviews && cachedReviews.length > 0) {
             console.log('Loading reviews from cache for product:', productId);
             renderReviewsWithMediaGallery(cachedReviews, reviewsList, mediaGallery);
             if (initial) updateReviewSummary(cachedReviews);
             isLoadingReviews = false;
             return;
         }
-        
+        // If cache is empty or missing, fetch from Firestore
         if (initial) {
             reviewsList.innerHTML = '';
             if (mediaGallery) mediaGallery.innerHTML = '';
@@ -267,31 +266,26 @@ document.addEventListener('DOMContentLoaded', function() {
             reviewsLoadedCount = 0;
             showAllReviews = false; // Reset on initial load
         }
-
-        // Fetch from both collections
         let allReviews = [];
         try {
             // Only fetch from 'reviews' collection to reduce reads
-            // 'cust_reviews' can be migrated to 'reviews' later
             const reviewsSnap = await firebase.firestore()
                 .collection('reviews')
                 .where('productId', '==', productId)
                 .orderBy('timestamp', 'desc')
-                .limit(50) // Limit to reduce reads
+                .limit(50)
                 .get();
             reviewsSnap.forEach(doc => {
                 const review = doc.data();
                 review._docId = doc.id;
                 allReviews.push(review);
             });
-
-            // Only fetch from 'cust_reviews' if no reviews found in main collection
             if (allReviews.length === 0) {
                 const custReviewsSnap = await firebase.firestore()
                     .collection('cust_reviews')
                     .where('productId', '==', productId)
                     .orderBy('createdAt', 'desc')
-                    .limit(50) // Limit to reduce reads
+                    .limit(50)
                     .get();
                 custReviewsSnap.forEach(doc => {
                     const review = doc.data();
@@ -299,14 +293,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     allReviews.push(review);
                 });
             }
-
-            // Sort, normalize, and deduplicate as before
             allReviews.sort((a, b) => new Date(b.createdAt || b.timestamp) - new Date(a.createdAt || a.timestamp));
-
             const uniqueReviews = [];
             const seen = new Set();
             for (const review of allReviews) {
-                // Normalize fields for compatibility
                 let firstName = review.firstName;
                 let lastName = review.lastName;
                 if (!firstName && review.name) {
@@ -334,26 +324,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 }
             }
-            // Prioritize reviews with images (mediaUrls)
             const reviewsWithImages = uniqueReviews.filter(r => Array.isArray(r.mediaUrls) && r.mediaUrls.length > 0);
             const reviewsWithoutImages = uniqueReviews.filter(r => !Array.isArray(r.mediaUrls) || r.mediaUrls.length === 0);
             reviewsWithImages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             reviewsWithoutImages.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             const prioritizedReviews = [...reviewsWithImages, ...reviewsWithoutImages];
-
             // Cache the results
             localStorage.setItem(cacheKey, JSON.stringify({
                 reviews: prioritizedReviews,
                 timestamp: Date.now()
             }));
-
-            // Render reviews and media gallery
             renderReviewsWithMediaGallery(prioritizedReviews, reviewsList, mediaGallery);
             if (initial) updateReviewSummary(prioritizedReviews);
-
         } catch (err) {
             console.error('Error loading reviews:', err);
-            // Try to load from cache even if fresh fetch failed
             const cachedData = localStorage.getItem(cacheKey);
             if (cachedData) {
                 try {
@@ -710,7 +694,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     `;
     document.head.appendChild(style);
-
+    
     // Initialize quantity controls
     initQuantityControls();
     

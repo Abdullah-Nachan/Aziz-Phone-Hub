@@ -47,9 +47,8 @@
     </div>
 
     <!-- Firebase SDK -->
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="../firebase-config.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
@@ -82,8 +81,7 @@
                 
                 // Check if user is admin
                 const db = firebase.firestore();
-                const userDoc = await db.collection('admins').doc(user.uid).get();
-                
+                const userDoc = await db.collection('admins').doc(user.email).get();
                 if (userDoc.exists) {
                     // Redirect to dashboard on successful login
                     window.location.href = 'dashboard.html';
@@ -118,8 +116,7 @@
                 // User is signed in, check if admin
                 try {
                     const db = firebase.firestore();
-                    const userDoc = await db.collection('admins').doc(user.uid).get();
-                    
+                    const userDoc = await db.collection('admins').doc(user.email).get();
                     if (userDoc.exists) {
                         // User is admin, redirect to dashboard
                         window.location.href = 'dashboard.html';
